@@ -1,0 +1,16 @@
+# Data files - too large for git
+data/audio/ami/
+data/audio/mediasum/
+data/documentation/jira/
+data/documentation/user stories/
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
