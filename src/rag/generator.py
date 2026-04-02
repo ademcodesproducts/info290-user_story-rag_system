@@ -1,15 +1,9 @@
-"""
-Generation layer — builds the prompt and calls the LLM to produce
-structured pain points and user stories grounded in retrieved context.
-"""
-
 import json
 from openai import OpenAI
 
 
 MODEL = "gpt-4o"
 
-# Few-shot examples of well-formed user stories (Connextra format)
 FEW_SHOT_EXAMPLES = """
 Example 1:
 As a Data Engineer, I want to receive a plain-language summary of why a Workflow task
@@ -82,24 +76,7 @@ def generate(
     model: str = MODEL,
     temperature: float = 0.2,
 ) -> dict:
-    """
-    Call the LLM with the retrieved context and return parsed structured output.
-
-    Args:
-        client:        OpenAI client instance.
-        query_text:    The PM's question.
-        context_block: Formatted numbered context from retriever.format_context_block().
-        model:         OpenAI model to use.
-        temperature:   Lower = more deterministic (good for structured extraction).
-
-    Returns:
-        Dict with keys: pain_points, user_stories, summary.
-    """
-    user_prompt = QUERY_PROMPT_TEMPLATE.format(
-        query=query_text,
-        context=context_block,
-    )
-
+    user_prompt = QUERY_PROMPT_TEMPLATE.format(query=query_text, context=context_block)
     response = client.chat.completions.create(
         model=model,
         temperature=temperature,
@@ -109,6 +86,4 @@ def generate(
             {"role": "user", "content": user_prompt},
         ],
     )
-
-    raw = response.choices[0].message.content
-    return json.loads(raw)
+    return json.loads(response.choices[0].message.content)

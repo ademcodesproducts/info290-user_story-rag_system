@@ -1,7 +1,3 @@
-"""
-RAG pipeline — orchestrates retrieval + generation into a single query call.
-"""
-
 import os
 from dataclasses import dataclass, field
 
@@ -33,26 +29,8 @@ def run_query(
     temperature: float = 0.2,
     where: dict | None = None,
 ) -> RAGResult:
-    """
-    Full RAG query: retrieve → format context → generate.
-
-    Args:
-        query_text:     The PM's question.
-        collection:     ChromaDB collection to retrieve from.
-        openai_client:  OpenAI client.
-        top_k:          Number of chunks to retrieve.
-        model:          LLM model for generation.
-        temperature:    Generation temperature.
-        where:          Optional metadata filter for retrieval.
-
-    Returns:
-        RAGResult with hits, pain_points, user_stories, and summary.
-    """
-    # Retrieve
     hits = retrieve(collection, query_text, top_k=top_k, where=where)
     context_block = format_context_block(hits)
-
-    # Generate
     output = generate(
         client=openai_client,
         query_text=query_text,
@@ -60,7 +38,6 @@ def run_query(
         model=model,
         temperature=temperature,
     )
-
     return RAGResult(
         query=query_text,
         hits=hits,
@@ -73,14 +50,12 @@ def run_query(
 
 
 def build_clients(api_key: str) -> tuple[chromadb.Collection, OpenAI]:
-    """Convenience helper to build both clients from an API key."""
     collection = get_collection(openai_api_key=api_key)
     openai_client = OpenAI(api_key=api_key)
     return collection, openai_client
 
 
 def format_result(result: RAGResult) -> str:
-    """Pretty-print a RAGResult for CLI display."""
     lines = []
     lines.append(f"\n{'='*60}")
     lines.append(f"QUERY: {result.query}")

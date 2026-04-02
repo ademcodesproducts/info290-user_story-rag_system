@@ -1,47 +1,16 @@
-"""
-Evaluation metrics for the RAG system.
-
-Two tiers:
-  Cheap  — no API calls, run always
-    - retrieval_recall_at_k   : did expected sources appear in top-k hits?
-    - reciprocal_rank         : rank of the first expected source hit
-    - pain_keyword_recall     : do expected keywords appear in generated pain points?
-    - user_story_format_score : Connextra format compliance + basic INVEST checks
-
-  LLM judge — costs tokens, run with --llm-eval flag
-    - faithfulness_score      : is the answer grounded in the retrieved context?
-    - relevance_score         : does the answer actually address the query?
-    - invest_score            : INVEST criteria scoring per user story
-"""
-
 import re
 from openai import OpenAI
 
 
-# ---------------------------------------------------------------------------
-# Cheap metrics (no API)
-# ---------------------------------------------------------------------------
-
 def retrieval_recall_at_k(hits: list[dict], expected_sources: list[str]) -> float:
-    """
-    Fraction of expected source files that appear in the retrieved hits.
-    A hit matches if any expected source filename is a substring of the hit's source_file.
-    """
     if not expected_sources:
         return 1.0
     retrieved_files = {h["metadata"].get("source_file", "") for h in hits}
-    matched = sum(
-        1 for exp in expected_sources
-        if any(exp in rf for rf in retrieved_files)
-    )
+    matched = sum(1 for exp in expected_sources if any(exp in rf for rf in retrieved_files))
     return matched / len(expected_sources)
 
 
 def mean_reciprocal_rank(hits: list[dict], expected_sources: list[str]) -> float:
-    """
-    MRR: 1/rank of the first hit that matches any expected source.
-    Returns 0 if no match found.
-    """
     for rank, hit in enumerate(hits, start=1):
         source_file = hit["metadata"].get("source_file", "")
         if any(exp in source_file for exp in expected_sources):
@@ -50,10 +19,6 @@ def mean_reciprocal_rank(hits: list[dict], expected_sources: list[str]) -> float
 
 
 def pain_keyword_recall(pain_points: list[dict], expected_keywords: list[str]) -> float:
-    """
-    Fraction of expected keywords found (case-insensitive substring match)
-    anywhere in the generated pain point descriptions.
-    """
     if not expected_keywords:
         return 1.0
     combined_text = " ".join(pp.get("description", "").lower() for pp in pain_points)
@@ -66,37 +31,16 @@ CONNEXTRA_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+DB_FEATURES = [
+    "mlflow", "unity catalog", "delta", "workflow", "dlt", "delta live",
+    "auto loader", "cluster", "notebook", "sql warehouse", "repos",
+    "mosaic", "vector search", "feature store", "photon", "databricks",
+]
+
+
 def user_story_format_score(user_stories: list[dict]) -> dict:
-    """
-    Checks each user story against:
-      - Connextra format compliance  (As a..., I want..., so that...)
-      - Specificity                  (mentions a named feature / tool)
-      - Benefit clause               (so that clause has >5 words)
-
-    Returns:
-        {
-          "format_compliance":  0.0–1.0  (fraction with correct format),
-          "has_named_feature":  0.0–1.0  (fraction mentioning a specific tool),
-          "benefit_detail":     0.0–1.0  (fraction with meaningful benefit clause),
-          "overall":            0.0–1.0  (mean of the three),
-          "per_story":          list of per-story detail dicts
-        }
-    """
     if not user_stories:
-        return {
-            "format_compliance": 0.0,
-            "has_named_feature": 0.0,
-            "benefit_detail": 0.0,
-            "overall": 0.0,
-            "per_story": [],
-        }
-
-    # Known Databricks features — presence of any = "specific"
-    db_features = [
-        "mlflow", "unity catalog", "delta", "workflow", "dlt", "delta live",
-        "auto loader", "cluster", "notebook", "sql warehouse", "repos",
-        "mosaic", "vector search", "feature store", "photon", "databricks",
-    ]
+        return {"format_compliance": 0.0, "has_named_feature": 0.0, "benefit_detail": 0.0, "overall": 0.0, "per_story": []}
 
     per_story = []
     for us in user_stories:
@@ -104,19 +48,16 @@ def user_story_format_score(user_stories: list[dict]) -> dict:
         story_lower = story.lower()
 
         fmt = bool(CONNEXTRA_PATTERN.match(story_lower))
+        has_feature = any(f in story_lower for f in DB_FEATURES)
 
-        has_feature = any(f in story_lower for f in db_features)
-
-        # Extract "so that ..." clause and count words
         so_that_match = re.search(r"so\s+that\s+(.+)", story, re.IGNORECASE)
         benefit_words = len(so_that_match.group(1).split()) if so_that_match else 0
-        benefit_ok = benefit_words >= 6
 
         per_story.append({
             "story": story[:80],
             "format_ok": fmt,
             "has_named_feature": has_feature,
-            "benefit_detail_ok": benefit_ok,
+            "benefit_detail_ok": benefit_words >= 6,
         })
 
     n = len(per_story)
@@ -132,10 +73,6 @@ def user_story_format_score(user_stories: list[dict]) -> dict:
         "per_story": per_story,
     }
 
-
-# ---------------------------------------------------------------------------
-# LLM judge metrics
-# ---------------------------------------------------------------------------
 
 FAITHFULNESS_PROMPT = """You are evaluating a RAG system's output for faithfulness.
 
@@ -205,42 +142,21 @@ def _llm_judge(client: OpenAI, prompt: str, model: str = "gpt-4o-mini") -> dict:
     return _json.loads(response.choices[0].message.content)
 
 
-def faithfulness_score(
-    client: OpenAI,
-    context_block: str,
-    pain_points: list[dict],
-    user_stories: list[dict],
-    model: str = "gpt-4o-mini",
-) -> dict:
+def faithfulness_score(client: OpenAI, context_block: str, pain_points: list[dict], user_stories: list[dict], model: str = "gpt-4o-mini") -> dict:
     pp_text = "; ".join(p.get("description", "") for p in pain_points)
     us_text = "; ".join(u.get("story", "") for u in user_stories)
-    prompt = FAITHFULNESS_PROMPT.format(
-        context=context_block[:3000],
-        pain_points=pp_text,
-        user_stories=us_text,
-    )
+    prompt = FAITHFULNESS_PROMPT.format(context=context_block[:3000], pain_points=pp_text, user_stories=us_text)
     return _llm_judge(client, prompt, model)
 
 
-def relevance_score(
-    client: OpenAI,
-    query: str,
-    summary: str,
-    model: str = "gpt-4o-mini",
-) -> dict:
-    prompt = RELEVANCE_PROMPT.format(query=query, summary=summary)
-    return _llm_judge(client, prompt, model)
+def relevance_score(client: OpenAI, query: str, summary: str, model: str = "gpt-4o-mini") -> dict:
+    return _llm_judge(client, RELEVANCE_PROMPT.format(query=query, summary=summary), model)
 
 
-def invest_scores(
-    client: OpenAI,
-    user_stories: list[dict],
-    model: str = "gpt-4o-mini",
-) -> list[dict]:
+def invest_scores(client: OpenAI, user_stories: list[dict], model: str = "gpt-4o-mini") -> list[dict]:
     results = []
     for us in user_stories:
-        prompt = INVEST_PROMPT.format(story=us.get("story", ""))
-        score = _llm_judge(client, prompt, model)
+        score = _llm_judge(client, INVEST_PROMPT.format(story=us.get("story", "")), model)
         score["story"] = us.get("story", "")[:80]
         results.append(score)
     return results
