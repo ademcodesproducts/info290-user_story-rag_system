@@ -1,0 +1,19 @@
+TICKET_ID: TKT-007
+DATE: 2024-07-19
+PLAN: Premium
+ROLE: ML Engineer
+PRODUCT_AREA: MLflow / Feature Store
+SENTIMENT: Frustrated
+---
+SUBJECT: Point-in-time feature lookups producing data leakage — silent incorrect behavior, no validation
+
+BODY:
+We discovered a data leakage issue in our production fraud detection model that we've traced back to incorrect point-in-time joins in the Databricks Feature Store. The model was trained in January 2024 and deployed in February. In March, we noticed that precision had degraded from 0.91 to 0.84. Root cause analysis (completed last week, 6 weeks after deployment) confirmed that our training data included feature values from *after* the transaction timestamp due to an off-by-one in how we specified the timestamp_lookup_key in FeatureLookup.
+
+The Feature Store performed the join without any warning that our timestamp specification might result in future data being included. This is a well-known problem in ML feature engineering (look-ahead bias / temporal leakage), and a mature feature store should have at minimum a validation check or warning when the joined feature values postdate the event timestamp in more than X% of training examples.
+
+Specific configuration that caused the issue: FeatureLookup(feature_table_name="prod.features.transaction_context", lookup_key=["customer_id"], timestamp_lookup_key="created_at") — the created_at column in our event table was the record creation time, not the transaction time, which was stored in a separate transaction_ts column. The Feature Store had no way to know this was wrong, but a sanity check on the distribution of (feature_timestamp - event_timestamp) would have surfaced it.
+
+Request: (1) Add an optional temporal validation parameter to FeatureLookup that warns when feature values consistently postdate the lookup timestamp, (2) Add a data leakage detection guide to the Feature Store documentation, (3) Surface in the training set statistics whether any feature columns contain future values relative to the label timestamp.
+
+---

@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-005
+DATE: May 22, 2024
+TEAM: Pipelines & Streaming
+ATTENDEES: Victor N. (Data Engineer), Yuri T. (Streaming Lead), Alicia C. (DevOps), Mike B. (SRE)
+SPRINT: Sprint 52
+---
+### What went well
+* **Auto Loader** handled the Black Friday traffic spike without a single manual intervention or OOM (Out of Memory) error.
+* **Checkpoints** saved in Delta Lake allowed us to recover quickly from a regional AWS outage.
+* The move to **m7g (Graviton)** instances for our worker nodes saved us 20% on compute costs.
+
+### What didn't go well
+* **Z-Order clustering** on our massive `events` table is taking longer than the actual data processing; we need to optimize the frequency of `OPTIMIZE` commands.
+* **Watermarking** in Structured Streaming is behaving inconsistently with late-arriving data, leading to duplicate records in the silver layer.
+* **Databricks Workflows** "Repair Run" feature didn't work for our multi-task job because the failure happened in a Python wheel dependency check.
+* We are seeing significant "Small File Problem" issues on our older tables that aren't yet using **Auto-Optimize**.
+
+### Action items
+* Enable `autoOptimize.optimizeWrite` and `autoOptimize.autoCompact` on all silver-tier tables (Victor N., June 1).
+* Test "Liquid Clustering" as a replacement for Z-Ordering to handle high-cardinality columns (Yuri T., June 10).
+* Refactor streaming logic to use `foreachBatch` for manual deduplication of late data (Victor N., June 15).
+---

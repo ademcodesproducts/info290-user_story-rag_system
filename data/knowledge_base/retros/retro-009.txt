@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-009
+DATE: September 28, 2024
+TEAM: Data Science Platform
+ATTENDEES: Leo J. (Lead DS), Rachel Z. (ML Engineer), Toby M. (DE), Sarah W. (Admin)
+SPRINT: Sprint 63
+---
+### What went well
+* **Databricks Runtime for ML** (14.x) pre-installed all the libraries we needed for the new CV project.
+* **Hyperopt** integration with MLflow simplified our parameter tuning significantly.
+* The **Notebook Collaboration** features (comments and co-presence) are working great for pair programming.
+
+### What didn't go well
+* **Package management** via `%pip install` in notebooks is slow and re-runs every time the cluster restarts.
+* The **MLflow Tracking Server** latency is high when logging thousands of parameters in a single sweep.
+* We're hitting **Workspace Files** storage limits because people are accidentally saving large datasets in their `/Users/` folder instead of `/Volumes/`.
+* **Ray on Databricks** setup was finicky; the worker initialization kept failing due to an SSH key mismatch in the cluster init script.
+
+### Action items
+* Switch from `%pip` to custom **Docker Containers** for clusters with heavy dependency needs (Rachel Z., Oct 5).
+* Move all transient data files from `/Users/` to a dedicated "Scratch" Volume in UC (Toby M., Oct 12).
+* Standardize the Ray-on-Databricks template and document the setup (Leo J., Oct 15).
+---

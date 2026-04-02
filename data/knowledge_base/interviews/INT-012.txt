@@ -1,0 +1,32 @@
+INTERVIEW_ID: INT-012
+DATE: 2024-05-22
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Ben Nakamura, Data Platform Admin, E-commerce scale-up (~900 employees)
+PRODUCT_AREA: Cluster Policies, Auto Scaling, DBU Cost Control, Access Management
+---
+
+Rachel: Ben, you mentioned in your survey that DBU costs are a constant battle. Tell me about that.
+
+Ben: We went from $15k a month to $80k a month in 18 months as the company scaled. That growth is expected, but I can't tell you with confidence where the money is going in enough detail to have an intelligent conversation with our finance team.
+
+Rachel: What level of visibility do you have today?
+
+Ben: I can see spend by workspace and by SKU — Jobs compute, SQL, ML. But within each SKU I can't see which specific jobs or which teams are driving the cost. The billing logs have cluster IDs but mapping cluster IDs to teams requires a lookup table I maintain manually. If someone runs an ad-hoc cluster without tagging it, it just shows up as unattributed cost.
+
+Rachel: How do you enforce good behavior?
+
+Ben: Cluster policies are my main tool. I've blocked certain instance types, set autoscaling limits, and set idle termination. But users find workarounds — mostly by using All-Purpose Compute for jobs that should use Jobs Compute, because our cluster policies on Jobs Compute are stricter. Jobs Compute is cheaper but has a longer startup time, so people avoid it. There should be a way to incentivize Jobs Compute use through the UI, not just through policies.
+
+Rachel: Are there access management headaches?
+
+Ben: SCIM provisioning. We use Okta and the Databricks-Okta SCIM integration works most of the time, but we get sync failures maybe twice a month with no useful error messages. The Databricks SCIM endpoint returns a 500 with a JSON body that just says "internal server error." I have to open a support ticket every time. And during the sync failure window, users who should have had their access revoked still have access.
+
+Rachel: What about permissions management at scale?
+
+Ben: Service principals are great in theory but managing them is painful. We have about 60 service principals for various pipelines and applications. There's no good way to see "which service principals have access to which secrets and which resources" in one view. I'd have to write a script to query across the permissions API, the secrets API, and the Unity Catalog permissions model. Security audits are a nightmare because of this.
+
+Rachel: What quick win would help most right now?
+
+Ben: Honestly, just better cost attribution tooling built into the platform. If Databricks showed me a cost breakdown by team and by job in the main cost UI, that would reduce my weekly administrative overhead by maybe 3 hours. Right now I spend Friday afternoons just pulling together cost reports for the VP of Engineering.
+
+---

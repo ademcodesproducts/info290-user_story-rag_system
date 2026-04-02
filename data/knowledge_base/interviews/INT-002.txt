@@ -1,0 +1,40 @@
+INTERVIEW_ID: INT-002
+DATE: 2024-05-08
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Priya Nair, Data Engineer II, Large e-commerce company (~4,000 employees)
+PRODUCT_AREA: Auto Loader, Delta Lake, Unity Catalog
+---
+
+James: Hi Priya, glad we could connect. What team are you on?
+
+Priya: I'm on the data platform team — we're basically the internal platform team for about 150 data consumers. Engineers, analysts, scientists, everyone goes through us for data infrastructure.
+
+James: What's the biggest source of friction right now?
+
+Priya: Migration, honestly. We're mid-way through migrating from our old Hive metastore to Unity Catalog and it is... a lot. Like, more than we expected. We have maybe 3,000 tables we need to move and the tooling for doing bulk migrations is pretty immature.
+
+James: What specifically is missing?
+
+Priya: So there's a SYNC command and there's the metastore migration tool, but neither handles all our edge cases. We have a bunch of tables with column-level tags and custom properties we set up for data governance, and those don't carry over. We have to manually re-tag everything post-migration. That's weeks of work. And there's no good way to validate that the migrated table is identical to the source — you have to write your own validation queries.
+
+James: What about access control — does Unity Catalog help there?
+
+Priya: Yes and no. The column-level security and row-level security are genuinely useful features, we've been asking for those for ages. But the privilege model is confusing to our users. The difference between USE CATALOG, USE SCHEMA, SELECT on table — the inheritance isn't intuitive. We had a data analyst who could see a schema but couldn't query any tables in it, and it took us an hour to debug because the permission error message just says "Permission denied" without telling you which privilege is missing.
+
+James: Let's talk about Auto Loader. How much do you use it?
+
+Priya: Heavily. We ingest from S3, GCS, and Azure Data Lake all through Auto Loader. It works well in general, but schema evolution is still a point of pain. If a source adds a new column, Auto Loader picks it up — great. But if a source changes a column type, like from int to bigint, it fails. And the schema location we specify fills up with checkpoints we can't easily clean up without breaking the stream. We've had to manually go delete checkpoint files and it always feels risky.
+
+James: Are there monitoring gaps?
+
+Priya: Huge ones. We have no good way to set up alerts for "Auto Loader hasn't processed any files in 6 hours." We have to build that ourselves with custom metrics or by polling the stream progress API. I'd love built-in SLA monitoring — like, "this pipeline is supposed to process data every hour, alert me if it hasn't."
+
+James: What's working well?
+
+Priya: Delta Lake merge operations are genuinely fantastic. The MERGE INTO syntax is clean, it handles all our CDC patterns, and the performance has gotten really good with the new deletion vectors. Also, Unity Catalog's data lineage visualization is honestly impressive — being able to see end-to-end lineage from source tables through to a dashboard is something we couldn't do before.
+
+James: Thanks, Priya. Any final thoughts?
+
+Priya: Just that the UC migration experience needs a lot of love. It feels like the product was designed for greenfield deployments, not for enterprises that have years of legacy metastore history. We need better tooling and clearer docs for the migration journey.
+
+---

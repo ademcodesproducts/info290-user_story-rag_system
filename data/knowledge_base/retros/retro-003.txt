@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-003
+DATE: March 05, 2024
+TEAM: Analytics Engineering
+ATTENDEES: Chloe S. (Lead Analytics Engineer), Ahmed F. (Data Analyst), Jenna M. (Senior DE), Tom W. (Product Manager)
+SPRINT: Sprint 46
+---
+### What went well
+* **Delta Live Tables (DLT)** simplified our gold-layer materialization; the data lineage graph is a hit with the stakeholders.
+* The new **Databricks Assistant** (AI) helped the junior analysts write complex Window functions in SQL much faster.
+* Transitioning to **Photon** acceleration on our ETL jobs reduced runtime by 40%.
+
+### What didn't go well
+* DLT pipeline debugging is frustrating; the error messages in the event log are often cryptic and don't point to the specific line in the `.sql` file.
+* **Schema Evolution** in Delta Lake caused a downstream failure in PowerBI because it doesn't handle dropped columns gracefully.
+* **Databricks Workflows** lacks a "native" way to trigger a job based on an external S3 event without using a Lambda or a long-polling notebook.
+* The **SQL Editor** in the UI frequently loses its connection state, forcing a page refresh and losing unsaved query snippets.
+
+### Action items
+* Set up a centralized "Query Snippet" Repo so analysts don't lose work on UI crashes (Ahmed F., Mar 10).
+* Implement "Fail-fast" data quality expectations in DLT to catch schema issues early (Jenna M., Mar 15).
+* Design a lightweight event-bridge for S3-to-Workflows triggering (Jenna M., Mar 20).
+---

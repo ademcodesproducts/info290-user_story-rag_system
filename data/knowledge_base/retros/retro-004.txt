@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-004
+DATE: April 18, 2024
+TEAM: Data Governance & Security
+ATTENDEES: Robert G. (CISO Liaison), Maya D. (Security Engineer), Oscar P. (Data Gov Lead), Linda E. (Platform Admin)
+SPRINT: Sprint 49
+---
+### What went well
+* **System Tables** (Beta) are finally giving us a clear view of who is accessing what data via `access_events`.
+* External Locations in **Unity Catalog** have replaced our messy mount points (`/mnt/`), making the storage layer much more secure.
+* SCIM provisioning is now fully automated via Azure AD.
+
+### What didn't go well
+* **Credential Passthrough** is incompatible with Unity Catalog, which broke several legacy legacy workflows that relied on user-identity-based S3 access.
+* Managing **Row-Level Security** (RLS) filters in UC is becoming a maintenance nightmare as we scale to 500+ users.
+* The **Audit Logs** arrive in the storage bucket with a 24-hour delay, which is too slow for real-time security incident response.
+* We found several "Shadow IT" workspaces that were created outside of our central **Account Console** governance.
+
+### Action items
+* Draft a migration plan for legacy "Mount Point" code to UC "Volumes" (Linda E., Apr 30).
+* Evaluate "Dynamic Views" as a more scalable alternative to RLS filters (Oscar P., May 5).
+* Configure the "Workspace Bindings" feature to restrict catalog visibility (Maya D., May 10).
+---

@@ -1,0 +1,78 @@
+[PRD] Team-Level Cost Attribution and Chargeback Reporting
+
+TL;DR
+Platform Admins and Finance teams currently struggle to attribute Databricks DBU spend to specific cost centers, projects, or teams because clusters and jobs are often shared. This feature provides a native "Chargeback Dashboard" that uses Unity Catalog tags and Workspace metadata to provide granular, daily cost breakdowns at the team level.
+
+---
+Problem Definition, Opportunity, and Outcome
+
+Databricks billing is typically workspace-wide. When a company has 10 different teams (Marketing, Risk, Product, etc.) sharing a few large clusters or a single workspace, it becomes an "accounting nightmare" to figure out who spent what. Admins currently export System Tables to PowerBI and try to join them with internal HR spreadsheets, which is manual and prone to error.
+
+The outcome of this lack of visibility is "Tragedy of the Commons"—no one feels responsible for cost because they can't see their own impact. By creating a native, tag-enforced Chargeback Reporting suite, we empower Team Leads to manage their own budgets and allow Finance to perform automated internal billing.
+
+Users & Use Cases
+
+1. PRIMARY USERS: Platform Admins, Engineering Managers
+   • A Platform Admin needs to charge the Marketing department for their SQL Warehouse usage.
+   • [Pain]: Has to manually filter `usage_logs` by user email and map them to departments.
+   • A Team Lead wants to know why their DBU burn doubled this month.
+   • [Pain]: Can't see which specific developer or Job is responsible for the spike.
+
+2. SECONDARY USERS (Edge Cases): Finance/CFO
+   • The CFO wants a monthly report of "Projected vs Actual" spend per business unit.
+   • [Pain]: Databricks billing is "too technical" for them to interpret without a simplified dashboard.
+
+Opportunity
+This turns Databricks System Tables from raw data into a finished product. It competes with third-party tools like Apptio or CloudHealth by providing "Databricks-Native" awareness (e.g., knowing the difference between a DLT run and a Serverless SQL query).
+
+JTDBs
+• When I am a Team Lead, I want to set a "Monthly Budget" for my team and get alerted when we hit 80%.
+• When I look at the cost dashboard, I want to see it broken down by "Project Tag" (e.g., #Project_Phoenix).
+• When there is a cost spike, I want to "drill down" from the Team level to the specific Job ID.
+• When a user creates a cluster, I want to force them to select a "Cost Center" from a dropdown.
+
+---
+Requirements and Product Definition
+
+M0: Tag-Based Attribution Dashboard - Min Viable
+
+P0: Native Chargeback Dashboard
+   • A new "Billing" tab in the Account Console and Workspace UI.
+   • Visualizations of DBU and Dollar spend by User, Cluster, and Job.
+
+P0: Mandatory Tagging Policies
+   • Integration with Cluster Policies to require a `Cost_Center` or `Team` tag before a resource can be provisioned.
+
+M1: Budgets & Forecasting - Advanced Usability
+
+P0: Team Budgets & Alerts
+   • Ability to define a dollar amount for a specific tag (e.g., `Team:Marketing`).
+   • Email/Slack alerts when the threshold is reached.
+
+P1: AI-Powered Cost Forecasting
+   • Predicts the month-end spend based on current burn rates and historical growth.
+
+P2: "Idle Asset" Identification
+   • List of the most "Inefficient" resources (e.g., clusters with 0.1% CPU utilization) per team.
+
+User Experience: Maria, a Platform Admin, is preparing for the quarterly budget review.
+   • (J1) She opens the "Cost Attribution" dashboard and filters by the tag `Department`.
+   • (J2) She sees that "Data Science" spent $5,000 on a single abandoned notebook session.
+   • (J3) She clicks the "Notify Owner" button directly from the cost chart, sending a Slack message to the user.
+   • (J4) She exports the "Monthly Chargeback Report" as a CSV, which is pre-formatted for her Finance department's ERP system.
+
+---
+Success Metrics
+
+Focus on Satisfaction (Transparency) and Efficiency (Budget Adherence).
+
+Objectives:
+   • Efficiency: Reduce "Attribution Gap" (unassigned spend) to less than 5%.
+   • Adoption: 100% of newly created resources have a required cost tag.
+   • Satisfaction: Finance and Engineering Managers report a "High" confidence in billing accuracy.
+
+| | SIGNALS | KPI |
+|---|---|---|
+| 1. Efficiency | % of spend assigned to a team/tag | >95% attributed spend |
+| 2. Adoption | Usage of Budget Alerts | 80% of teams have >1 budget alert |
+| 3. Satisfaction | Time to generate monthly billing report | -90% manual effort hours |

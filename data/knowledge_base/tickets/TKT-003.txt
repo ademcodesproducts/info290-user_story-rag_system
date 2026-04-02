@@ -1,0 +1,17 @@
+TICKET_ID: TKT-003
+DATE: 2024-04-10
+PLAN: Enterprise
+ROLE: Platform Admin
+PRODUCT_AREA: Unity Catalog / SCIM
+SENTIMENT: Frustrated
+---
+SUBJECT: Okta SCIM sync silently failing — deprovisioned users retaining Databricks access for hours
+
+BODY:
+We've had two security incidents in the past month where employees whose Okta accounts were deactivated (one voluntary departure, one termination) continued to have active Databricks access for 4-6 hours after deactivation. Our Okta-to-Databricks SCIM integration (configured per the standard Databricks SCIM documentation) is failing silently — the Okta SCIM provisioning logs show a 500 response from the Databricks SCIM endpoint with body: {"error": "Internal server error", "error_description": "An unexpected error occurred processing the SCIM request"}. No further detail.
+
+This is a SOC 2 Type II compliance issue. Our auditors have flagged it and we need documented evidence that access is revoked within 1 hour of deactivation. Right now we can't provide that guarantee. We have implemented a compensating control (manual Databricks user deactivation checklist) but this is not sustainable for a team of 900+ Databricks users.
+
+Workspace: adb-1029384756102938.4.azuredatabricks.net. Okta tenant: our-company.okta.com. We are on the latest Databricks SCIM API version (2.0). The SCIM failures happen approximately 2-3 times per week, always for the DELETE or PATCH deactivate operations, never for user creation. Please escalate this to the identity team and provide a timeline for resolution. We are considering this a P1 security issue.
+
+---

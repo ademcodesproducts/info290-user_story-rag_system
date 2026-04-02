@@ -1,0 +1,32 @@
+INTERVIEW_ID: INT-013
+DATE: 2024-07-09
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Amara Diallo, Senior Platform Engineer, Global consulting firm (~25,000 employees)
+PRODUCT_AREA: Unity Catalog, Workspace Management, Security, Compliance
+---
+
+Sarah: Amara, you're managing Databricks for a consulting firm — that means multi-client data, presumably?
+
+Amara: Exactly. We have strict data isolation requirements. Each client's data has to be in separate Unity Catalog catalogs with no possibility of cross-client data access. We have about 35 active client workspaces.
+
+Sarah: How do you ensure that isolation?
+
+Amara: We use a separate catalog per client, strict row-level security where we can't fully isolate at the catalog level, and we audit access logs weekly. But the isolation isn't perfect — there are scenarios in Unity Catalog where a user with broad enough privileges could potentially enumerate catalog names and see that client X's data exists, even if they can't read it. Metadata leakage is a real concern in our environment.
+
+Sarah: Have you raised this with Databricks?
+
+Amara: Yes, it's an ongoing conversation. Their answer is that catalog names are metadata and they don't guarantee metadata isolation without separate metastores, which would require separate workspaces. But separate workspaces per client is 35 workspaces, which is operationally insane to manage. I need Unity Catalog to support stronger metadata isolation within a single metastore.
+
+Sarah: What about security and audit capabilities?
+
+Amara: The audit log is good but the volume is overwhelming. At 35 clients with hundreds of users each, we generate millions of audit log entries per day. There's no built-in alerting on top of the audit logs — if a user queries a table they're not supposed to have queried, I want to know immediately. Right now I have to build detection logic myself on top of the system.audit table. The data is there, the alerting isn't.
+
+Sarah: Are there operational consistency challenges across so many workspaces?
+
+Amara: Constant. When Databricks releases a new feature or changes default behavior, I have to update 35 workspaces. There's no way to push configuration changes to a fleet of workspaces centrally. I wrote a Terraform-based automation layer for this, which took months to build and requires constant maintenance. This should be a first-class platform capability.
+
+Sarah: What's the biggest security gap you see?
+
+Amara: Secret management integration. We use HashiCorp Vault as our enterprise secrets store, and the Databricks secrets-to-Vault integration is one-directional and not real-time. We have to sync secrets from Vault to Databricks secret scopes periodically. If a secret is rotated in Vault, Databricks doesn't know until the next sync cycle. For compliance purposes we want secrets to be single-source-of-truth in Vault, with Databricks as a consumer. The current architecture means we have secret copies, which is a security smell.
+
+---

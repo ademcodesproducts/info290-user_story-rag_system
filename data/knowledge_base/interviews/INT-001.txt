@@ -1,0 +1,40 @@
+INTERVIEW_ID: INT-001
+DATE: 2024-03-12
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Marcus Webb, Senior Data Engineer, Mid-size fintech (~600 employees)
+PRODUCT_AREA: DLT (Delta Live Tables), Auto Loader, Workflows
+---
+
+Sarah: Thanks for making time, Marcus. Can you walk me through what your day-to-day looks like on Databricks?
+
+Marcus: Sure. So I'm basically running our ingestion layer — we pull in transaction data from about 40 different sources, mostly Kafka streams and S3 drops, and we use DLT pipelines to process and land everything into Delta Lake. We've been on Databricks for about two years now.
+
+Sarah: What's working well?
+
+Marcus: Honestly the Delta Lake side is great. Time travel, ACID guarantees, schema enforcement — that stuff just works. Auto Loader is also pretty solid for the S3 ingestion once you get it configured. The file notification mode is way faster than the directory listing mode, which we learned the hard way.
+
+Sarah: You mentioned you learned that the hard way — can you tell me more?
+
+Marcus: Yeah so, last November we had a pipeline that was crawling. Like, 4-hour backfill jobs that should've taken 20 minutes. Turns out we were using directory listing on an S3 prefix with about 2 million small files. Nobody told us to switch to file notification mode — we figured it out by reading a community forum post at 11pm. There's nothing in the DLT UI that warns you about this, no best practice surfaced anywhere obvious.
+
+Sarah: That's a real pain point. What else comes up?
+
+Marcus: DLT error handling is... rough. When a pipeline fails, the error messages are sometimes completely useless. Like last Tuesday, our bronze-to-silver pipeline failed and the error was just "An unexpected error occurred in the Delta Live Tables runtime." That's it. Nothing in the event log, nothing actionable. I had to open a support ticket and we were down for six hours before they told us it was a transient metastore connectivity issue.
+
+Sarah: Six hours is significant. How often does that happen?
+
+Marcus: Maybe once every three weeks? It's not constant but it's enough to be stressful. The worst part is that DLT pipelines don't have great retry logic either. If you set up a triggered pipeline and it fails, you get an alert but re-triggering requires either the UI or the Jobs API. There's no native "retry on failure with backoff" like you'd expect from a mature workflow tool.
+
+Sarah: What about the Workflows side? How are you orchestrating all of this?
+
+Marcus: We use Databricks Workflows for most things. It's gotten better — the multi-task DAGs are useful. But I still hit walls. For example, conditional branching based on task output is really limited. I want to say "if task A returns X, skip tasks B and C and go straight to D." Right now I'm hacking that with notebook widgets and exit values, which feels wrong. And the job run history — it only keeps 60 days by default. We had a compliance audit where we needed to prove data lineage for a pipeline from 5 months ago and the run history was just gone.
+
+Sarah: What about cluster management? Is compute a headache?
+
+Marcus: God, yes. We're always fighting DBU costs. Our platform admin set up cluster policies but they're pretty blunt instruments. Like, I can't easily say "this DLT pipeline should scale up to 10 workers during market hours but only 3 workers overnight." The autoscaling works but it doesn't know about our business logic. And the DLT pipeline compute is separate from the interactive cluster compute, so I feel like I'm always looking at two different dashboards to understand what we're spending.
+
+Sarah: One last one — if you could change one thing tomorrow, what would it be?
+
+Marcus: Better DLT error messages. Full stop. I'll take verbose and ugly over cryptic any day. Give me a stack trace, give me the offending record, give me something. The current state is like debugging with a blindfold on.
+
+---

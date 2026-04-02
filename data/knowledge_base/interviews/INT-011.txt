@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-011
+DATE: 2024-03-28
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Sandra Volkov, Principal Data Platform Engineer, Large telecom (~15,000 employees)
+PRODUCT_AREA: Unity Catalog, Cluster Policies, Cost Management, Multi-workspace
+---
+
+James: Sandra, you manage Databricks at enterprise scale — what does that look like?
+
+Sandra: We have 14 workspaces across 4 regions, about 800 active Databricks users. My team of 3 is responsible for platform governance, cost optimization, and making sure the right people have access to the right data. It's a lot.
+
+James: At that scale, what breaks down first?
+
+Sandra: Cross-workspace governance is the biggest gap. Unity Catalog was supposed to unify governance but the metastore boundaries still create friction. If a user in workspace A wants to access data in a catalog that's primarily managed by workspace B, we have to go through a whole process of catalog sharing and permission granting. The lineage doesn't always cross workspace boundaries cleanly either. I've had data lineage queries in Unity Catalog that just... stop at a workspace boundary.
+
+James: What about cluster management at scale?
+
+Sandra: Cluster policies work but they're static. I define a policy and it applies uniformly to whoever it's assigned to. What I need is dynamic policies — "this policy applies during business hours, that one applies overnight," or "ML engineers get GPU clusters, data engineers don't." Right now I manage 23 different cluster policies and it's getting unwieldy. There's no policy inheritance or templating, so when I need to update a common setting across all policies, I have to edit each one manually.
+
+James: How do you handle cost allocation?
+
+Sandra: Tags, then custom analytics. We mandated that every cluster and job must have a cost-center tag, and we have a monitoring pipeline that alerts when resources are untagged. But enforcing tags is hard — there's no native "require this tag on all resources" policy. I have to use the policy constraints as a proxy, which is clunky. And warehouse costs can't be tagged at all, which is a gap.
+
+James: What about cost anomaly detection?
+
+Sandra: Completely manual right now. I have a Databricks SQL dashboard showing week-over-week spend by workspace, and I check it every Monday morning. If there's a spike, I have to dig through job run logs to figure out why. I've asked for native anomaly alerts — "if spend increases more than 20% week-over-week, send me an alert" — and the answer has always been "use third-party monitoring." That's not an acceptable answer for a mature enterprise platform.
+
+James: What about the Unity Catalog side specifically?
+
+Sandra: The system catalog tables for audit logging are great. But the lineage data has gaps. Column-level lineage is only captured for certain operation types — SELECT-INTO style operations don't capture it. So our lineage graph has holes. When a compliance officer asks "show me everywhere this PII column flows in our system," I can't give them a complete answer from Unity Catalog alone.
+
+James: What would make your life significantly easier?
+
+Sandra: A real platform administration console. Right now managing 14 workspaces means I'm logging into each one separately or writing scripts against the Workspace API. I want a single-pane-of-glass admin view where I can see all workspaces, all cluster policies, all costs, all users, all permissions — and make changes centrally. The Account Console is getting there but it's still pretty limited.
+
+---

@@ -1,0 +1,77 @@
+[PRD] Simplified Unity Catalog Permission Management for Non-Admins
+
+TL;DR
+Managing data access in Unity Catalog currently requires high-level workspace or metastore admin privileges, creating bottlenecks in fast-moving teams. This feature introduces "Delegated Ownership" and a "Request Access" workflow, allowing data owners to manage permissions for their own schemas/tables without filing IT tickets.
+
+---
+Problem Definition, Opportunity, and Outcome
+
+Currently, a Data Engineer who creates a new schema in Unity Catalog often cannot grant access to an Analyst unless they are a Workspace Admin or the explicit owner of the parent Catalog. This "All-or-Nothing" admin model forces teams to wait days for Jira tickets to be resolved by central IT.
+
+The outcome is often "security debt"—admins give too many people `ADMIN` rights just to stop the tickets, which violates the principle of least privilege. By creating a localized "Access Control List" (ACL) UI within the Catalog Explorer that non-admins can use for their own assets, we speed up the data democratization process while maintaining the audit logs required by the CISO.
+
+Users & Use Cases
+
+1. PRIMARY USERS: Analytics Engineers, Data Owners
+   • An Analytics Engineer creates a 'Gold' schema for a new project.
+   • [Pain]: Cannot grant `SELECT` to the Finance team without pinging the central Platform Admin.
+   • A Lead Data Scientist wants to share a specific Volume of unstructured images with a contractor.
+   • [Pain]: The UI for `GRANT` statements is intimidating for non-SQL users.
+
+2. SECONDARY USERS (Edge Cases): Platform Admins
+   • An Admin needs to maintain oversight without being a bottleneck.
+   • [Pain]: 60% of their "High Priority" tickets are simple permission requests.
+
+Opportunity
+This bridges the gap between the complex SQL-based `GRANT/REVOKE` system and a modern, "Google Docs-style" sharing experience. It complements Unity Catalog's core security model but adds a usable wrapper similar to Snowflake's secondary roles or AWS RAM.
+
+JTDBs
+• When I create a table, I want to quickly add my teammates as "Editors" so we can collaborate.
+• When an analyst tries to query a table they don't have access to, I want them to see a "Request Access" button that notifies me.
+• When I am an owner of a schema, I want to see a list of everyone who has access in a simple UI.
+• When I leave a project, I want to transfer ownership of my Unity Catalog assets to a colleague.
+
+---
+Requirements and Product Definition
+
+M0: Localized Access UI & Ownership Transfer - Min Viable
+
+P0: "Share" Button in Catalog Explorer
+   • A visible button on Tables, Schemas, and Volumes that opens a permission modal.
+   • Allows searching for users/groups via SCIM sync and assigning `SELECT`, `MODIFY`, or `OWNERSHIP`.
+
+P0: Ownership Transfer
+   • Ability for a current owner to nominate a new owner without Admin intervention.
+
+M1: Access Request Workflow - Advanced Usability
+
+P0: "Request Access" UI
+   • If a user hits a `Permission Denied` error in a notebook, provide a button to "Request Access from Owner."
+
+P1: Permission Templates
+   • Admins can define "Project Roles" (e.g., "Analyst" = SELECT + DESCRIBE) that owners can apply in one click.
+
+P2: Expiration-based Access
+   • Ability to grant access that automatically expires after 30/60/90 days (Temporal Access).
+
+User Experience: Chloe, an Analytics Engineer, has finished the `v_sales_forecast` table.
+   • (J1) She clicks the "Permissions" tab in Catalog Explorer and sees she is the owner.
+   • (J2) She types "Marketing_Analyst_Group" into the search bar and selects "Read Only," then clicks Save.
+   • (J3) An analyst outside that group tries to query the table, sees a "Locked" icon, and clicks "Request Access."
+   • (J4) Chloe receives a notification in Databricks and approves the 30-day temporary access immediately.
+
+---
+Success Metrics
+
+Focus on Adoption and Efficiency (Time-to-Access).
+
+Objectives:
+   • Efficiency: Reduce the average time from "Data Creation" to "First Downstream Query" by 50%.
+   • Adoption: 70% of non-admin data creators use the "Share" button instead of SQL `GRANT`.
+   • Satisfaction: Significant decrease in "Permission" related support tickets.
+
+| | SIGNALS | KPI |
+|---|---|---|
+| 1. Efficiency | Median time to grant permission | -60% hours from request to grant |
+| 2. Adoption | % of grants made via UI vs CLI/SQL | >70% UI adoption for grants |
+| 3. Satisfaction | Admin ticket volume | -30% reduction in Access Jira tickets |

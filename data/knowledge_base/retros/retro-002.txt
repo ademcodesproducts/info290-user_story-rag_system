@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-002
+DATE: February 12, 2024
+TEAM: ML Platform Team
+ATTENDEES: Elena V. (MLOps Lead), Jordan K. (ML Engineer), Sam B. (Data Scientist), Lin H. (Backend Dev)
+SPRINT: Sprint 44
+---
+### What went well
+* Standardized model deployment using **MLflow Recipes**, which significantly cut down on boilerplate code for the Forecasting project.
+* The integration of **Mosaic AI** for fine-tuning our internal LLM showed promising initial latency benchmarks.
+* Successfully set up **Model Serving** endpoints with auto-scaling enabled.
+
+### What didn't go well
+* **Databricks Repos** (Git Integration) struggled with large notebook files; we had several merge conflicts that were nearly impossible to resolve in the UI.
+* The **MLflow Model Registry** is becoming cluttered; we lack a clear lifecycle policy for "Archived" vs. "Deleted" models.
+* Feature engineering jobs are failing because the **Unity Catalog** doesn't support some legacy UDFs (User Defined Functions) we brought over from the Hive Metastore.
+* Python dependency hell: A library update on the Shared Cluster broke three production notebooks because of a pip version mismatch in the **Cluster Log Delivery**.
+
+### Action items
+* Implement a "Git-flow" training session focused on Databricks Repo best practices (Jordan K., Feb 18).
+* Create an automated script to prune old MLflow model versions older than 90 days (Elena V., Feb 25).
+* Migrate legacy UDFs to Unity Catalog-compatible Python/SQL functions (Sam B., Mar 1).
+---

@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-006
+DATE: June 14, 2024
+TEAM: AI/ML Innovations
+ATTENDEES: Dr. Aris S. (Data Scientist), Bella L. (ML Engineer), Carlos D. (Product), Diane H. (DE)
+SPRINT: Sprint 54
+---
+### What went well
+* Using **MLflow Model Serving** for our real-time recommendation engine; latency is under 50ms.
+* The **Feature Store** (Unity Catalog integrated) has made features discoverable across three different pods.
+* The **Mosaic AI Model Training** platform allowed us to fine-tune Llama-3 with our proprietary docs in record time.
+
+### What didn't go well
+* **GPU availability** in the `us-east-1` region is a constant battle; jobs keep getting stuck in "Pending" for 30+ minutes.
+* We're hitting the **MLflow experiment limit** in the workspace, making it hard to find historical runs for the churn model.
+* **Vector Search** indexing is slow to update when the underlying Delta table changes; there's a noticeable lag in RAG response freshness.
+* Notebook-based training is hard to unit test; we need to move towards **Databricks Asset Bundles (DABs)**.
+
+### Action items
+* Set up "Spot Instance" fallback for non-critical ML training tasks (Bella L., June 20).
+* Migrate the Recommendation Engine project to Databricks Asset Bundles (Carlos D., June 30).
+* Investigate "Triggered" vs "Continuous" Vector Search sync modes (Diane H., July 5).
+---

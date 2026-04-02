@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-007
+DATE: 2024-06-11
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Mei-Ling Zhao, Senior ML Engineer, Autonomous vehicle startup (~350 employees)
+PRODUCT_AREA: MLflow, Distributed Training, GPU Clusters, Mosaic AI
+---
+
+Sarah: Mei-Ling, you're working on ML for autonomous vehicles — that's a pretty intensive compute environment. How does Databricks fit in?
+
+Mei-Ling: We use Databricks as our central ML platform. We do a lot of distributed training on large sensor datasets — LiDAR point clouds, camera frames. The scale of data we work with means we're always bumping up against performance ceilings.
+
+Sarah: What are the biggest challenges with distributed training?
+
+Mei-Ling: Cluster startup latency for GPU jobs is really painful. When I submit a distributed training run, it can take 10 to 15 minutes before the actual training starts because the GPU cluster is provisioning. For a training run that only takes 2 hours, that's a 10% overhead just waiting for compute. And if my code has a bug and crashes in the first 5 minutes, I've burned 20 minutes total for nothing.
+
+Sarah: Is spot/preemptible compute part of your setup?
+
+Mei-Ling: Yes, we use spot instances for cost reasons. But the spot interruption handling in Databricks is not great. When a spot instance is preempted in the middle of a training run, the job fails. There's no automatic checkpoint-and-resume behavior. We've implemented our own checkpointing at the PyTorch level, but it's not integrated with the Databricks job retry logic — if a job fails due to spot preemption, it restarts from scratch at the job level, not from the last checkpoint. So we waste compute re-doing training steps we already completed.
+
+Sarah: What about MLflow at your scale?
+
+Mei-Ling: Artifact storage is the main issue. We log large model artifacts — a single model checkpoint can be 20-40GB. The artifact logging in MLflow doesn't have great resumable upload support, so if your network has a hiccup during a 30GB upload, the whole thing fails and you start over. We've had training runs where the training itself completed successfully but the MLflow artifact upload failed, so the run shows as completed but the model isn't actually saved.
+
+Sarah: That's frustrating. How do you handle that now?
+
+Mei-Ling: We wrote a retry wrapper around the mlflow.log_artifact call and we break large models into chunks before logging. Very DIY. Also, MLflow doesn't support artifact deduplication — if I retrain a model with the same weights, it uploads the full artifact again. For checkpoints that are saved every 10 epochs, that's a lot of redundant storage.
+
+Sarah: Tell me about the Mosaic AI side — are you using any of that?
+
+Mei-Ling: We're evaluating the fine-tuning APIs for some of our perception models. Honestly the APIs are clean and it's the right direction. But the model selection is still limited for domain-specific computer vision tasks. All the headline models are language models. I want to fine-tune a DINO or SAM-style vision model and the tooling just isn't there yet.
+
+Sarah: What's your overall platform stability experience?
+
+Mei-Ling: It's okay for interactive work but for long-running training jobs — 8, 12, 16 hours — we get occasional random cluster failures that aren't spot preemptions, just... infrastructure issues. Maybe twice a month. The email notification says "cluster terminated unexpectedly" with no further detail. For a 12-hour GPU training run at maybe $200 in compute, that's a painful failure mode with no explanation.
+
+---

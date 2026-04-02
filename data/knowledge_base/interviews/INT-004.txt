@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-004
+DATE: 2024-04-15
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Lily Bergström, Data Engineer, Large media company (~2,500 employees)
+PRODUCT_AREA: Delta Live Tables, Structured Streaming, Notebooks
+---
+
+Sarah: Lily, thanks for joining. What's your main focus area on Databricks?
+
+Lily: I work on our real-time pipeline infrastructure. We process about 5 billion events per day from our content recommendation system — user clicks, impressions, watch time, all that. We use DLT with structured streaming for most of it.
+
+Sarah: Real-time at that scale — what are the biggest technical challenges?
+
+Lily: Watermarking and late data handling is something we've spent a ton of time on. The DLT documentation around how watermarks interact with the DLT execution model is really sparse. We had a situation where our pipeline was silently dropping late-arriving events because our watermark threshold was set incorrectly, but there were no warnings in the DLT event log. We only noticed when an analyst flagged that the hourly event counts were lower than expected.
+
+Sarah: How long did it take to diagnose?
+
+Lily: About two weeks. The data discrepancy was subtle — it was only late data from a specific mobile SDK version that had a clock skew issue. We ended up having to add our own monitoring layer that compares expected event counts against actual landed counts. But that's something that should be built into DLT, not something I should have to build myself.
+
+Sarah: What about operational challenges?
+
+Lily: Pipeline updates are scary. When you update a DLT pipeline definition and do a full refresh, it drops and recreates all the tables. For a streaming pipeline with 5 billion events, a full refresh means potentially hours of reprocessing. There's no way to do a "partial refresh" on just one table in the pipeline without taking the whole thing down. So we're very conservative about updates, which slows down our iteration speed.
+
+Sarah: Is there a workaround?
+
+Lily: Sort of. We've started decoupling our pipelines so each one only has a few tables. That way a full refresh on one pipeline doesn't affect the others. But it creates a proliferation of small pipelines that are harder to manage. The DLT UI starts to get pretty cluttered when you have 30+ pipelines.
+
+Sarah: What about development experience? How do you test changes?
+
+Lily: Testing is painful. The DLT development mode is useful for interactive debugging but it's expensive — it keeps a cluster running the whole time. And there's no local testing story. I can't run DLT expectations or transformations against a small local sample dataset without spinning up actual cloud compute. Our data team has been asking for a dbt-style local testing capability for over a year.
+
+Sarah: Any feature requests you've submitted?
+
+Lily: A few. I submitted a request for better pipeline diff tooling — like, "show me what changed between version 3 and version 4 of this pipeline." Right now you have to manually compare notebook code in Git. Also, I really want first-class support for "exactly-once" semantics guarantees with end-to-end documentation. We're in media so we do ad billing and the difference between at-least-once and exactly-once matters a lot financially.
+
+---

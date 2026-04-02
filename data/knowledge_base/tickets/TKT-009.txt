@@ -1,0 +1,19 @@
+TICKET_ID: TKT-009
+DATE: 2024-08-22
+PLAN: Enterprise
+ROLE: Data Engineer
+PRODUCT_AREA: Databricks Workflows / Jobs API
+SENTIMENT: Frustrated
+---
+SUBJECT: Jobs API v2.1 breaking change in task dependency schema not announced — Terraform configs broken in production
+
+BODY:
+On August 14th, our CI/CD pipeline began failing after a Databricks platform update silently changed behavior in the Jobs API v2.1 task dependency schema. Specifically, the depends_on field in multi-task jobs now requires explicit task_key references in a different format than what our Terraform azurerm_databricks_job resources were generating. Our Terraform provider version was 1.38.0 (current at the time). The result: 14 production jobs were silently reconfigured to have no task dependencies, converting DAGs into flat parallel execution, which caused data correctness issues in 3 downstream pipelines before we caught it.
+
+We only discovered this because a data quality check fired at 3am — not because Databricks sent any notification of a breaking API change. We searched the Databricks release notes for the week of August 14th and found no mention of this change. A community forum post from August 16th (two days after the breakage) described the same issue and mentioned it was related to a "jobs API schema normalization" that Databricks pushed silently.
+
+This is unacceptable for an enterprise platform. Breaking API changes must be: (1) versioned and announced with minimum 90-day deprecation notice, (2) documented in the release notes for the deployment week, (3) flagged in the Terraform provider changelog with a migration guide. We lost approximately 8 engineering hours diagnosing and remediating this, plus the downstream data quality incident.
+
+We are requesting: formal acknowledgment that this was an unannounced breaking change, a post-incident summary, and a commitment to the deprecation policy described above. We have escalated this to our account executive.
+
+---

@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-001
+DATE: January 15, 2024
+TEAM: Core Infrastructure Team
+ATTENDEES: Sarah J. (Principal Data Engineer), Marcus L. (DevOps), Priya R. (Cloud Architect), Kevin T. (Senior Engineer)
+SPRINT: Sprint 42
+---
+### What went well
+* Successfully migrated the marketing workspace to **Unity Catalog**, enabling fine-grained access control.
+* Reduced idle costs by 15% after implementing custom **Cluster Policies** that enforce auto-termination after 20 minutes.
+* The **Databricks Terraform provider** worked seamlessly for the new staging environment rollout.
+
+### What didn't go well
+* **DBSQL Warehouse** startup times are still hitting 2-3 minutes for the "Pro" tier, causing friction for the Tableau users who expect instant connectivity.
+* Experienced several "Concurrent Append Exceptions" on our bronze tables because multiple **Auto Loader** streams were writing to the same Delta path without proper partitioning.
+* **DBU consumption** spiked unexpectedly over the weekend because a user left a High Concurrency cluster running with no auto-stop enabled (policy bypass).
+* The **Jobs API** rate limits throttled our CI/CD pipeline during the massive Friday deployment, causing several build failures.
+
+### Action items
+* Audit all cluster policies to ensure "Auto-termination" is a fixed attribute (Marcus L., Jan 22).
+* Investigate **Serverless SQL Warehouses** to eliminate "cold start" latency for BI users (Priya R., Jan 25).
+* Refactor Auto Loader logic to use specific checkpoints per stream (Kevin T., Jan 30).
+---

@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-008
+DATE: August 11, 2024
+TEAM: BI & Visualization
+ATTENDEES: Mark P. (BI Lead), Susan R. (Analyst), David K. (DE), Emily T. (Stakeholder)
+SPRINT: Sprint 59
+---
+### What went well
+* **Databricks Dashboards** (the new Lakeview) is much faster and more intuitive than the legacy dashboarding tool.
+* Sharing insights is easier now that we can use **Unity Catalog** namespacing in our SQL queries.
+* Performance for large `JOIN` queries improved significantly after we ran `ANALYZE TABLE` on our core dimensions.
+
+### What didn't go well
+* The **SQL Warehouse** "Scaling" settings are aggressive; we saw 4 clusters spin up for just 10 users because of a few heavy queries.
+* There's no way to "Schedule" a Lakeview dashboard to PDF/Email yet, which is a major blocker for executive reporting.
+* **Visualizations** in notebooks don't always match the formatting in the SQL editor, causing confusion for analysts.
+* The **Metadata** tab in the Catalog Explorer is missing descriptions for 40% of our production columns.
+
+### Action items
+* Run a "Documentation Hackathon" to populate Unity Catalog descriptions (Susan R., Aug 20).
+* Optimize the SQL Warehouse scaling policy to "Cost Optimized" instead of "Reliability" (Mark P., Aug 25).
+* Beta test the new "Export to PDF" feature for Dashboards as soon as it's available (Mark P., Sept 1).
+---

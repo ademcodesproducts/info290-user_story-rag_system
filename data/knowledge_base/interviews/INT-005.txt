@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-005
+DATE: 2024-09-03
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Rohit Menon, Senior Data Engineer, Healthcare analytics firm (~800 employees)
+PRODUCT_AREA: Unity Catalog, Delta Lake, Workflows, Compliance
+---
+
+James: Rohit, healthcare data has some unique constraints. How does that shape your Databricks usage?
+
+Rohit: Enormously. We're HIPAA-compliant so everything touches access control, audit logging, and data residency. Unity Catalog has been really important for us but it's also been the source of a lot of our headaches.
+
+James: Let's start with the positives on Unity Catalog.
+
+Rohit: The audit log integration is actually really good. Every query, every table access, every permission change gets logged to a system table that we can query with SQL. That's been a huge win for our compliance team — we can pull exact audit trails on demand. Also, the ability to set row-level security at the Unity Catalog layer means we can expose the same table to different teams with different data visibility, rather than maintaining separate table copies.
+
+James: And the pain points?
+
+Rohit: External locations are confusing. We have data in both AWS S3 and Azure Data Lake — yes, we're multi-cloud, long story — and the way external locations map to storage credentials in Unity Catalog is not intuitive. We had a credential misconfiguration that caused a data engineer to accidentally have write access to a production bucket. Not great for a healthcare company. The credential validation flow should be more explicit about what permissions are actually being granted.
+
+James: What about compliance and PHI handling specifically?
+
+Rohit: The data classification story is incomplete. We use tags on columns to mark PHI fields, but Databricks doesn't do anything with those tags automatically — they're just metadata. We had to build our own policy enforcement layer that checks for PHI tags before allowing certain operations. I expected Unity Catalog to have some native integration where "if this column is tagged as PHI, automatically redact it for users without PHI access." That doesn't exist.
+
+James: How are you handling encryption?
+
+Rohit: Customer-managed keys, which work fine. But key rotation is manual and the documentation is scattered. We had a key rotation 6 months ago and I spent two days piecing together the right sequence of operations from three different documentation pages. Some of those pages contradicted each other. It would be great to have a single runbook for key rotation operations.
+
+James: What about your pipelines — any Workflows-specific issues?
+
+Rohit: Yes — parameterizing jobs is still clunky. We run the same pipeline for different health systems, each with different configuration. We use job parameters for this, but the parameter passing between tasks is inconsistent. Notebook tasks get parameters as widgets, Python wheel tasks get them differently, SQL tasks differently again. I want a unified parameter model where a job-level parameter propagates cleanly to all task types.
+
+James: Last question — what's your confidence level in Databricks for a HIPAA-regulated workload?
+
+Rohit: High confidence in the underlying security primitives — encryption, audit logging, access control. Medium confidence in the compliance workflow UX. The tools are there but they're not assembled into a coherent compliance workflow. I end up assembling my own compliance checklist from multiple documentation sources. A "compliance readiness" feature that validates your workspace configuration against HIPAA/SOC2 requirements would be genuinely valuable.
+
+---

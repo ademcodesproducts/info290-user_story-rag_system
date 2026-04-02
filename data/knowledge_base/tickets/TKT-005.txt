@@ -1,0 +1,19 @@
+TICKET_ID: TKT-005
+DATE: 2024-06-03
+PLAN: Enterprise
+ROLE: Data Scientist
+PRODUCT_AREA: Notebooks / Repos
+SENTIMENT: Frustrated
+---
+SUBJECT: Databricks Connect auth error "connection refused" is masking token expiration — 90 min debugging wasted
+
+BODY:
+Using Databricks Connect 14.1.0 with VS Code extension 2.3.1 on macOS Sonoma 14.4. When my personal access token expires, the error surfaced to the developer is: "ConnectionRefusedError: [Errno 61] Connection refused" — not "AuthenticationError: token expired" or "401 Unauthorized." This is actively misleading and caused me to spend 90 minutes yesterday diagnosing what I thought was a network or proxy issue, reinstalling the extension, and eventually filing this ticket — before a colleague suggested I just regenerate my PAT.
+
+Steps to reproduce: (1) Generate a PAT with a 30-day expiry, (2) Wait for it to expire, (3) Run any Databricks Connect operation from VS Code. Expected: clear authentication error with instructions to regenerate token. Actual: "Connection refused" with no hint that authentication is the issue.
+
+This is a UX issue but it's costing real developer time. I've seen at least 3 other people on my team hit this exact problem in the past 2 months, each spending 30-90 minutes debugging before realizing the PAT was expired. There's no in-IDE token expiry warning either — it would be great if the VS Code extension showed a warning badge when the configured token is within 7 days of expiry.
+
+Databricks Connect config: host = adb-8374651029384756.12.azuredatabricks.net, cluster_id = 0312-152341-abc123. This is a bug report with low severity but high frequency impact across our data science team.
+
+---

@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-003
+DATE: 2024-07-22
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Devon Okafor, Staff Data Engineer, Series B startup (~200 employees)
+PRODUCT_AREA: Databricks Workflows, Jobs API, Cluster Policies
+---
+
+Rachel: Devon, you mentioned in your pre-survey that cost management is your top concern. Can you start there?
+
+Devon: Yeah, so we're a startup and every dollar matters. We're spending about $40k a month on Databricks and honestly I'm not sure all of it is justified. The problem is the cost visibility is really bad. Like, I can see total DBU spend by workspace, but I can't easily break it down by team, by pipeline, or by business unit. Our finance team keeps asking me to show them the cost attributable to each product feature and I just can't do it natively.
+
+Rachel: How are you working around it?
+
+Devon: Tagging. We tag everything — clusters, jobs, warehouses — with team and project tags. Then I export the billing data to a Delta table and built my own cost attribution dashboard in Databricks SQL. Which works, but it's like 3 weeks of work I had to do myself. This feels like table stakes for an enterprise product.
+
+Rachel: What other workflow pain points do you hit?
+
+Devon: The Jobs API versioning drives me crazy. We manage all our jobs as code using Terraform, and every time Databricks updates the job settings schema, our Terraform configs break in non-obvious ways. The deprecation notices aren't surfaced well — I found out about a breaking change in the tasks schema by reading a random community forum thread, not from any official notification.
+
+Rachel: How about cluster policies — are you using those?
+
+Devon: We have them but honestly they're not expressive enough. I want to say "this team can only use cluster types X and Y, max size Z, and if they're idle for more than 30 minutes, terminate." The idle termination part works, but the cluster type restrictions are all-or-nothing. I also want to be able to say "ML team gets a $5,000 monthly budget, alert me when they hit $4,000." That kind of budget guardrail just doesn't exist.
+
+Rachel: What about notebooks and developer experience?
+
+Devon: Oh, the Repos experience is still kind of frustrating. Git integration has improved a lot — I'll give them that. But merge conflicts in notebooks are a nightmare. The conflict resolution UI is basic and since notebooks are JSON files under the hood, a merge conflict in a code cell generates this ugly JSON diff that's really hard to read. Most of my team just avoids branching and works directly on main, which is obviously bad practice but the alternative is spending 45 minutes resolving a merge conflict.
+
+Rachel: Any positives you want to call out?
+
+Devon: DLT has gotten really good. The expectations framework — being able to define data quality rules and have them enforced at pipeline runtime — is genuinely useful. We define expectations in our bronze-to-silver transformations and the quarantine behavior means we never accidentally propagate bad data downstream. That was a real problem we had with our old Spark jobs.
+
+Rachel: Last question — what would make you more confident in the platform?
+
+Devon: Honestly, better observability as a first-class feature. I want cost dashboards, pipeline health dashboards, data quality dashboards — all built in, not DIY. Right now Databricks gives you the compute and the data platform but leaves all the operational visibility as an exercise for the user.
+
+---
