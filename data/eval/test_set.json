@@ -1,0 +1,107 @@
+[
+  {
+    "id": "T01",
+    "query": "What are the top pain points around MLflow experiment tracking?",
+    "expected_sources": ["retro-002.txt", "retro-006.txt"],
+    "expected_pain_keywords": ["mlflow", "experiment", "registry", "clutter", "limit", "model"],
+    "expected_story_roles": ["Data Scientist", "ML Engineer"]
+  },
+  {
+    "id": "T02",
+    "query": "What are the biggest issues users have with Unity Catalog permissions?",
+    "expected_sources": ["retro-004.txt", "prd-002.txt"],
+    "expected_pain_keywords": ["permission", "access", "admin", "grant", "unity catalog", "bottleneck"],
+    "expected_story_roles": ["Analytics Engineer", "Data Engineer", "Platform Admin"]
+  },
+  {
+    "id": "T03",
+    "query": "What do users say about cluster cost management and DBU waste?",
+    "expected_sources": ["retro-001.txt", "retro-007.txt", "prd-001.txt"],
+    "expected_pain_keywords": ["dbu", "cost", "cluster", "idle", "termination", "weekend"],
+    "expected_story_roles": ["Data Engineer", "Data Scientist", "FinOps"]
+  },
+  {
+    "id": "T04",
+    "query": "What are the pain points with Databricks Workflows and job failures?",
+    "expected_sources": ["retro-005.txt", "retro-010.txt", "prd-004.txt"],
+    "expected_pain_keywords": ["workflow", "job", "failure", "repair", "log", "error"],
+    "expected_story_roles": ["Data Engineer", "SRE"]
+  },
+  {
+    "id": "T05",
+    "query": "What issues do users face with Delta Live Tables (DLT) pipelines?",
+    "expected_sources": ["retro-003.txt"],
+    "expected_pain_keywords": ["dlt", "delta live tables", "error", "debug", "pipeline", "cryptic"],
+    "expected_story_roles": ["Data Engineer", "Analytics Engineer"]
+  },
+  {
+    "id": "T06",
+    "query": "What do data scientists struggle with in Databricks notebooks?",
+    "expected_sources": ["retro-009.txt"],
+    "expected_pain_keywords": ["notebook", "package", "pip", "cluster", "restart", "storage"],
+    "expected_story_roles": ["Data Scientist"]
+  },
+  {
+    "id": "T07",
+    "query": "What are the security and governance pain points around Unity Catalog?",
+    "expected_sources": ["retro-004.txt"],
+    "expected_pain_keywords": ["audit", "security", "row-level", "credential", "shadow", "governance"],
+    "expected_story_roles": ["Platform Admin", "Security Engineer", "Data Gov Lead"]
+  },
+  {
+    "id": "T08",
+    "query": "What problems do teams face with Databricks Workflows task orchestration at scale?",
+    "expected_sources": ["retro-010.txt", "prd-004.txt"],
+    "expected_pain_keywords": ["orchestration", "task", "dependency", "god job", "history", "sluggish"],
+    "expected_story_roles": ["Data Engineer", "Platform Admin"]
+  },
+  {
+    "id": "T09",
+    "query": "What are user frustrations with Databricks SQL and dashboarding?",
+    "expected_sources": ["retro-003.txt", "retro-008.txt"],
+    "expected_pain_keywords": ["sql", "warehouse", "dashboard", "editor", "scaling", "pdf", "report"],
+    "expected_story_roles": ["Analyst", "BI Lead"]
+  },
+  {
+    "id": "T10",
+    "query": "What GPU and compute availability issues do ML teams encounter?",
+    "expected_sources": ["retro-006.txt"],
+    "expected_pain_keywords": ["gpu", "pending", "availability", "spot", "compute", "training"],
+    "expected_story_roles": ["ML Engineer", "Data Scientist"]
+  },
+  {
+    "id": "T11",
+    "query": "What are the pain points with Structured Streaming and late-arriving data?",
+    "expected_sources": ["retro-005.txt"],
+    "expected_pain_keywords": ["streaming", "watermark", "duplicate", "late", "silver", "foreachbatch"],
+    "expected_story_roles": ["Data Engineer", "Streaming Lead"]
+  },
+  {
+    "id": "T12",
+    "query": "What cost attribution and chargeback problems do platform admins face?",
+    "expected_sources": ["retro-007.txt", "prd-005.txt"],
+    "expected_pain_keywords": ["attribution", "chargeback", "cost center", "tag", "team", "billing"],
+    "expected_story_roles": ["Platform Admin", "FinOps", "Engineering Manager"]
+  },
+  {
+    "id": "T13",
+    "query": "What pain points exist around ML model reproducibility and lineage tracking?",
+    "expected_sources": ["retro-006.txt", "prd-003.txt"],
+    "expected_pain_keywords": ["lineage", "reproducib", "model", "version", "delta table", "mlflow"],
+    "expected_story_roles": ["ML Engineer", "Data Scientist"]
+  },
+  {
+    "id": "T14",
+    "query": "What issues do teams face deploying notebooks to production?",
+    "expected_sources": ["retro-002.txt", "retro-009.txt"],
+    "expected_pain_keywords": ["production", "notebook", "dependency", "repo", "conflict", "version"],
+    "expected_story_roles": ["ML Engineer", "Data Engineer"]
+  },
+  {
+    "id": "T15",
+    "query": "What are user complaints about Auto Loader and small file problems in Delta Lake?",
+    "expected_sources": ["retro-001.txt", "retro-005.txt"],
+    "expected_pain_keywords": ["auto loader", "small file", "optimize", "checkpoint", "partition"],
+    "expected_story_roles": ["Data Engineer"]
+  }
+]

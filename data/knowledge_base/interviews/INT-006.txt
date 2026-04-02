@@ -1,0 +1,44 @@
+INTERVIEW_ID: INT-006
+DATE: 2024-02-19
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Andile Dlamini, ML Engineer, Large insurance company (~6,000 employees)
+PRODUCT_AREA: MLflow, Model Serving, Feature Store
+---
+
+Rachel: Andile, walk me through your ML workflow on Databricks.
+
+Andile: Sure. We train and deploy models for fraud detection and risk scoring. The full cycle is: feature engineering in Databricks, experiment tracking in MLflow, model registration in the MLflow Model Registry, and then deployment through Databricks Model Serving. It sounds clean but in practice there are a lot of rough edges.
+
+Rachel: Let's dig in. Where do things break down first?
+
+Andile: Experiment tracking in MLflow is great for logging metrics and artifacts, but the UI for comparing experiments is quite basic. If I have 50 experiment runs and I want to compare them across 10 different hyperparameters, the comparison table in the MLflow UI gets unwieldy fast. There's no built-in parallel coordinates plot or anything sophisticated. I end up exporting the experiment data to a pandas DataFrame and doing my own analysis, which kind of defeats the purpose.
+
+Rachel: Is there a workaround you've found?
+
+Andile: I built a small Databricks SQL dashboard that queries the MLflow experiment tables directly through the system catalog. It works but it took me a week to build. I feel like this should be a built-in capability — "advanced experiment comparison view" or something.
+
+Rachel: What about the Feature Store?
+
+Andile: The Feature Store is conceptually great but the point-in-time lookups have been a source of bugs for us. We had an incident in March where a model was being trained on features that included future data — a data leakage issue caused by an off-by-one error in how we were specifying the timestamp column for point-in-time joins. The Feature Store didn't surface this as an error; it just silently joined on the wrong key.
+
+Rachel: How did you catch it?
+
+Andile: Our model performance started degrading in production about 6 weeks after deployment. That's when we traced it back. Six weeks of a wrong model making risk decisions at an insurance company. The Feature Store should have validation that helps you detect potential data leakage, especially for point-in-time joins. That's a well-known problem in ML.
+
+Rachel: What about Model Serving? How does that work for you?
+
+Andile: It's gotten much better in the last year — the provisioned throughput endpoints have good latency. But cold start is still a problem for our less-frequently-used endpoints. We have about 12 model endpoints and some of them only get called once a day. When the endpoint is cold, the first inference call can take 30+ seconds, which blows our SLA. I want the ability to keep endpoints "warm" with zero-traffic minimum instances, but the cost model for that doesn't work well for us — you pay full price for an idle instance.
+
+Rachel: Is there a middle ground?
+
+Andile: Not that I've found. I proposed we batch all our low-traffic models into a single multi-model endpoint, but that's not something Model Serving supports natively. I'd have to write a custom router layer, which adds maintenance burden. This seems like a feature that would help a lot of people.
+
+Rachel: What about model governance and approval workflows?
+
+Andile: Really missing. The Model Registry has stages — staging, production, archived — but there's no built-in approval flow. I want to say "before a model can be promoted to production, it needs sign-off from both the model owner and the compliance team." Right now that's a process we enforce manually through Slack messages and a spreadsheet. It would be great if the Model Registry had a native approval workflow with required reviewers.
+
+Rachel: Thanks Andile. Anything else?
+
+Andile: One more thing — MLflow model explainability integration is missing. We're required to explain our model decisions for regulatory reasons. We use SHAP values but integrating SHAP with MLflow is all custom code. I want a first-class "log explainability artifact" API that handles SHAP, LIME, whatever framework you're using, and makes those explanations accessible alongside the model in the registry.
+
+---

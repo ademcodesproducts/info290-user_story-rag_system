@@ -1,0 +1,19 @@
+TICKET_ID: TKT-011
+DATE: 2024-09-17
+PLAN: Enterprise
+ROLE: Data Scientist
+PRODUCT_AREA: Notebooks / Collaboration
+SENTIMENT: Frustrated
+---
+SUBJECT: Concurrent notebook edits result in silent data loss — no conflict detection
+
+BODY:
+Two members of our data science team were working on the same notebook (in Databricks Repos, workspace adb-5647382910564738.7.azuredatabricks.net) yesterday afternoon. Analyst A had the notebook open and was working on cells 12-18. Analyst B opened the same notebook independently (no warning of concurrent editing was shown) and saved changes to cells 3-8. When Analyst A subsequently saved, Analyst B's changes were silently overwritten. There was no merge conflict dialog, no warning that another user had saved changes, no version history entry distinguishing the two save events.
+
+As a result, approximately 45 minutes of Analyst B's work — including a data cleaning function we needed for a model feature — was permanently lost. We checked the notebook version history in Repos and the overwrite appears as a single commit with Analyst A as the author; Analyst B's intermediate save is not recorded anywhere in the history.
+
+This is a data loss bug. Google Docs, Notion, and even basic file-sharing tools handle concurrent editing gracefully. The minimum acceptable behavior is: (1) A warning when you open a notebook that another user has it open, (2) Conflict detection when saving if the remote version has changed since you last loaded, (3) A merge dialog similar to git conflict resolution. Ideally: real-time co-editing with presence indicators, which tools like Hex and Deepnote have had for years.
+
+We've instituted a manual "notebook lock" process via Slack (post in #data-notebooks before editing) but this is embarrassing to enforce and inevitably fails. We are evaluating Hex as an alternative for collaborative work specifically because of this limitation.
+
+---

@@ -1,0 +1,19 @@
+TICKET_ID: TKT-013
+DATE: 2024-10-15
+PLAN: Premium
+ROLE: Data Engineer
+PRODUCT_AREA: DLT / Delta Lake
+SENTIMENT: Neutral
+---
+SUBJECT: Feature request: partial pipeline refresh for single DLT table without full pipeline restart
+
+BODY:
+This is a feature request that I believe affects a large portion of DLT users. When a DLT pipeline contains multiple tables and one downstream table needs to be fully refreshed (e.g., due to a logic change or data quality issue), the only current option is to run a "Full Refresh" on the entire pipeline, which drops and recomputes all tables from scratch. For pipelines with large bronze tables or slow streaming sources, this can mean 4-8 hours of recomputation to fix a single downstream gold table.
+
+Requested feature: selective table refresh within a DLT pipeline. Something like REFRESH TABLE gold.customer_segments IN PIPELINE my_pipeline, which would only recompute that table and its direct dependencies, leaving unaffected tables untouched.
+
+Our current workaround is to split pipelines into smaller units with fewer tables each. We've gone from 3 large pipelines to 11 smaller ones specifically to reduce the blast radius of full refreshes. This creates management overhead: 11 separate pipeline schedules to maintain, 11 separate monitoring configurations, and complex cross-pipeline dependencies that DLT doesn't natively understand.
+
+Similar functionality exists in dbt (dbt run --select +my_model+ runs only a model and its ancestors). If DLT had equivalent selective execution, it would significantly reduce our pipeline management overhead and the 4-8 hour refresh windows that currently block downstream consumers. This has been the most upvoted request from our data engineering team in the last 6 months.
+
+---

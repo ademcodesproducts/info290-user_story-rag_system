@@ -1,0 +1,17 @@
+TICKET_ID: TKT-002
+DATE: 2024-03-21
+PLAN: Premium
+ROLE: ML Engineer
+PRODUCT_AREA: MLflow / Model Serving
+SENTIMENT: Frustrated
+---
+SUBJECT: Model endpoint cold start taking 45+ seconds — blowing latency SLA for low-traffic models
+
+BODY:
+We have 8 model endpoints deployed via Databricks Model Serving (workspace: adb-4523198765432109.9.azuredatabricks.net). Six of them are business-critical but low-traffic — they get called maybe 10-20 times per day. The problem is cold start: when an endpoint is idle for more than ~15 minutes, the first inference call takes anywhere from 38 to 52 seconds. Our application SLA is 5 seconds. This is a hard failure mode, not a degraded experience.
+
+The models themselves are standard sklearn pipelines with XGBoost, logged via mlflow.sklearn.log_model(). Model size is under 200MB. Once warm, inference is sub-200ms, which is excellent. The issue is purely the cold start. We've tried setting "scale_to_zero_enabled: false" in the endpoint config but at $0.07/DBU on provisioned throughput, keeping all 8 endpoints permanently warm costs ~$1,400/month just for idle capacity. That's not justifiable for internal tooling.
+
+What we need is either: (a) a "keep-warm" ping mechanism where Databricks periodically sends a no-op inference call to prevent scale-to-zero, (b) a "shared warm pool" option for low-traffic endpoints where startup cost is amortized across multiple models, or (c) a tiered pricing model where sub-100ms latency isn't required and cold start is acceptable but cheaper. None of these exist today. The current choice is "pay for always-warm" or "accept 45-second cold starts," with nothing in between.
+
+---

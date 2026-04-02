@@ -1,0 +1,19 @@
+TICKET_ID: TKT-001
+DATE: 2024-02-07
+PLAN: Enterprise
+ROLE: Data Engineer
+PRODUCT_AREA: Delta Live Tables
+SENTIMENT: Frustrated
+---
+SUBJECT: DLT pipeline failing with "DELTA_LIVE_TABLES_RUNTIME_ERROR" - no actionable info in event log
+
+BODY:
+Our production DLT pipeline (pipeline ID: 8a3f1c2d-4e5b-4f6a-9c0d-1e2f3a4b5c6d) has been failing intermittently since the DBR 14.2 upgrade last Thursday. The error we see in the pipeline event log is: "com.databricks.backend.daemon.driver.DriverClient$DriverException: An unexpected error occurred in the Delta Live Tables runtime." That's it. No stack trace, no offending task, no hints about which table or transformation caused the failure.
+
+This pipeline processes ~800GB of raw clickstream data daily across 14 DLT datasets (bronze → silver → gold). When it fails, we have a 6-hour SLA breach before the retrigger catches up. We've checked the Spark UI for the failed run — the cluster terminates before we can view the executor logs. We need Databricks to either persist executor logs post-failure or surface the actual root cause exception in the event log.
+
+We've tried: pinning the pipeline to DBR 13.3 LTS (failure still occurs), reducing the cluster size (no effect), and disabling continuous mode in favor of triggered (reduced frequency but failure still happens). Support case #CS-2024-029847 was opened 5 days ago with no resolution beyond "we're investigating." This is blocking our data team of 12 from trusting pipeline outputs.
+
+Requested action: (1) Root cause of this specific error, (2) A fix or workaround within 48 hours given SLA impact, (3) Long-term: add full exception details to the DLT event log as a standard feature.
+
+---

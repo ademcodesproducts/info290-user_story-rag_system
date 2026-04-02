@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-010
+DATE: 2024-10-14
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Jordan Kim, Analytics Engineer, Financial services firm (~3,500 employees)
+PRODUCT_AREA: Databricks SQL, Unity Catalog, SQL Warehouses, Dashboards
+---
+
+Sarah: Jordan, tell me about your team's setup.
+
+Jordan: We're a team of 6 analytics engineers supporting about 80 analysts across the firm. We manage the semantic layer — all the dbt models, the data marts, the dashboards. We're heavily invested in Unity Catalog and Databricks SQL.
+
+Sarah: What are the most common friction points you hear from your analyst users?
+
+Jordan: Query performance unpredictability is the top complaint. Analysts will run the same query on the same table and sometimes it takes 5 seconds, sometimes 2 minutes. It depends on whether the query hits the Databricks SQL result cache, whether Photon kicks in optimally, whether the warehouse has warmed up. The non-determinism makes it hard for analysts to trust their results or their time estimates.
+
+Sarah: Is this a caching issue specifically?
+
+Jordan: Partly. The result cache is 24 hours, which helps for repeated queries. But the query compilation cache is different — that one has much shorter TTL and we don't fully understand when it invalidates. Also, when an analyst writes a new query, there's no way to see if a similar query already exists and is cached. We're definitely computing redundant results across the team.
+
+Sarah: Tell me about access control management — does Unity Catalog help?
+
+Jordan: Yes, it's genuinely better than the old workspace-level ACLs. The ability to grant access to a schema and have it apply to all tables is cleaner. But managing permissions for 80 analysts is still a lot of manual work. We want group-based access management where I define "Analyst Group A gets read access to finance_mart.* " and new analysts automatically inherit that when I add them to the group. The group functionality exists but the integration with our Active Directory SSO has had sync lag — sometimes a new user gets AD access but it takes hours for that to propagate into Databricks permissions.
+
+Sarah: Are you using Databricks SQL dashboards in production?
+
+Jordan: Yes, and they've become business-critical. The issue is dashboard reliability — we have executive dashboards that refresh every 30 minutes and occasionally they fail silently. The refresh job shows as "completed" but the chart data is actually from the previous run. We only find out when an executive mentions a data discrepancy. There's no dashboard health monitoring or stale data alerts.
+
+Sarah: What about the SQL development experience?
+
+Jordan: The SQL editor is decent but collaboration is missing. Two analysts can't work on the same query simultaneously — if analyst A saves a query that analyst B had open, B's changes are silently overwritten. We've had data-losing situations because of this. There's no version history for queries stored in the SQL editor either. I'd like something like Google Docs-style concurrent editing or at least conflict detection.
+
+Sarah: Last one — what's the most underrated feature in Databricks SQL?
+
+Jordan: The system tables. Being able to query billing data, query history, and access patterns as SQL tables is really powerful. I've built admin dashboards using the system.billing and system.query_history tables that have helped us identify expensive query patterns and optimize warehouse configurations. More people should know about these — they're not well-documented or promoted.
+
+---

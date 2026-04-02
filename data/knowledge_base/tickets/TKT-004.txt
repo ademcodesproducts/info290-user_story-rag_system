@@ -1,0 +1,19 @@
+TICKET_ID: TKT-004
+DATE: 2024-05-14
+PLAN: Premium
+ROLE: Analytics Engineer
+PRODUCT_AREA: Databricks SQL / dbt
+SENTIMENT: Frustrated
+---
+SUBJECT: dbt column descriptions not syncing to Unity Catalog — data catalog is empty
+
+BODY:
+We manage ~400 dbt models on top of Databricks, and we've invested significant effort writing column-level descriptions in our dbt schema.yml files. After migrating from Hive metastore to Unity Catalog, we expected the dbt-databricks adapter to write these descriptions as column comments in Unity Catalog, making them visible in the catalog explorer and queryable via information_schema.column_field_paths. This does not happen.
+
+Running dbt run or dbt docs generate populates the dbt docs site correctly, but zero column descriptions appear in Unity Catalog. The table-level comment does sync (set via the description field in dbt model config), but column-level descriptions are dropped entirely. We confirmed this with dbt-databricks adapter version 1.7.4 and 1.8.0 — same behavior on both. Our Unity Catalog version is the current workspace default.
+
+We have 8 analysts who rely on the catalog explorer to understand what columns mean before writing queries. Right now the catalog shows every column as having no description, making it nearly useless for discovery. We've had to maintain a parallel Confluence page with column definitions, which immediately goes stale. This defeats the entire purpose of a governed data catalog.
+
+Workaround we're attempting: using a post-hook in dbt that runs ALTER TABLE ... ALTER COLUMN ... COMMENT on each column after model materialization. Early testing shows this works but adds ~45 seconds to each model's run time and doesn't handle incremental models cleanly. A native solution in the adapter is strongly needed.
+
+---

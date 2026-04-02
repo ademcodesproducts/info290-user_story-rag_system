@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-014
+DATE: 2024-04-02
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Yuki Tanaka, Data Scientist, Tech company (~2,200 employees)
+PRODUCT_AREA: Notebooks, Repos, Collaboration, Compute Management
+---
+
+James: Yuki, what's your typical workflow on Databricks?
+
+Yuki: I do exploratory analysis and model prototyping, mostly in notebooks. I use Repos for version control. My team is 8 data scientists and we work on a mix of shared and individual projects.
+
+James: Where does the notebook experience break down?
+
+Yuki: The biggest issue is notebook state management. When you're collaborating on a notebook with a colleague, there's no merge capability that understands notebook structure — the Python cells, the markdown, the outputs, the cell order. Git treats notebooks as JSON files, so a merge conflict gives you a mess of JSON diffs. We had a situation last week where two of us were working on different sections of the same notebook and the merge conflict took 2 hours to resolve. We basically rewrote both sections from scratch because the JSON diff was incomprehensible.
+
+James: How do you work around this in practice?
+
+Yuki: We've moved to a "one notebook, one person" rule, which limits collaboration. For shared analysis we use a shared notebook that only one person touches at a time, with a Slack channel as a "lock." Very manual and error-prone. I've heard Databricks has collaboration features on their roadmap but it's been on the roadmap for a long time.
+
+James: How about compute? Any friction there?
+
+Yuki: Cluster startup time kills my flow. When I come in in the morning and want to start working, I attach to a cluster and wait 4-5 minutes for it to start. If I'm iterating quickly on a prototype, I might restart the cluster several times in a day — maybe because I installed a new package, maybe because the cluster got into a weird state. All that waiting adds up.
+
+James: Are you using personal compute or shared clusters?
+
+Yuki: Both. Personal compute is great in principle — I get my own environment, no sharing. But it means every data scientist has their own cluster running, which is expensive. The platform admin limits our personal compute to Business Critical tier single-node clusters, which is fine for small data but painful for medium-scale analysis. I often need to run something on 100GB of data and my personal cluster runs out of memory, so I have to spin up a multi-node cluster anyway.
+
+James: What about the interactive development experience — notebooks vs IDEs?
+
+Yuki: I actually prefer to develop locally in VS Code with the Databricks extension, but the experience is inconsistent. The connect workflow — using Databricks Connect to run code from local VS Code against a remote cluster — sometimes works perfectly and sometimes breaks with mysterious authentication errors. Last Thursday I spent 90 minutes debugging a Databricks Connect authentication issue that turned out to be a token expiration that wasn't surfaced clearly. The error message said "connection refused" not "authentication failed."
+
+James: What features would make the biggest difference?
+
+Yuki: Native real-time collaboration in notebooks, like what Deepnote or Hex do. I know this is hard to build but it's what every data scientist on my team wants most. Second would be persistent interactive environments — some way to "hibernate" a running notebook with all its state, put it down, and pick it back up tomorrow without losing the Python state. Today if my cluster terminates overnight, all my in-memory objects are gone and I have to rerun everything.
+
+---

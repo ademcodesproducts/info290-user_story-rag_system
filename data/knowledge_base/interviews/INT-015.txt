@@ -1,0 +1,40 @@
+INTERVIEW_ID: INT-015
+DATE: 2024-09-18
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Omar Hassan, Data Scientist, Healthcare AI company (~500 employees)
+PRODUCT_AREA: Notebooks, MLflow, Repos, Mosaic AI, Model Development
+---
+
+Rachel: Omar, tell me about your day-to-day.
+
+Omar: I split my time between exploratory research — digging into new datasets, testing hypotheses — and model development work that eventually goes into production. I'm at a healthcare AI company so I also deal with a lot of compliance requirements around how we document our models and experiments.
+
+Rachel: Let's start with the compliance side since that's unique to healthcare.
+
+Omar: The MLflow experiment and run documentation is really minimal for compliance purposes. I can add tags and descriptions, but there's no structured way to document things like "what data was used to train this model," "what bias evaluations were run," "what are the known limitations." I've been manually writing these up in a separate Word document and attaching it as a text artifact in MLflow. That's not scalable and it's not discoverable.
+
+Rachel: Is this a gap in MLflow's design or more about your use case?
+
+Omar: Probably both. MLflow is designed for ML engineers who care about metrics and reproducibility. Healthcare and finance have additional documentation requirements. I'd love a "model card" concept built into MLflow — a structured template where I fill in training data description, evaluation methodology, intended use, limitations, and that gets version-controlled alongside the model. The model card format from Hugging Face is a good example.
+
+Rachel: Let's talk about Repos. How's your experience with Git integration?
+
+Omar: The Repos feature is useful but has some surprising limitations. I can't use Repos with large data files — if I accidentally add a 500MB CSV to my repo, the git operations become painfully slow. There's no .gitignore support in Databricks Repos, so I can't exclude certain file types. Also, the repo browser in the UI only supports a subset of git operations. I regularly have to drop to a notebook terminal and run raw git commands, which feels like a workaround.
+
+Rachel: What about when you're doing intensive research and need to iterate quickly?
+
+Omar: Variable explorer is missing. In Jupyter, there's a variable inspector that shows you all your in-memory objects, their types and sizes. In Databricks notebooks, there's nothing equivalent. When I'm deep in an analysis and I've created 30 different DataFrames, I have no quick way to see what's in memory, which ones are large, or clean up what I don't need. I've run out of memory on a cluster because I didn't realize I had 15 cached DataFrames from earlier analysis.
+
+Rachel: Are you using Mosaic AI at all?
+
+Omar: We're starting to. The playground environment is nice for quick testing. But the integration between Mosaic AI and MLflow is incomplete in my opinion. When I run a Mosaic AI fine-tuning job, it doesn't automatically create an MLflow experiment and log the training metrics in the format I'd expect. I have to set that up separately or it doesn't happen at all. For a research-focused workflow, I want everything automatically tracked in MLflow without extra setup.
+
+Rachel: What's your biggest quality-of-life request?
+
+Omar: Persistent environment snapshots. I want to be able to say "save this cluster state including all installed packages, loaded data, and defined functions" and restore it exactly tomorrow. Right now my morning routine is: start cluster, run package installs, load the data I was working with, redefine the helper functions I wrote last week. That's 20-30 minutes of setup every morning before I can do any actual research. It's a real morale and productivity issue.
+
+Rachel: Thanks Omar — really helpful perspective on the healthcare/compliance angle.
+
+Omar: One more thing — the notebook output handling. When I run a cell that produces a large plotly visualization, sometimes it just doesn't render and shows a blank output. Then I run it again and it works. Or it renders differently at different display scales. The visualization rendering in Databricks notebooks is just not reliable enough for the detailed work we do. I've started saving all my key charts as image files rather than relying on notebook outputs.
+
+---

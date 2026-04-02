@@ -1,0 +1,19 @@
+TICKET_ID: TKT-014
+DATE: 2024-11-06
+PLAN: Enterprise
+ROLE: ML Engineer
+PRODUCT_AREA: MLflow / Model Registry
+SENTIMENT: Neutral
+---
+SUBJECT: Feature request: approval workflows for model promotion in Unity Catalog Model Registry
+
+BODY:
+We operate in a regulated financial services environment (FINRA-registered broker-dealer) and are required to have documented human approval of any model that makes or influences customer-facing decisions before it goes to production. Currently, the Unity Catalog Model Registry has lifecycle stages (None → Staging → Production) but no native approval workflow: any user with EXECUTE privilege on the model can promote it to Production with a single API call or UI click, with no required reviewer, no approval audit trail, and no ability to block promotion pending review.
+
+Our current process: when a data scientist wants to promote a model, they post in a Slack channel, a designated model reviewer checks MLflow experiment metrics and the model card (which we maintain as a separate Confluence doc), and verbally approves in Slack. The reviewer then performs the promotion. This process exists entirely outside Databricks and leaves no traceable audit record inside the platform.
+
+For our next FINRA examination, we need to demonstrate that all production model promotions were (a) reviewed by an authorized reviewer, (b) approved based on documented criteria, and (c) have a timestamped record. A Slack message does not satisfy (c) to our auditors.
+
+Requested feature: a configurable promotion approval workflow in the Model Registry. At minimum: (1) Required approvers field per model (users or groups), (2) Approval request state with comment field, (3) Audit log entry in system.access.audit recording approver identity, timestamp, and approval decision. This is directly analogous to GitHub branch protection rules for code — we need the equivalent for ML models.
+
+---

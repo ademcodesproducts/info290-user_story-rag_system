@@ -1,0 +1,21 @@
+TICKET_ID: TKT-008
+DATE: 2024-08-05
+PLAN: Enterprise
+ROLE: Platform Admin
+PRODUCT_AREA: Cost Management / Cluster Policies
+SENTIMENT: Neutral
+---
+SUBJECT: NPS Response — Score: 7 — Cost visibility is the main blocker to full platform adoption
+
+BODY:
+NPS verbatim (collected via CSM quarterly check-in, August 2024):
+
+"We're mostly happy with Databricks — the Delta Lake + Unity Catalog combination is genuinely best-in-class for governed data management and we're not going back to our previous setup. The compute performance with Photon has been a real win for our SQL workloads. The reason I didn't score higher is cost visibility. We're spending roughly $120,000/month on Databricks and I can tell our CFO the total but I cannot tell her which team, which product feature, or which pipeline is responsible for each dollar. The tagging system helps but it's a manual discipline problem — we have about 15% of our compute that's untagged and I can't enforce tagging without writing custom automation.
+
+The cluster policy system is good but not expressive enough for budget governance. I want to say 'Team A has a $10,000 monthly budget, alert me at $8,000, hard-stop at $10,000.' That doesn't exist. I've had to build a cost monitoring pipeline myself that queries the system.billing_usage table and sends Slack alerts — it took a senior engineer two weeks to build something that should be a platform feature.
+
+If Databricks shipped a proper FinOps module — budget definitions, cost allocation rules, anomaly alerts, team-level dashboards — I would move our score from 7 to 9 or 10 immediately. That's the one thing standing between us and being a full reference customer."
+
+CSM note: Customer is $1.2M ACV, renewal in Q1 2025. Cost visibility comes up every QBR. Flagging for product team. Similar feedback from TKT-003 account and two other enterprise accounts this quarter.
+
+---

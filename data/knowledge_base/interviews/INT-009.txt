@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-009
+DATE: 2024-01-30
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Farida Osei, Analytics Engineer, SaaS company (~1,800 employees)
+PRODUCT_AREA: Databricks SQL, dbt Integration, SQL Warehouses
+---
+
+Rachel: Farida, you're an analytics engineer — which is an interesting role on a platform like Databricks. How does your work intersect with the data engineering side?
+
+Farida: We sit in the middle. Data engineers build the pipelines and land data into Delta tables, we model the data with dbt and expose it as clean semantic models, and then analysts and BI tools sit on top. Databricks SQL is our main interface.
+
+Rachel: Let's talk about dbt on Databricks. What's your experience been?
+
+Farida: The dbt-databricks adapter has gotten a lot better. Materializations work well — incremental models, snapshots, all solid. But there are some rough spots. The dbt metadata — like, column descriptions and model docs — doesn't propagate back to Unity Catalog as column-level comments automatically. So our data catalog in Unity Catalog has all the right tables but none of the documentation from dbt. We have to sync it manually or write a custom post-hook, which is annoying.
+
+Rachel: Are there performance issues?
+
+Farida: Oh yes. The big one is query compilation time on complex models. We have some dbt models with 50+ CTEs that reference a lot of views on top of Delta tables. The compilation and query planning in Databricks SQL can take 20-30 seconds before any data is processed. Photon speeds up the actual computation but doesn't help with planning time. For development iteration, when I'm running a model over and over with small changes, that 25-second overhead before I see results really slows me down.
+
+Rachel: What about SQL warehouse management?
+
+Farida: Serverless warehouses are good for most things but the cost unpredictability is stressful. With classic warehouses you know exactly what you're paying — X nodes, Y hours. With serverless it scales up and down automatically, which is great, but I've had jobs that ran unexpectedly expensive because they triggered a warehouse scale-up I didn't anticipate. I'd like cost caps or budget alerts at the warehouse level.
+
+Rachel: Do you use any BI tools on top of Databricks SQL?
+
+Farida: Mostly Looker and Tableau, plus some internal Databricks SQL dashboards. The JDBC connectivity has improved but it's still the weakest link. Tableau connections to Databricks SQL will randomly drop and require reconnection. It happens maybe twice a week for our heavier users. And the Tableau Databricks connector doesn't support initial SQL, which limits how we can parameterize data access.
+
+Rachel: What about Databricks SQL's own dashboard experience?
+
+Farida: It's okay for internal use. The new dashboards UI that launched last year is cleaner. But it's missing features that mature BI tools have had for years. Cross-filter interactions between charts are limited. You can't have a chart respond to a click on another chart to filter down. Our analysts keep asking for this and I keep having to tell them to use Looker instead. It feels like Databricks is trying to build a BI layer but it's a few years behind the dedicated tools.
+
+Rachel: What feature would have the biggest impact on your team's productivity?
+
+Farida: Native dbt metadata sync to Unity Catalog. If when I run dbt docs generate, those column descriptions and model docs automatically populated the Unity Catalog column metadata — that would save us hours every week and make our data catalog actually useful. Right now it's a beautiful catalog with empty description fields.
+
+---

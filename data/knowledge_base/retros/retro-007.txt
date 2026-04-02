@@ -1,0 +1,23 @@
+---
+MEETING_ID: RETRO-007
+DATE: July 19, 2024
+TEAM: Platform Reliability
+ATTENDEES: Steve M. (SRE), Nancy W. (Admin), Gary B. (Security), Fiona Q. (FinOps)
+SPRINT: Sprint 57
+---
+### What went well
+* Implemented **Budget Policies** which successfully alerted us before we hit our quarterly DBU limit.
+* **Serverless SQL** adoption has reached 60%, reducing our management overhead for clusters significantly.
+* The **Unity Catalog** lineage UI has saved us hours during the recent GDPR audit.
+
+### What didn't go well
+* **IP Access Lists** are difficult to maintain as our remote workforce grows; we keep locking out legitimate users.
+* The **Account Console** doesn't provide granular enough cost attribution for shared "General Purpose" clusters.
+* **Databricks Workflows** job history only goes back 60 days in the UI, making year-over-year performance comparisons difficult.
+* Cross-workspace **Delta Sharing** setup was confusing; the recipient token management feels very manual.
+
+### Action items
+* Develop a custom script to export Job Run metadata to a long-term Delta table for reporting (Steve M., Aug 1).
+* Automate IP Access List updates via a CI/CD pipeline and a central registry (Gary B., Aug 10).
+* Set up a tagging enforcement policy to improve DBU cost attribution (Fiona Q., Aug 15).
+---

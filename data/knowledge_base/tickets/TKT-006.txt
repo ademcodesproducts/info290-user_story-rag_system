@@ -1,0 +1,19 @@
+TICKET_ID: TKT-006
+DATE: 2024-06-28
+PLAN: Enterprise
+ROLE: Data Engineer
+PRODUCT_AREA: Auto Loader / Delta Lake
+SENTIMENT: Neutral
+---
+SUBJECT: Feature request: built-in SLA alerting for Auto Loader streams — "no files processed in N hours"
+
+BODY:
+This is a feature request, not a bug. We operate 23 Auto Loader ingestion streams across our data platform, each with different SLA requirements. Some need to process files within 1 hour of landing in S3; others are daily batch windows. Currently, we have no way to configure Databricks-native alerting that triggers if an Auto Loader stream has not processed any files within a configurable time window.
+
+Our current workaround is a separate Databricks Workflows job that queries the stream progress metrics table every 30 minutes and sends a PagerDuty alert if processingTimeSec has not advanced. This works but adds ~12 hours of engineering to set up for each new stream, and it's fragile — the monitoring job itself can fail. We've had 3 cases in the past 6 months where a stalled stream went undetected for 4+ hours because the monitoring job also failed.
+
+The requested feature: a native "stream health" SLA configuration on Auto Loader jobs or DLT pipelines. Something like: sla_alert_if_no_progress_minutes: 60, with a notification channel (email, webhook, PagerDuty). This is conceptually simple and would eliminate a whole class of DIY monitoring infrastructure for data engineering teams. Attaching our current monitoring notebook as a reference implementation.
+
+Priority in our roadmap planning: High. We're a $40M ARR customer and this is one of the top-5 requests from our data engineering team in the last two quarters.
+
+---

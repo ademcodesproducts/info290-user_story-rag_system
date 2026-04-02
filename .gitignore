@@ -11,6 +11,9 @@ __pycache__/
 .venv/
 venv/
 
+# Vector store
+chroma_db/
+
 # OS
 .DS_Store
 Thumbs.db

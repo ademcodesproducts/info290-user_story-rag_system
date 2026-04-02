@@ -1,0 +1,19 @@
+TICKET_ID: TKT-010
+DATE: 2024-09-04
+PLAN: Premium
+ROLE: Analytics Engineer
+PRODUCT_AREA: Databricks SQL / Dashboards
+SENTIMENT: Frustrated
+---
+SUBJECT: Dashboard refresh silently shows stale data — "Last refreshed" timestamp is wrong
+
+BODY:
+We have an executive-facing revenue dashboard (workspace: adb-2938475610293847.11.azuredatabricks.net, dashboard ID: 01ef8c2d-3b4a-7f6e-9d0c-2e3f4a5b6c7d) that is scheduled to refresh every 30 minutes via a Databricks SQL dashboard schedule. Since approximately August 28th, the dashboard appears to refresh successfully (the "Last refreshed" timestamp updates), but the underlying chart data is not updating — it shows data from the previous successful refresh, sometimes 6-12 hours old.
+
+We confirmed this by comparing chart values against direct SQL query results: the SQL query returns current data, but the dashboard visualization shows old data. The scheduled refresh jobs show as "Succeeded" in the job run history. This appears to be a caching or rendering bug where the dashboard marks the refresh as complete but serves cached tile results.
+
+This was discovered when our VP of Sales asked why our MRR dashboard showed a number from yesterday during an all-hands meeting. The impact to trust in our data platform was significant. We need: (1) Immediate resolution for our affected dashboard, (2) Root cause explanation, (3) A mechanism for dashboard stale-data detection — even a simple "data as of [actual query time]" watermark visible to viewers would help us catch this earlier.
+
+We are currently working around this by having analysts manually export SQL query results and paste them into a Google Sheet before all executive meetings. This is not sustainable.
+
+---

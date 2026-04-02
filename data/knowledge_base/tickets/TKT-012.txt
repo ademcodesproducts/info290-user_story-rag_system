@@ -1,0 +1,21 @@
+TICKET_ID: TKT-012
+DATE: 2024-10-01
+PLAN: Enterprise
+ROLE: Platform Admin
+PRODUCT_AREA: Unity Catalog / Data Governance
+SENTIMENT: Positive
+---
+SUBJECT: NPS Response — Score: 9 — Unity Catalog audit logging has been a compliance game-changer
+
+BODY:
+NPS verbatim (collected via in-product survey, October 2024):
+
+"I want to specifically call out the Unity Catalog system tables as something that has genuinely changed how we operate. Before Unity Catalog, our data governance story was 'we think the right people have access to the right data, but we can't prove it.' Now I can query system.access.audit and system.access.column_lineage and give our compliance team an exact answer to 'who queried this table containing PII in the last 30 days' in about 5 minutes. Our last SOC 2 audit took 3 days less than the previous year because of this capability.
+
+The column-level lineage is also impressive. Being able to trace a column from a raw S3 source file through 6 transformation layers to a BI dashboard — that's something we genuinely couldn't do before. Our data stewards now use the lineage graph weekly to assess the blast radius of upstream schema changes before they approve them.
+
+The one area I'd push for improvement: the lineage has gaps for certain operations (CREATE TABLE AS SELECT with complex subqueries doesn't always capture column-level lineage, and operations through JDBC connections are invisible to the lineage graph). But the direction is right and the velocity of improvement has been good. Renewing for 3 years next month."
+
+CSM note: Customer is $800K ACV, 3-year renewal confirmed. Flagging as potential reference customer for Unity Catalog compliance use case. Would participate in case study per CSM conversation.
+
+---

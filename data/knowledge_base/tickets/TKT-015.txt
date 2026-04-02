@@ -1,0 +1,17 @@
+TICKET_ID: TKT-015
+DATE: 2024-11-21
+PLAN: Enterprise
+ROLE: Platform Admin
+PRODUCT_AREA: Multi-workspace / Account Administration
+SENTIMENT: Frustrated
+---
+SUBJECT: No central admin console for fleet management — managing 18 workspaces requires 18 separate logins
+
+BODY:
+We manage 18 Databricks workspaces across 3 AWS regions (us-east-1, us-west-2, eu-west-1). Every administrative action — reviewing cluster policies, checking active runs, auditing user permissions, modifying job schedules — requires logging into each workspace individually. The Databricks Account Console (accounts.azuredatabricks.net equivalent for AWS: accounts.cloud.databricks.com) provides very limited workspace management: user assignment, metastore assignment, and billing summary. It does not allow me to view or manage workspace-level resources (clusters, jobs, policies, warehouses) centrally.
+
+In practice this means: when I receive a "why is our Databricks spend up 40% this week" question from finance (which happens monthly), I have to log into 18 workspaces, navigate to each cost dashboard, export or screenshot the data, and assemble it manually. This takes approximately 3 hours. I have partially automated this with a Python script that uses the Workspace API to query each workspace's cluster events and billing system tables, but maintaining this script against Databricks API changes is ongoing work.
+
+We are a $2.1M ACV customer. I'm raising this as a formal product feedback item: a genuine multi-workspace administration console is needed for enterprise customers operating at our scale. The minimum viable version would support: (1) Cross-workspace cost reporting in a single view, (2) Cross-workspace job run status and history, (3) Centralized cluster policy management with push-to-all or push-to-selected-workspaces capability. Without this, our team of 2 admins cannot responsibly govern a fleet of 18 workspaces, and we are actively evaluating whether a third-party governance layer (Okera, Alation) could fill this gap.
+
+---

@@ -1,0 +1,40 @@
+INTERVIEW_ID: INT-008
+DATE: 2024-08-27
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Carlos Reyes, ML Engineer, Retail analytics company (~1,200 employees)
+PRODUCT_AREA: MLflow, Model Registry, Feature Store, Batch Inference
+---
+
+James: Carlos, what's your primary use case on Databricks?
+
+Carlos: We do demand forecasting and personalization — predicting what customers will buy, when, and what to recommend to them. We train models weekly and do daily batch inference at scale. Millions of predictions per day across all our product catalog.
+
+James: Let's start with batch inference. What are the pain points there?
+
+Carlos: The main one is that batch inference with MLflow pyfunc models doesn't parallelize well out of the box. When I apply a logged model to a Spark DataFrame using mlflow.pyfunc.spark_udf, the performance is really sensitive to how the model loads. If the model has a heavy initialization cost — loading weights, initializing tokenizers — that happens once per executor process, which is fine. But sometimes it reinitializes per partition, which is catastrophic for performance. The documentation on this is unclear and the behavior seems to change between Databricks Runtime versions.
+
+James: Have you raised this with support?
+
+Carlos: Yes, we opened a ticket. The answer was basically "it depends on your configuration" with a generic Python multiprocessing explanation. Not actionable. We ended up wrapping our model in a custom broadcast variable approach that we found in a blog post. Works, but fragile.
+
+James: What about Feature Store? How does it fit into your workflow?
+
+Carlos: We use it for real-time feature lookups in our personalization pipeline. The online store integration with DynamoDB works okay. But the feature freshness visibility is poor. I want to be able to see, for any given model endpoint, "here are the features it uses, here is when each feature was last written to the online store." Right now I have to cross-reference the feature definitions with our pipeline schedule manually.
+
+James: How do you manage model versions? Are you using the Model Registry?
+
+Carlos: We are, but the transition from the workspace model registry to the Unity Catalog model registry has been disruptive. We migrated 6 months ago and some of our CI/CD tooling broke because the model URI format changed. Like, the old URIs were models:/ModelName/Production and the new ones are three-part catalog.schema.model_name URIs. We had to update dozens of references across notebooks, pipelines, and internal tools.
+
+James: Were there migration tools?
+
+Carlos: Sort of. There's a migration script but it doesn't handle lineage information — we lost the history of which experiment runs produced which model versions during the migration. That traceability was actually important for our compliance documentation. We had to reconstruct it by cross-referencing MLflow experiment logs manually.
+
+James: What would improve your weekly model retraining workflow?
+
+Carlos: I'd love better experiment-to-production promotion automation. Right now the flow is: training job completes, data scientist looks at metrics in MLflow UI, decides to promote, manually clicks through the registry UI. I want to define promotion criteria as code — "if validation RMSE is below threshold X and there's no data drift on feature set Y, auto-promote to staging." There's no native way to do this. I've built a Python script that queries the MLflow API and does it programmatically, but it's not connected to any approval workflow.
+
+James: One last question — what's the biggest risk to your team's productivity right now?
+
+Carlos: Honestly, MLflow debt. We have hundreds of experiments that are poorly named, poorly organized, with no consistent tag taxonomy. There's no garbage collection — experiments accumulate forever. The artifacts alone are probably costing us thousands of dollars a month in S3 storage. I need a way to define retention policies on experiments — "delete artifacts for any run older than 90 days that wasn't promoted to the registry."
+
+---

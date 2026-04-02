@@ -1,0 +1,78 @@
+[PRD] Smarter Cluster Auto-Termination with Cost Preview and Snooze Controls
+
+TL;DR
+Databricks users often lose DBUs because clusters stay active due to background processes or forgotten tabs, while aggressive auto-termination disrupts long-running manual analysis. This feature introduces a real-time cost-burn preview and a "Snooze" notification system, allowing users to extend sessions intentionally while visualizing the financial impact of keeping a cluster alive.
+
+---
+Problem Definition, Opportunity, and Outcome
+
+Currently, cluster auto-termination is a "blind" binary setting. Users set a minute threshold (e.g., 60 mins), but have no visibility into how much a session has cost until they check the Account Console later. When a cluster is about to terminate, any unsaved state in a notebook (like a large local temporary file or a specific library configuration) is lost without warning.
+
+This leads to two costly behaviors: engineers set excessively long timeouts to avoid disruption, leading to "DBU leakage," or they experience "termination rage" when a cluster shuts down in the middle of a thought process. By adding a "Snooze" grace period and a "Dollars-per-hour" live ticker, we shift the responsibility of cost management from rigid admin policies to informed user behavior.
+
+Users & Use Cases
+
+1. PRIMARY USERS: Data Scientists, Data Engineers
+   • A Data Scientist needs to run ad-hoc queries over several hours with long pauses for data interpretation.
+   • [Pain]: Cluster terminates while they are writing a complex JOIN, forcing a 3-5 minute wait for a cold start and re-running setup cells.
+   • A Data Engineer needs to monitor a manual migration script.
+   • [Pain]: Forgets to manually terminate the High Concurrency cluster on a Friday, leading to a weekend of wasted premium DBUs.
+
+2. SECONDARY USERS (Edge Cases): Finance/FinOps
+   • A FinOps lead needs to ensure teams stay within monthly credits.
+   • [Pain]: Lack of "at-the-source" visibility for users makes it impossible to enforce a culture of cost-consciousness.
+
+Opportunity
+This feature complements the existing Cluster Policies by making them interactive rather than purely restrictive. Unlike standard Jupyter or SageMaker instances that remain on until manual shutoff, this provides a "smart" middle ground similar to modern battery-saver modes on OSs.
+
+JTDBs
+• When my cluster is nearing its idle limit, I want to receive a browser notification, so I can snooze the shutdown if I'm still working.
+• When I am using an expensive GPU instance, I want to see a live DBU/USD burn rate, so I can justify the cost or switch to a smaller instance.
+• When a cluster auto-terminates, I want to see a summary of the cost saved, so I feel motivated to keep timeouts short.
+• When I am in a "Deep Work" session, I want to one-click extend the life of the cluster by 30 minutes.
+
+---
+Requirements and Product Definition
+
+M0: Cost Visibility & Snooze Notification - Min Viable
+
+P0: Live Cost Ticker
+   • Display estimated $/hr or DBU/hr in the cluster status bar within the Notebook UI.
+   • Update based on current instance type and DBU tier (Standard/Premium/Enterprise).
+
+P0: Termination Warning & Snooze
+   • 5-minute "Warning" toast notification before auto-termination.
+   • "Snooze 30m" button within the notification to reset the idle timer.
+
+M1: Predictive Termination & Policy Integration - Advanced Usability
+
+P0: Cost-to-Date Summary
+   • Hovering over the ticker shows the total cost incurred by the current cluster session.
+
+P1: "Save State" Snapshot
+   • Option to trigger a Git commit or "Checkpoint" save in Repos before the final termination signal is sent.
+
+P2: Idle Reason Diagnostics
+   • UI shows why the cluster is considered idle (e.g., "No commands run," "Low CPU/Network utilization").
+
+User Experience: Sarah, a Data Scientist, is exploring a massive Delta table on an i3.xlarge cluster.
+   • (J1) Sarah notices a small "$2.40/hr" indicator next to her cluster name and realizes she's using a more expensive node than needed.
+   • (J2) After she steps away for lunch, a notification pops up on her laptop: "Cluster 'Model_Dev' will terminate in 5 mins. Cost saved so far: $12.00."
+   • (J3) She clicks "Snooze" from her phone's browser because she knows she has one more test to run, extending the life by 30 minutes.
+   • (J4) At the end of the day, she sees a "Final Session Cost: $18.50" summary, helping her track her project spend.
+
+---
+Success Metrics
+
+The below metrics use the HEART UX framework focusing on Engagement and Efficiency.
+
+Objectives:
+   • Efficiency: Reduce "accidental" weekend/overnight DBU spend by 15%.
+   • Adoption: 40% of active users interact with the "Snooze" or Cost Ticker within the first month.
+   • Satisfaction: Reduce "Cold Start" cluster events by 10% (indicating users are snoozing rather than restarting).
+
+| | SIGNALS | KPI |
+|---|---|---|
+| 1. Efficiency | Reduced idle DBU consumption | -15% DBU waste on idle clusters |
+| 2. Adoption | Interaction with "Snooze" button | 40% of users utilize "Snooze" monthly |
+| 3. Satisfaction | Qualitative feedback on termination | 4.2/5 CSAT on "Cluster Management" |
