@@ -1,9 +1,11 @@
 import json
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import chromadb
-from openai import OpenAI
+from openai import OpenAI, RateLimitError
+from json import JSONDecodeError
 
 from src.evaluation.metrics import (
     faithfulness_score,
@@ -24,7 +26,7 @@ DEFAULT_TEST_SET_PATH = Path("data/eval/test_set.json")
 class TestCaseResult:
     test_id: str
     query: str
-    rag_result: RAGResult
+    rag_result: RAGResult | None = None
     recall_at_k: float = 0.0
     mrr: float = 0.0
     pain_keyword_recall: float = 0.0
@@ -32,6 +34,21 @@ class TestCaseResult:
     faithfulness: dict = field(default_factory=dict)
     relevance: dict = field(default_factory=dict)
     invest: list = field(default_factory=list)
+
+
+def result_from_dict(d: dict) -> "TestCaseResult":
+    """Reconstruct a TestCaseResult from a serialized case dict (for resume)."""
+    return TestCaseResult(
+        test_id=d["test_id"],
+        query=d["query"],
+        recall_at_k=d.get("recall_at_k", 0.0),
+        mrr=d.get("mrr", 0.0),
+        pain_keyword_recall=d.get("pain_keyword_recall", 0.0),
+        story_format=d.get("story_format", {}),
+        faithfulness=d.get("faithfulness", {}),
+        relevance=d.get("relevance", {}),
+        invest=d.get("invest", []),
+    )
 
 
 def load_test_set(path: Path = DEFAULT_TEST_SET_PATH) -> list[dict]:
@@ -47,22 +64,41 @@ def run_evaluation(
     judge_model: str = "gpt-4o-mini",
     test_ids: list[str] | None = None,
     test_set_path: Path = DEFAULT_TEST_SET_PATH,
+    prompt_variant: str = "baseline",
+    skip_ids: set[str] | None = None,
 ) -> list[TestCaseResult]:
     test_cases = load_test_set(test_set_path)
     if test_ids:
         test_cases = [t for t in test_cases if t["id"] in test_ids]
+    if skip_ids:
+        test_cases = [t for t in test_cases if t["id"] not in skip_ids]
+        print(f"  Resuming — skipping {len(skip_ids)} already-completed cases")
 
     results = []
     for i, tc in enumerate(test_cases):
         print(f"  [{i+1}/{len(test_cases)}] {tc['id']}: {tc['query'][:60]}...")
 
-        rag_result = run_query(
-            query_text=tc["query"],
-            collection=collection,
-            openai_client=openai_client,
-            top_k=top_k,
-            model=model,
-        )
+        for attempt in range(5):
+            try:
+                rag_result = run_query(
+                    query_text=tc["query"],
+                    collection=collection,
+                    openai_client=openai_client,
+                    top_k=top_k,
+                    model=model,
+                    prompt_variant=prompt_variant,
+                )
+                break
+            except RateLimitError:
+                wait = 2 ** attempt
+                print(f"    rate limited — waiting {wait}s…")
+                time.sleep(wait)
+            except JSONDecodeError:
+                print(f"    malformed JSON on attempt {attempt + 1}, retrying…")
+                time.sleep(1)
+        else:
+            print(f"    SKIPPED {tc['id']} after 5 attempts")
+            continue
 
         tc_result = TestCaseResult(
             test_id=tc["id"],

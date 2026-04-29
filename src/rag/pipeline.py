@@ -28,6 +28,7 @@ def run_query(
     model: str = MODEL,
     temperature: float = 0.2,
     where: dict | None = None,
+    prompt_variant: str = "baseline",
 ) -> RAGResult:
     hits = retrieve(collection, query_text, top_k=top_k, where=where)
     context_block = format_context_block(hits)
@@ -37,6 +38,7 @@ def run_query(
         context_block=context_block,
         model=model,
         temperature=temperature,
+        prompt_variant=prompt_variant,
     )
     return RAGResult(
         query=query_text,
