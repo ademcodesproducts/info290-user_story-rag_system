@@ -8,7 +8,7 @@ Product Managers and UX researchers at Databricks routinely synthesize large vol
 
 ## 2. Data
 
-### Knowledge Base (90 documents, 143 chunks)
+### Knowledge Base (100 documents, 163 chunks)
 
 | Type | Count | Description |
 |---|---|---|
@@ -16,6 +16,7 @@ Product Managers and UX researchers at Databricks routinely synthesize large vol
 | Tickets | 20 | Customer support tickets and NPS responses |
 | Retrospectives | 25 | Sprint retrospective notes from engineering and ML teams |
 | PRDs | 25 | Product requirement documents with personas, pain points, and success criteria |
+| Meeting Notes | 10 | PM and research sync notes: decision logs, raised pain points, open questions |
 
 **Product areas covered:** Unity Catalog, MLflow, Databricks Workflows, DLT, Databricks SQL, Mosaic AI, Feature Store, Notebooks, Cost Management, Auto Loader, Delta Sharing, Structured Streaming, Repos, and Multi-workspace Fleet Management.
 
