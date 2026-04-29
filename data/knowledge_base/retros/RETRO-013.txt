@@ -1,0 +1,22 @@
+RETRO_ID: RETRO-013
+DATE: 2024-12-20
+MEETING_TYPE: End-of-Year Platform Review
+ATTENDEES: Priya Shankar (PM), Ananya Krishnan (PM), Sandra Volkov (Platform Eng), Yuna Park (ML Platform Lead), Tomás Rivera (Eng Manager)
+PRODUCT_AREA: Cross-Product Year-End Summary
+SPRINT: Q4 Year-End
+---
+
+PAIN POINTS RAISED:
+
+1. Sandra: "If I had to name the single biggest platform gap this year, it's operational visibility. We have great compute, great storage, great governance primitives. But when something goes wrong — a pipeline fails, costs spike, a policy is inconsistent — we find out from downstream impacts, not from the platform. Cost alerts, pipeline health dashboards, policy drift detection — these all had to be built by us, not by Databricks."
+
+2. Yuna: "From an ML perspective, the theme is MLflow maturity. Experiment organization, artifact lifecycle, approval workflows, explainability logging — all manual, all DIY. MLflow is a great experiment tracker. It's not yet a model governance platform. That's what enterprise customers need."
+
+3. Priya: "The most common word in our interview notes this year was 'workaround.' DLT error messages — workaround. Cluster policy budget gates — workaround. Multi-workspace admin — workaround. SCIM failures — workaround. We're building a platform for data teams but data teams are spending too much time building workarounds for the platform itself."
+
+DECISIONS:
+- Platform observability (cost attribution, pipeline health, policy governance) to be the #1 platform engineering theme for H1 next year.
+- Yuna to draft a proposal for an "ML Governance" initiative covering approval workflows, model cards, and explainability logging — target Q1 kickoff.
+
+OPEN QUESTION:
+What would it take to reduce the customer-built-workaround rate by 50% in the next 12 months? Priya to turn this into a measurable OKR for the product team.

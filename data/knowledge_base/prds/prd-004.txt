@@ -1,77 +1,38 @@
-[PRD] Inline Job Failure Diagnostics in Databricks Workflows
+PRD_ID: PRD-004
+DATE: 2024-06-17
+AUTHOR: Marcus Delgado, PM — Enterprise Platform
+PRODUCT_AREA: Multi-workspace / Account Administration
+STATUS: Draft
+---
+TITLE: Multi-Workspace Fleet Administration Console
 
-TL;DR
-When a Databricks Workflow fails, users are forced to dig through deep driver logs, Spark UI stages, or standard out (stdout) to find the root cause. This feature uses AI-powered log summarization and "Error Context" cards to surface the exact line of code, the specific data record that caused a crash, and a "Suggested Fix" directly in the Workflow UI.
+PERSONA:
+Role: Platform Admin / Data Platform Lead
+Company size: 2,000–50,000 employees
+Context: Manages 10–30 Databricks workspaces across multiple cloud regions and business units. Currently logs into each workspace individually for every administrative task. Spends ~3 hours/week on cross-workspace cost reporting alone.
+Job-to-be-done: Administer, monitor, and govern a fleet of Databricks workspaces from a single interface — without writing and maintaining custom API scripts.
+
+PAIN POINTS:
+1. "When finance asks why spend is up 40% this week, I log into 18 workspaces, export dashboards from each, and assemble it manually. Three hours, every time." — Platform Admin, $2.1M ACV enterprise customer (TKT-015).
+2. Cluster policy updates must be applied to each workspace individually — no broadcast or template propagation. An admin managing 20 workspaces makes 20 separate edits for each policy change.
+3. No cross-workspace job run history — determining which workspace had a job failure last Tuesday requires checking each workspace's job run log.
+4. The Account Console (accounts.cloud.databricks.com) shows billing summary and metastore assignment but no workspace-level resource visibility.
+5. Unity Catalog lineage stops at workspace boundaries — cross-workspace data flows are invisible to the lineage graph.
+
+REQUIREMENTS:
+1. Fleet cost dashboard in Account Console: aggregated and per-workspace spend for any date range, broken down by SKU and (where tagged) by team. No custom SQL required.
+2. Cross-workspace job run feed: a unified view of all job runs across all workspaces in the account, filterable by status (failed/running/succeeded), workspace, and date range.
+3. Centralized cluster policy management: admins define policies in the Account Console and push them to selected workspaces (push-to-all or multi-select). Policy version history tracked per workspace.
+4. Cross-workspace user inventory: single view of all users across all workspaces, their workspace assignments, and last active timestamp. Supports bulk deprovisioning.
+5. Alert routing: admins configure account-level alerts (cost anomaly, job failure rate, cluster policy violation) that aggregate signals across all workspaces.
+
+SUCCESS CRITERIA:
+- A platform admin produces a cross-workspace cost report for any 30-day window in under 5 minutes from the Account Console with no API calls or custom scripts.
+- A cluster policy change is propagated to all selected workspaces in a single operation in under 60 seconds.
+- Cross-workspace job run feed loads the last 24 hours of runs across 20 workspaces in under 10 seconds.
+
+OPEN QUESTIONS:
+- How do we handle workspaces where the account admin does not have workspace-admin privileges?
+- Should cross-workspace lineage be part of this PRD or a separate Unity Catalog initiative?
 
 ---
-Problem Definition, Opportunity, and Outcome
-
-Currently, a failure in a 20-task Databricks Workflow requires a "treasure hunt." A Data Engineer must click into the failed task, open the log, search for "Exception," and then try to correlate that exception back to a cell in a notebook or a line in a Python Wheel. If the error is an OOM (Out of Memory), they have to dive into the Spark UI to find the skewed partition.
-
-This is a massive drain on DBU efficiency because the "Repair Run" usually happens only after 30-60 minutes of manual investigation. By surfacing the "Last Successful Line" and "Exception Summary" on the Workflow Canvas itself, we can reduce the Mean Time to Repair (MTTR) and prevent engineers from wasting compute on "guess-and-check" fixes.
-
-Users & Use Cases
-
-1. PRIMARY USERS: Data Engineers, SREs (Site Reliability Engineers)
-   • A Data Engineer's midnight ETL job fails.
-   • [Pain]: Has to wake up, open a laptop, and scroll through 5,000 lines of Spark logs to find a "Column Not Found" error.
-   • A Platform Engineer monitors 100+ concurrent jobs.
-   • [Pain]: Cannot quickly distinguish between "Transient Cloud Errors" (retryable) and "Logic Errors" (fix required).
-
-2. SECONDARY USERS (Edge Cases): Data Scientists
-   • A model training job fails after 4 hours.
-   • [Pain]: Unclear if it's a code bug or if the cluster ran out of local disk space for artifacts.
-
-Opportunity
-This leverages the "Databricks Assistant" (Mosaic AI) capabilities to provide a specialized diagnostic tool for orchestrations. It competes directly with specialized observability tools like Monte Carlo or Astronomer (Airflow) by providing deeper, Spark-native diagnostics.
-
-JTDBs
-• When a job fails, I want to see the "Human Readable" reason on the main dashboard, so I don't have to open logs.
-• When a notebook task fails, I want a link that takes me directly to the failed cell with the error message pre-highlighted.
-• When an OOM occurs, I want to see which Spark stage and which table partition caused the skew.
-• When a task fails, I want to see if this same error has happened in the last 7 days and how it was fixed.
-
----
-Requirements and Product Definition
-
-M0: Error Summarization & Code Mapping - Min Viable
-
-P0: AI-Powered Error Summary
-   • A "Diagnosis" card at the top of the failed Workflow task.
-   • Uses LLM to summarize the stack trace into: "Error Type," "Location," and "Potential Cause."
-
-P0: "Jump to Error" in Notebooks
-   • For notebook tasks, a direct deep link to the specific cell and line number that threw the exception.
-
-M1: Data & Resource Diagnostics - Advanced Usability
-
-P0: Data Quality / Skew Alerts
-   • If the failure was due to a `Check Violation` in DLT or an OOM in Spark, surface the offending table and partition key.
-
-P1: "One-Click Repair" Suggestions
-   • Provide buttons for common fixes, e.g., "Increase Worker Size," "Enable Photon," or "Retry with Different Config."
-
-P2: Historical Error Correlation
-   • Show a "Last seen 2 days ago" badge if the same stack trace has been recorded in the workspace recently.
-
-User Experience: Kevin, a Data Engineer, sees a red "Failed" status on his `Morning_Ingestion` workflow.
-   • (J1) He opens the workflow and immediately sees a card: "Failure: `AnalysisException`. Column 'user_id' not found in table 'raw_logs'. Source: Cell 4."
-   • (J2) He clicks "Jump to Cell" and is taken directly to the notebook, where the SQL query is highlighted.
-   • (J3) The Assistant suggests: "The schema of 'raw_logs' changed at 2 AM. Click here to update the target table schema."
-   • (J4) Kevin clicks "Update & Repair Run," and the workflow resumes only the failed task, saving 20 minutes of compute.
-
----
-Success Metrics
-
-Focus on Efficiency (MTTR) and Satisfaction.
-
-Objectives:
-   • Efficiency: Reduce Mean Time to Repair (MTTR) for failed workflows by 50%.
-   • Adoption: 60% of users click the "Diagnosis" card before opening raw logs.
-   • Satisfaction: Reduce the number of "Failed Repetitive Runs" (indicating users are fixing the root cause faster).
-
-| | SIGNALS | KPI |
-|---|---|---|
-| 1. Efficiency | Median time from "Failure" to "Repair Run" | -50% MTTR |
-| 2. Adoption | % of failures where Diagnosis Card is viewed | 60% view rate |
-| 3. Satisfaction | Qualitative "Helpfulness" rating on AI summary | >4.0/5 rating |

@@ -1,0 +1,35 @@
+PRD_ID: PRD-007
+DATE: 2024-09-02
+AUTHOR: Priya Shankar, PM — Data Platform
+PRODUCT_AREA: Delta Live Tables
+STATUS: Draft
+---
+TITLE: Selective Table Refresh in DLT Pipelines
+
+PERSONA:
+Role: Data Engineer
+Company size: 200–10,000 employees
+Context: Operates DLT pipelines with 10–30 tables per pipeline. Needs to recompute a single downstream gold table due to a logic change — but a full pipeline refresh means 4–8 hours of reprocessing all upstream tables from source.
+Job-to-be-done: Refresh only the affected table(s) and their direct dependencies, leaving unaffected tables untouched — the same way dbt run --select +my_model+ works.
+
+PAIN POINTS:
+1. "A full refresh on our pipeline takes 8 hours and blocks all downstream consumers. I changed two lines in a gold table transformation. Eight hours." — Data Engineer, media company (TKT-013, INT-004).
+2. Teams work around this by splitting large pipelines into many small ones — one team went from 3 pipelines to 11. This multiplies scheduling, monitoring, and dependency management overhead.
+3. DLT has no concept of "dirty" tables — if only one table's logic changed, the pipeline has no way to know that other tables are clean and can be skipped.
+4. The dbt ecosystem has solved this problem with graph-aware selective execution. DLT users expect equivalent functionality.
+
+REQUIREMENTS:
+1. Selective refresh API: pipelines can be triggered with a tables parameter specifying one or more table names. Only those tables and their ancestor tables (direct and transitive dependencies) are recomputed.
+2. Unaffected tables: tables not in the dependency subgraph of the selected tables are not dropped, not recomputed, and remain available to downstream consumers throughout the refresh.
+3. UI support: in the pipeline detail view, users can right-click any table node in the DAG visualization and select "Refresh this table and dependencies."
+4. CLI/API support: databricks pipelines start --pipeline-id <id> --tables gold.customer_segments,gold.order_summary
+5. Dependency validation: before executing a selective refresh, DLT validates that the selected tables' upstream dependencies have not changed schema since the last full refresh. If schema drift is detected, it warns the user: "Upstream table silver.transactions has a new column added since last full refresh. Selective refresh may produce inconsistent results. Proceed?"
+
+SUCCESS CRITERIA:
+- A selective refresh of a single gold table in a 20-table pipeline completes in under 20% of the time a full pipeline refresh would take, for pipelines where the selected table has fewer than 5 upstream dependencies.
+- Zero downstream consumer outages during a selective refresh (unaffected tables remain queryable throughout).
+- The selective refresh option is available in the UI, CLI, and Jobs API for all DLT pipeline types (batch and streaming).
+
+OPEN QUESTIONS:
+- How do we define "dependency" for streaming tables — does a selective refresh of a streaming table replay from the beginning or from the last checkpoint?
+- Should selective refresh be blocked for pipelines in continuous mode?

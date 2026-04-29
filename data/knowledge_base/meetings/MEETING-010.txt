@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-010
+DATE: 2024-11-19
+MEETING_TYPE: PM Roadmap Prioritization — H1 Planning
+ATTENDEES: Priya Shankar (PM, Data Platform), Daniel Osei (PM, Mosaic AI), Ananya Krishnan (PM, ML Platform), Sana Mirza (PM, SQL), Marcus Delgado (PM, Enterprise), VP Product (Databricks)
+PRODUCT_AREA: Cross-Product H1 Planning
+---
+
+USER PAIN POINTS RAISED (from field synthesis):
+
+Priya: "The top three themes from customer interviews this quarter: cost visibility, pipeline observability, and DLT error diagnostics. All three are 'the platform doesn't tell me what's happening' problems. We're good at data processing, but we're not good at operational transparency."
+
+Ananya: "ML governance is the common thread across our regulated industry accounts. Model approval workflows, audit trails, explainability artifacts. These aren't nice-to-haves for a FINRA-registered bank — they're table stakes. We're losing deals to competitors who have even basic governance features."
+
+Daniel: "Mosaic AI traction is strong but prompt management is the #1 requested feature from enterprise pilots. Three pilots stalled at the 'moving to production' gate specifically because they had no way to version-control prompts or pin a specific version to a production deployment."
+
+DECISIONS:
+- H1 top priorities confirmed: (1) Cost attribution dashboard, (2) DLT error diagnostics, (3) Pipeline SLA alerting, (4) Model approval workflows, (5) Mosaic AI prompt versioning.
+- Multi-workspace admin console moved to H1 from H2 based on ACV at risk ($4.2M across 6 accounts flagging it as a renewal concern).
+
+OPEN QUESTION:
+Should H1 prioritization be communicated publicly on the roadmap portal, or kept internal? VP Product to decide — risk of competitor awareness vs. benefit of customer confidence in the roadmap.

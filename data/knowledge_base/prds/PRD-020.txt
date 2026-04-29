@@ -1,0 +1,35 @@
+PRD_ID: PRD-020
+DATE: 2025-03-18
+AUTHOR: Sana Mirza, PM — Databricks SQL
+PRODUCT_AREA: Databricks SQL / dbt Integration
+STATUS: In Review
+---
+TITLE: Native dbt Metadata Sync to Unity Catalog
+
+PERSONA:
+Role: Analytics Engineer
+Company size: 100–5,000 employees
+Context: Manages dbt models materialized in Databricks with detailed column descriptions in dbt schema.yml files. After migrating to Unity Catalog, expects these descriptions to be visible in the catalog explorer — but they are silently dropped by the dbt-databricks adapter.
+Job-to-be-done: Write documentation once in dbt schema.yml and have it automatically appear in Unity Catalog as column and table comments — visible in the catalog explorer, queryable via information_schema, and surfaced in Databricks SQL column autocomplete.
+
+PAIN POINTS:
+1. "We spent months writing column descriptions in dbt. They appear on the dbt docs site. They do not appear in Unity Catalog. The catalog is beautiful and empty." — Analytics Engineer, SaaS company (TKT-004, INT-009).
+2. Teams maintain duplicate documentation: dbt schema.yml for data engineers and a separate Confluence page (which goes stale immediately) for analysts who use the catalog explorer.
+3. The workaround — a dbt post-hook running ALTER TABLE ... ALTER COLUMN ... COMMENT — adds 45 seconds per model and doesn't handle incremental models or column deletions cleanly.
+4. Column autocomplete in the Databricks SQL editor shows column names but no descriptions — analysts cannot discover what a column means without leaving the editor.
+
+REQUIREMENTS:
+1. Automatic column comment sync: when a dbt model materializes in Unity Catalog (via dbt run), the dbt-databricks adapter automatically syncs all column descriptions from schema.yml as Unity Catalog column comments. No post-hook required.
+2. Table-level comment sync: model-level descriptions in dbt schema.yml sync as table comments in Unity Catalog (this currently works inconsistently — make it reliable).
+3. Tag sync: dbt model tags and column tags sync as Unity Catalog system tags on the corresponding table and columns.
+4. Incremental sync: the sync is diff-aware — only columns whose descriptions have changed since the last dbt run are updated in Unity Catalog, avoiding unnecessary ALTER TABLE operations.
+5. SQL editor enrichment: column descriptions from Unity Catalog appear as tooltips in the Databricks SQL editor column autocomplete, so analysts see column definitions inline while writing queries.
+
+SUCCESS CRITERIA:
+- 100% of columns with descriptions in dbt schema.yml have matching comments in Unity Catalog after dbt run, with no post-hooks, no manual steps, and no custom scripts.
+- Column comment sync adds no more than 5 seconds of overhead per dbt model run.
+- Column description tooltips appear in the Databricks SQL editor autocomplete within 2 minutes of a dbt run completing.
+
+OPEN QUESTIONS:
+- Should tag sync be part of v1 or deferred to v2 to scope the adapter changes?
+- How do we handle dbt sources (not models) — should source column descriptions also sync to Unity Catalog?

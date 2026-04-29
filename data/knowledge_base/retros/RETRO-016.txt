@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-016
+DATE: 2024-01-12
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Devon Okafor (Staff Data Eng), Isabel Fernández (Data Eng), Priya Nair (Data Eng), Tomás Rivera (Eng Manager)
+PRODUCT_AREA: Auto Loader / Schema Evolution
+SPRINT: Q1 Sprint 1
+---
+
+PAIN POINTS RAISED:
+
+1. Devon: "We had a schema breaking change from an upstream Kafka producer this sprint — they changed a column from string to JSON without telling us. Auto Loader failed the stream. The error said 'schema mismatch' and nothing else. Not which column, not what changed, not what to do. We were down for 3 hours figuring it out."
+
+2. Isabel: "The Auto Loader schema location is filling up with checkpoint files and we have no clean way to prune them. We've accumulated 6 months of checkpoint history in S3 and it's starting to cost real money. Deleting them manually feels dangerous — I'm never sure which checkpoints are still active."
+
+3. Priya: "Schema evolution mode is all-or-nothing. Either Auto Loader accepts everything, or it fails on anything new. I want it to accept new columns silently but alert me and pause on type changes. That graduated behavior doesn't exist — I'd have to build it myself with a pre-ingestion schema validation job."
+
+DECISIONS:
+- Devon to add a schema validation pre-check job upstream of the Auto Loader stream that compares the incoming file schema against the expected schema and sends a Slack alert on mismatch. Buys us warning time before the stream fails.
+- Isabel to document which checkpoint files are safe to delete and when — add it to the team runbook before someone deletes the wrong thing.
+
+OPEN QUESTION:
+Is there an Auto Loader configuration that lets us log schema changes without failing, so we can handle them asynchronously? Devon to check the documentation and Databricks community forum.
+
+---

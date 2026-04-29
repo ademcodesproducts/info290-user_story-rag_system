@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-001
+DATE: 2024-02-09
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Marcus Webb (Data Eng), Priya Nair (Data Eng), Fatima Al-Hassan (Data Eng Lead), Devon Okafor (Staff Eng)
+PRODUCT_AREA: DLT Pipelines / Workflows
+SPRINT: Q1 Sprint 3
 ---
-MEETING_ID: RETRO-001
-DATE: January 15, 2024
-TEAM: Core Infrastructure Team
-ATTENDEES: Sarah J. (Principal Data Engineer), Marcus L. (DevOps), Priya R. (Cloud Architect), Kevin T. (Senior Engineer)
-SPRINT: Sprint 42
----
-### What went well
-* Successfully migrated the marketing workspace to **Unity Catalog**, enabling fine-grained access control.
-* Reduced idle costs by 15% after implementing custom **Cluster Policies** that enforce auto-termination after 20 minutes.
-* The **Databricks Terraform provider** worked seamlessly for the new staging environment rollout.
 
-### What didn't go well
-* **DBSQL Warehouse** startup times are still hitting 2-3 minutes for the "Pro" tier, causing friction for the Tableau users who expect instant connectivity.
-* Experienced several "Concurrent Append Exceptions" on our bronze tables because multiple **Auto Loader** streams were writing to the same Delta path without proper partitioning.
-* **DBU consumption** spiked unexpectedly over the weekend because a user left a High Concurrency cluster running with no auto-stop enabled (policy bypass).
-* The **Jobs API** rate limits throttled our CI/CD pipeline during the massive Friday deployment, causing several build failures.
+PAIN POINTS RAISED:
 
-### Action items
-* Audit all cluster policies to ensure "Auto-termination" is a fixed attribute (Marcus L., Jan 22).
-* Investigate **Serverless SQL Warehouses** to eliminate "cold start" latency for BI users (Priya R., Jan 25).
-* Refactor Auto Loader logic to use specific checkpoints per stream (Kevin T., Jan 30).
+1. Marcus: "We had three DLT pipeline failures this sprint and every single one gave us the same useless error message. 'Unexpected runtime error.' Three different root causes — schema drift, a bad S3 file, a metastore blip — but we couldn't tell from the error which was which. I burned 4 hours on what turned out to be a single malformed Parquet file."
+
+2. Priya: "The retry logic on our Workflows DAG still isn't right. We set max_retries: 3 but when a task fails due to a transient network issue, the job retries from the beginning of the whole DAG, not from the failed task. We've got tasks that take 40 minutes upstream of the failure. Three retries means we waste 2 hours re-running work that already succeeded."
+
+3. Devon: "I tried to implement conditional branching this sprint — 'if the row count check task returns zero, skip the downstream transforms.' The only way I could do it was notebook exit values parsed by downstream tasks as strings. It works but it's a hack. Someone's going to break it the first time they rename a variable."
+
+DECISIONS:
+- Team will add a wrapper function around all DLT pipeline triggers that logs the full event_log() output to a Delta table on failure — workaround until Databricks improves error messages.
+- Priya to open a feature request ticket for task-level retry (not job-level) in Databricks Workflows.
+
+OPEN QUESTION:
+Is there a supported pattern for conditional branching in Workflows that doesn't use notebook exit value hacks? Fatima to check docs and Databricks Slack community before next sprint.
+
 ---

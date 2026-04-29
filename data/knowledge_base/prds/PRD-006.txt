@@ -1,0 +1,37 @@
+PRD_ID: PRD-006
+DATE: 2024-08-11
+AUTHOR: Daniel Osei, PM — Mosaic AI
+PRODUCT_AREA: Mosaic AI / Model Serving
+STATUS: In Review
+---
+TITLE: Multi-Model Endpoint Routing for Low-Traffic Model Consolidation
+
+PERSONA:
+Role: ML Engineer / Platform Admin
+Company size: 500–5,000 employees
+Context: Operates 10–20 production model endpoints, many of which serve fewer than 50 requests per day. Each endpoint must stay warm for latency SLA compliance, but keeping low-traffic endpoints always-on is cost-prohibitive.
+Job-to-be-done: Serve multiple ML models from a single endpoint with intelligent routing — so warm-pool costs are shared and cold-start latency is eliminated for all models.
+
+PAIN POINTS:
+1. "We have 12 model endpoints and some only get called once a day. The first call takes 45 seconds. Our SLA is 5 seconds. We pay $1,400/month just keeping them idle and warm." — ML Engineer, insurance company (TKT-002, INT-006).
+2. The only current options are: (a) always-on provisioned throughput at full cost, or (b) scale-to-zero with 30–52 second cold starts. No middle option.
+3. Building a custom router in front of multiple endpoints adds infrastructure, a new failure point, and ongoing maintenance.
+4. Low-traffic models are often internal tools or compliance-adjacent models that must exist but don't justify dedicated infrastructure.
+
+REQUIREMENTS:
+1. Multi-model endpoint: a single Databricks Model Serving endpoint hosts up to 10 named model routes (e.g., /models/fraud-v2, /models/churn-v1). Each route maps to a registered model version in Unity Catalog.
+2. Shared warm pool: the endpoint maintains a minimum of 1 warm instance shared across all hosted routes. Cold start only occurs when all routes are simultaneously cold — not per-model.
+3. Routing API: requests include a model_name parameter in the JSON body or URL path. The endpoint routes to the correct model version with no additional latency vs. a dedicated endpoint.
+4. Per-route traffic controls: admins set per-route rate limits and can A/B split traffic between two versions of the same model (e.g., 90% to fraud-v2, 10% to fraud-v3).
+5. Per-route monitoring: latency, error rate, and request count metrics are broken down per route in the endpoint monitoring dashboard.
+
+SUCCESS CRITERIA:
+- A customer hosting 8 low-traffic models on a single multi-model endpoint pays no more than 30% of the cost of 8 dedicated always-on endpoints.
+- P99 latency for a warm route is within 20ms of a dedicated single-model endpoint serving the same model.
+- Route configuration changes (adding/removing a model, updating a version) take effect in under 60 seconds with zero dropped requests.
+
+OPEN QUESTIONS:
+- What is the maximum model artifact size per route given shared memory constraints?
+- How do we handle routes with incompatible Python environments (different package versions)?
+
+---

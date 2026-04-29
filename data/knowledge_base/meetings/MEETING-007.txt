@@ -1,0 +1,24 @@
+MEETING_ID: MEETING-007
+DATE: 2024-07-31
+MEETING_TYPE: Feature Scoping — Mosaic AI Prompt Management
+ATTENDEES: Daniel Osei (PM, Mosaic AI), Mei-Ling Zhao (ML Eng, customer), Two additional ML engineers (participants), Mosaic AI Engineering Lead
+PRODUCT_AREA: Mosaic AI / LLM Tooling
+---
+
+USER PAIN POINTS RAISED:
+
+Mei-Ling: "I'm iterating on a system prompt for our perception model description pipeline. I've made 40 changes. I have no idea which version is currently in production. It's in a Confluence page that someone edited last week without telling me. If something breaks in production I cannot quickly identify whether it's the prompt or the model."
+
+Participant 2: "The Playground is great for testing but it's ephemeral. I close the tab and everything is gone. I've started copy-pasting prompts into a text file as I go, which is essentially manual version control. This is embarrassing for a platform that sells itself as a data + AI platform."
+
+Participant 3: "Side-by-side model comparison is the feature I want most. I want to run the same prompt on DBRX and on Llama 3 simultaneously and see the outputs next to each other. Right now I run one, copy the output to a doc, run the other, compare manually. It adds 20 minutes to every model evaluation."
+
+DECISIONS:
+- Prompt versioning and session persistence confirmed as v1 scope for Mosaic AI Playground — Daniel to finalize PRD by end of August.
+- Side-by-side comparison added to v1 scope based on strong user signal from all three participants.
+- MLflow integration (prompt versions as MLflow artifacts) scoped for v2 — too much cross-team coordination for v1 timeline.
+
+OPEN QUESTION:
+Should prompt versions be user-scoped or workspace-scoped? Participant 2 wants to share prompt versions with teammates; Mei-Ling wants private versioning. May need both with sharing controls.
+
+---

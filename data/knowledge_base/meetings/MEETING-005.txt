@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-005
+DATE: 2024-05-29
+MEETING_TYPE: PM–Engineering Scoping — Auto Loader Monitoring
+ATTENDEES: Priya Shankar (PM, Data Platform), Lily Bergström (Data Eng, customer), Devon Okafor (Staff Eng, customer), Databricks Product Team (Engineering)
+PRODUCT_AREA: Auto Loader / Pipeline Monitoring
+---
+
+USER PAIN POINTS RAISED:
+
+Lily: "We have 23 Auto Loader streams. I have a custom monitoring script that polls each one every 30 minutes and pages me if there's no progress. That script took 2 weeks to build per-stream and it fails too. Last month the monitoring script for our clickstream ingestion failed silently and we had 8 hours of stale data before an analyst noticed. The monitoring needs a monitor."
+
+Devon: "The core request is simple: I should be able to say on this pipeline, alert me if no records have been processed in N hours. That's one configuration field. I should not have to build a separate pipeline to monitor my pipeline."
+
+DECISIONS:
+- SLA alerting for streaming pipelines to be added to the Data Platform roadmap for Q3 — Priya to write a full PRD.
+- Lily and Devon agreed to beta test the feature when available — CSM to add them to the early access list.
+
+OPEN QUESTION:
+Should the SLA alerting be configured on the pipeline object itself (part of the pipeline API) or as a separate monitoring layer? Engineering preference is the latter for separation of concerns, but customers strongly prefer the former for discoverability.
+
+---

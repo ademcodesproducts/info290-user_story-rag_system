@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-020
+DATE: 2024-05-17
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Lena Brückner (ML Eng), Mei-Ling Zhao (Sr ML Eng), Nina Kowalczyk (ML Platform Eng), Daniel Osei (PM — observer)
+PRODUCT_AREA: Mosaic AI / LLMOps
+SPRINT: Q2 Sprint 4
+---
+
+PAIN POINTS RAISED:
+
+1. Lena: "Prompt management is the single biggest pain point in our LLM work right now. I maintain 6 prompts for different applications. They live in a Confluence page. I am not exaggerating when I say I have no idea which prompt version is live in production for two of them. The deployment process doesn't capture this information anywhere auditable."
+
+2. Mei-Ling: "We ran a fine-tuning job this sprint that failed at hour 9. No checkpoint, no recovery, $240 of GPU compute gone. Re-ran it, it succeeded. Transient infrastructure failure with no explanation. For jobs that might run 24 hours, this is a blocking issue — we can't accept a 50% chance of losing an all-day run."
+
+3. Nina: "Model endpoint observability is still a black box. I know total request count and average latency. I don't know which requests are slow, whether latency correlates with input length, or what error messages callers are receiving. When a user reports a bad model response, I have nothing to look at on the serving side."
+
+DECISIONS:
+- Lena to implement a deployment manifest pattern: every time a prompt is updated, commit the prompt text, version, and deployment target to a git repo with a timestamp tag. Imperfect but creates an audit trail going forward.
+- Team agrees: do not schedule any fine-tuning jobs longer than 4 hours until checkpoint recovery is available. Restructure training to use shorter epochs with intermediate evaluation.
+
+OPEN QUESTION:
+Daniel (PM observer): "Would teams be willing to accept request-level logging if it requires opt-in and adds ~5ms latency?" All three participants said yes immediately. Daniel to take this back to the Mosaic AI engineering team.
+
+---

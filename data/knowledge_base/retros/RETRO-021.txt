@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-021
+DATE: 2024-06-28
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Andile Dlamini (ML Eng), Fatima Al-Hassan (Data Eng Lead), Jordan Kim (Analytics Eng), Ben Nakamura (Platform Admin)
+PRODUCT_AREA: Unity Catalog / Governance
+SPRINT: Q3 Sprint 1
+---
+
+PAIN POINTS RAISED:
+
+1. Andile: "Our compliance team asked me this sprint: 'For every model you promoted to production this year, show me who approved it and when.' I had to go through 8 months of Slack history and reconstruct approvals from messages. That took 3 hours. One approval I couldn't find at all — the Slack thread was deleted. We have a gap in our audit record."
+
+2. Fatima: "We have 3,000 tables in Unity Catalog and maybe 15% have meaningful column descriptions. The rest are empty. The data catalog is beautiful to look at and useless to search. Nobody writes descriptions because there's no enforcement and no incentive — it doesn't affect their day-to-day work."
+
+3. Ben: "PHI column tagging is completely manual. We have a compliance requirement to tag all PHI columns. We have 3,000 tables. I've tagged maybe 400. The remaining 2,600 are not yet reviewed. There's no scanner that helps me find likely PHI columns. I'm doing this with grep and intuition."
+
+DECISIONS:
+- Andile to implement the formal SOP for model approvals (Slack → confirmation → promote sequence) and ask Yuna to enforce it as a team norm until native approval workflows ship.
+- Ben to prioritize a PHI column audit for the 50 most-queried tables first — focus on tables where a breach would be highest impact, not on exhaustive coverage.
+
+OPEN QUESTION:
+Is there a Unity Catalog API that returns all tables with empty column descriptions? Ben to write a quick query against information_schema to generate the list — at least then we know the scope of the problem.
+
+---

@@ -1,0 +1,38 @@
+PRD_ID: PRD-017
+DATE: 2025-02-05
+AUTHOR: Marcus Delgado, PM — Developer Experience
+PRODUCT_AREA: Notebooks / Collaboration
+STATUS: In Review
+---
+TITLE: Real-Time Collaborative Notebook Editing
+
+PERSONA:
+Role: Data Scientist / ML Engineer
+Company size: 50–5,000 employees
+Context: Works in a team of 2–10 people who frequently co-develop analyses, debug together, or pair-program in notebooks. Currently, opening a notebook that a colleague has open leads to silent overwrite risk — there is no shared cursor visibility or conflict prevention.
+Job-to-be-done: Edit a notebook simultaneously with teammates — seeing each other's cursors, getting conflict prevention, and not losing work — the way Google Docs enables document collaboration.
+
+PAIN POINTS:
+1. "We have a 'one notebook, one person' rule. It's the only way to avoid merge conflicts. That rule kills collaborative work." — Data Scientist, tech company (INT-014, TKT-011).
+2. Tools like Hex and Deepnote have offered real-time notebook collaboration for 2+ years. Databricks users actively evaluate these tools as alternatives specifically for collaborative work.
+3. The Git integration for notebooks treats them as JSON files — merge conflicts generate incomprehensible JSON diffs with no notebook-aware resolution UI.
+4. There is no presence system — no way to see if a colleague has a notebook open, which cells they're editing, or whether they've made unsaved changes.
+5. Pair debugging is done via screen share (Zoom), not within the notebook — a workaround that becomes cumbersome for multi-hour sessions.
+
+REQUIREMENTS:
+1. Presence indicators: when a notebook is opened, all current editors' names and cursor positions are visible in real time. Each editor has a distinct color. Cell being edited by another user is highlighted with their color.
+2. Operational transform (OT) or CRDT-based concurrent editing: changes to a cell by one user are transmitted in real time to all other editors with sub-500ms latency. Conflicting edits to the same cell are merged without data loss.
+3. Cell-level locking (fallback): for teams that prefer exclusive editing semantics, an optional cell-level lock: a user "claims" a cell before editing; others see it as locked and can request the lock. Lock auto-releases after 10 minutes of inactivity.
+4. Notebook-aware merge conflict resolution: when merging branches in Databricks Repos, the conflict resolution UI shows conflicts at the cell level (not JSON level), with a side-by-side view and one-click cell-level accept/reject.
+5. Session history: a per-session activity feed showing who edited which cells and when, retained for 7 days.
+
+SUCCESS CRITERIA:
+- Two users editing different cells of the same notebook simultaneously never lose each other's changes.
+- Presence indicators for all active editors appear within 2 seconds of notebook open.
+- Notebook-aware merge conflict UI reduces conflict resolution time by >50% compared to raw JSON diff (measured via usability test with 10 engineers).
+
+OPEN QUESTIONS:
+- Should real-time collaboration require both users to be attached to the same cluster, or work across different clusters?
+- How do we handle collaborative editing of notebook outputs — should execution results be shared in real time or remain per-user?
+
+---

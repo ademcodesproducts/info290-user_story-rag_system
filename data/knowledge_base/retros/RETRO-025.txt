@@ -1,0 +1,22 @@
+RETRO_ID: RETRO-025
+DATE: 2024-10-18
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Marcus Webb (Data Eng), Devon Okafor (Staff Eng), Fatima Al-Hassan (Data Eng Lead), Priya Shankar (PM — observer)
+PRODUCT_AREA: Workflows / Jobs Orchestration
+SPRINT: Q4 Sprint 4
+---
+
+PAIN POINTS RAISED:
+
+1. Marcus: "I finally implemented the conditional branching pattern this sprint — 'if row count is zero, skip downstream transforms.' The hack using notebook exit values works, but it's completely invisible to the Workflows DAG visualization. The run UI shows all tasks as 'Skipped' with no explanation of why — the condition that caused the skip is not recorded anywhere."
+
+2. Devon: "Parameter passing across task types broke again. We converted a notebook task to a Python wheel task this sprint and the parameter passing broke silently — the Python wheel task fell back to a default date instead of the job-level run_date parameter. We ran the pipeline for 3 days before noticing the data was from 2023. The silent fallback to default is the killer — it should error on missing required parameter."
+
+3. Fatima: "The Jobs API Terraform provider updated this sprint and broke 3 of our job configs. The Terraform plan showed no changes but the apply silently changed the task dependency format. We've now had this happen twice in 6 months. There has to be a better deprecation process — this is a basic API hygiene problem."
+
+DECISIONS:
+- Devon to add explicit parameter validation at the start of every task: if a required parameter is None or equals the default sentinel value, raise an exception with a clear message. Makes silent fallbacks explicit.
+- Marcus to file a product feedback item: conditional task skip should log the evaluated condition expression and its result value in the job run event history. Currently invisible.
+
+OPEN QUESTION:
+Is there a Databricks-recommended pattern for Terraform-managed jobs that is resilient to Jobs API schema changes? Fatima to check if there's a version pinning mechanism in the Terraform provider that would prevent silent breaking upgrades.

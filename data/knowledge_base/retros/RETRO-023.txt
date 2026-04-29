@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-023
+DATE: 2024-08-23
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Chidi Eze (Platform Architect), Sandra Volkov (Platform Eng), Amara Diallo (Sr Platform Eng), Kenji Matsuda (SecOps)
+PRODUCT_AREA: Multi-workspace / Compliance
+SPRINT: Q3 Sprint 4
+---
+
+PAIN POINTS RAISED:
+
+1. Chidi: "We had a workspace provisioned by a business line without going through the governance checklist again. This time it had 40 users and 200 tables before I found out. Retroactively applying Unity Catalog governance to an already-active workspace is much harder than getting it right from day one. We need a 'workspace provisioned' event alert and an automated governance bootstrap."
+
+2. Sandra: "I did the quarterly cross-workspace policy audit this sprint. Three workspaces had cluster policies 2 versions behind. One workspace had a policy that had been manually edited after I last pushed it from Terraform — someone went into the UI and changed a setting directly, which means Terraform state is now wrong. Policy drift is silent and dangerous."
+
+3. Amara: "The Vault secret rotation this quarter went better than last time — we had the runbook. But it still took 2.5 hours and required 2 engineers. The bottleneck is that there's no batch rotation — each of our 60 service principals has to be updated one by one. We need either batch operations or, better, real-time Vault integration so rotation is automatic."
+
+DECISIONS:
+- Chidi to implement a Cloud Trail alert for new workspace creation and assign it to a dedicated #databricks-governance Slack channel monitored by the platform team 24/7.
+- Sandra to add a Terraform drift detection step to the weekly CI job — compares Terraform state against live workspace config and alerts on any drift. Should catch manual UI edits.
+
+OPEN QUESTION:
+If Databricks shipped real-time Vault integration (fetch secrets live, no sync), would that eliminate the quarterly rotation ceremony entirely? Amara to model the time savings and include it in the next CSM conversation as a formal feature request.
+
+---

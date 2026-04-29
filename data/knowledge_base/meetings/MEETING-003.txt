@@ -1,0 +1,23 @@
+MEETING_ID: MEETING-003
+DATE: 2024-03-07
+MEETING_TYPE: Cross-Functional Sync — Unity Catalog Migration
+ATTENDEES: Marcus Delgado (PM, Enterprise Platform), Priya Nair (Data Eng, customer), Rohit Menon (Data Eng, customer), Sandra Volkov (Platform Eng, customer), Anjali Mehta (CSM)
+PRODUCT_AREA: Unity Catalog
+---
+
+USER PAIN POINTS RAISED:
+
+Priya: "We're 60% through our UC migration and the tooling is not keeping up. We have 3,000 tables and the bulk migration tool doesn't carry over column-level tags. Every migrated table needs manual re-tagging for our data governance framework. We're talking weeks of work for my team. The migration was sold to us as mostly automated."
+
+Rohit: "Privilege debugging is too opaque. A user gets 'Permission denied' when querying a table and the error tells them nothing — not which privilege is missing, not at which level it's missing. I spend 30–45 minutes per week just debugging permission issues for users. There should be an 'explain permissions' command that shows exactly what's missing."
+
+Sandra: "External locations and storage credentials are confusing to audit. I can't easily answer 'which service principals have write access to which storage locations' without writing custom queries across multiple system tables. A permissions inventory view would help enormously."
+
+DECISIONS:
+- Marcus to escalate the bulk migration column-tag carry-over issue to the UC engineering team as a P1 bug.
+- Priya to document the specific tag types that are not migrating — needed for engineering to scope the fix.
+
+OPEN QUESTION:
+Should the UC migration tooling be improved for the current migration wave, or is the priority to prevent these gaps for future migrations? Marcus to discuss priority with engineering lead.
+
+---

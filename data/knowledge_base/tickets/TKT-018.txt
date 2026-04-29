@@ -1,0 +1,19 @@
+TICKET_ID: TKT-018
+DATE: 2024-08-29
+PLAN: Enterprise
+ROLE: Platform Admin
+PRODUCT_AREA: Multi-workspace / Workflows
+SENTIMENT: Frustrated
+---
+SUBJECT: No cross-workspace task dependencies in Databricks Workflows — forcing fragile polling workarounds
+
+BODY:
+We operate 5 Databricks workspaces across 4 geographic regions (data residency requirements). We have a core data pipeline where: (1) regional workspace jobs run ETL on local data, (2) a central workspace job aggregates the regional outputs, (3) results are pushed back to regional workspaces. This is a standard hub-and-spoke pattern for multi-region data platforms.
+
+Databricks Workflows does not support cross-workspace task dependencies. Workspace A's job cannot declare a dependency on Workspace B's job. Our workaround is a polling task in the central workspace that calls the Jobs API of each regional workspace every 5 minutes to check if the regional jobs have completed, then triggers the central aggregation when all regional jobs show "SUCCEEDED" status.
+
+Problems with this workaround: (1) Adds 0–5 minutes of latency per regional workspace (average 2.5 min per workspace × 4 = 10 minutes added to our total pipeline runtime), (2) The polling task itself can fail, breaking the cross-region dependency chain with no alert, (3) If a regional job fails, the polling task catches it but the error handling is fragile — we've had cases where the central job proceeded on stale data because our failure detection logic had a bug.
+
+Requested: Native cross-workspace task dependency in Databricks Workflows. Allow a task in Workflow A (workspace 1) to declare depends_on: { workspace_id: "...", job_id: "...", task_key: "..." }. This would eliminate our polling layer entirely and make our multi-region pipeline robust. This is P1 for us — our regional expansion plans require adding 3 more regional workspaces, which will make the polling workaround even more fragile.
+
+---

@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-009
+DATE: 2024-10-22
+MEETING_TYPE: Research Synthesis — Analytics Engineer Pain Points
+ATTENDEES: Sarah Chen (UX Researcher), Sana Mirza (PM, Databricks SQL), Farida Osei (Analytics Eng — participant), Jordan Kim (Analytics Eng — participant)
+PRODUCT_AREA: Databricks SQL / dbt
+---
+
+USER PAIN POINTS RAISED:
+
+Farida: "The number one thing I want from Databricks SQL is for my dbt column descriptions to just show up in the catalog. I've been asking for this for 18 months. I wrote a post-hook that does it, it works, and it adds 45 seconds per model. I shouldn't have to maintain that. It should just work."
+
+Jordan: "The silent overwrite problem in the SQL editor has cost us real work. Binta lost 45 minutes this month. I've lost work twice this year. Every mature collaborative tool in 2024 has conflict detection — Google Docs, Notion, Linear, Figma. Databricks SQL is the only tool my team uses that can silently discard your work without warning."
+
+DECISIONS:
+- dbt metadata sync to be escalated to the dbt-databricks adapter team as a P1 integration gap — Sana to arrange intro with dbt Labs product team.
+- SQL editor conflict detection to be added to the Q4 Databricks SQL roadmap as a must-have before v2 of the SQL editor experience.
+
+OPEN QUESTION:
+Is the dbt metadata sync better solved in the Databricks adapter or in the Databricks platform (i.e., should Unity Catalog have a dbt-native import API)? Sana to consult with the UC product team on the right ownership model.
+
+---

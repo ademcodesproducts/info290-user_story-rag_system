@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-022
+DATE: 2024-07-26
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Rohit Menon (Sr Data Eng), Lily Bergström (Data Eng), Isabel Fernández (Data Eng), Tomás Rivera (Eng Manager)
+PRODUCT_AREA: DLT / Delta Lake / Cluster Costs
+SPRINT: Q3 Sprint 3
+---
+
+PAIN POINTS RAISED:
+
+1. Rohit: "We finally did the gold table logic update this sprint — the one we'd been putting off for 3 sprints because of the full refresh. 8 hours of pipeline downtime, 4 downstream teams blocked, 2 analysts who came to me asking why their dashboards were empty. A selective refresh feature would have made this a 30-minute operation with zero consumer impact."
+
+2. Lily: "Cluster costs for our DLT pipelines spiked this sprint — we went from $8,000 to $14,000 month-over-month. I traced it to a configuration change that accidentally disabled autoscaling on one of our larger pipelines. The pipeline ran at max cluster size 24/7 for two weeks. There was no alert for 'cluster running at max size continuously' — we only found it in the weekly cost review."
+
+3. Isabel: "The DLT pipeline monitoring is still manual. I check the event log every morning. If something went wrong overnight, I find out when I check it. We need push notifications for pipeline health, not pull."
+
+DECISIONS:
+- Lily to add a weekly automated check: query system.billing_usage for any DLT pipeline that ran at max cluster size for more than 48 hours straight, and send a Slack alert. Basic cost anomaly detection.
+- Tomás to escalate the selective refresh request to the CSM with a concrete business impact: 3 sprints of deferred work + 8 hours of planned downtime. Should be on the product roadmap.
+
+OPEN QUESTION:
+Should we implement a more aggressive DLT pipeline split to reduce the refresh blast radius? Rohit to model whether splitting into 5 pipelines vs. current 2 would meaningfully reduce the risk.
+
+---

@@ -1,0 +1,37 @@
+PRD_ID: PRD-023
+DATE: 2024-11-18
+AUTHOR: Daniel Osei, PM — Mosaic AI
+PRODUCT_AREA: Mosaic AI / RAG
+STATUS: Approved
+---
+TITLE: Managed RAG Pipeline with Evaluation-Driven Iteration
+
+PERSONA:
+Role: ML Engineer / AI Engineer
+Company size: 200–10,000 employees
+Context: Building a RAG (retrieval-augmented generation) pipeline for a production enterprise application. Currently assembles the RAG stack manually: a vector index, a retrieval layer, a generation model, and a separate evaluation harness — each from different tools with no unified tracking or iteration workflow.
+Job-to-be-done: Build, evaluate, and improve a RAG pipeline entirely within Databricks — with retrieval quality, generation quality, and end-to-end latency tracked in a single place, and a clear path from evaluation results to pipeline improvement.
+
+PAIN POINTS:
+1. "I have no idea if my RAG pipeline is getting better or worse when I change the retrieval strategy. I compare 20 outputs manually and call it good. That is not science." — ML Engineer, user research session Q3 2024 (PRD-012 background research).
+2. RAG pipeline components (chunking strategy, embedding model, retrieval k, reranker, generation model, prompt template) are each a separate configuration decision — and changing any one of them has no systematic evaluation harness to measure the impact.
+3. Ground truth QA datasets for RAG evaluation are typically stored as CSV files in notebooks with no versioning or governance — the same evaluation set is rarely used consistently across experiments.
+4. End-to-end RAG pipeline latency (retrieval + generation) is not tracked alongside quality metrics — teams often optimize for quality at the cost of 10x latency increases without realizing it.
+
+REQUIREMENTS:
+1. RAG pipeline builder: a no-code / low-code UI for assembling a RAG pipeline from configurable components: document loader, chunking strategy (fixed-size, semantic, markdown-aware), embedding model (from Unity Catalog model registry), vector index (Databricks Vector Search), reranker (optional), and generation model + prompt template.
+2. Pipeline versioning: each pipeline configuration is versioned and stored as a Unity Catalog artifact. Versions are immutable once saved.
+3. Evaluation integration: the pipeline UI has an "Evaluate" button that runs the pipeline against a registered evaluation dataset (Unity Catalog table with question, expected_answer columns) and logs results to an MLflow experiment. Scores: retrieval_recall@k, answer_correctness, groundedness, latency_p50, latency_p99, cost_per_query.
+4. A/B comparison: users select two pipeline versions and run them against the same evaluation dataset simultaneously. Results shown side-by-side with statistical significance indicators for quality score differences.
+5. Promotion workflow: a pipeline version can be promoted to "production" (subject to approval workflow from PRD-008 if configured), which pins the component versions and configuration and makes the pipeline callable via a stable REST endpoint.
+
+SUCCESS CRITERIA:
+- An ML engineer assembles a baseline RAG pipeline and runs a full evaluation (100 QA pairs, all 6 metrics) in under 30 minutes from scratch with no custom code.
+- A/B comparison of two pipeline versions on 100 QA pairs completes and renders results in under 15 minutes.
+- Promoted RAG pipelines are callable via REST API with p50 latency ≤ 3 seconds for documents up to 1,000 tokens.
+
+OPEN QUESTIONS:
+- Should the pipeline builder support external vector stores (Pinecone, Weaviate) or only Databricks Vector Search in v1?
+- How do we handle RAG pipelines that use multi-hop retrieval — is the evaluation framework applicable?
+
+---

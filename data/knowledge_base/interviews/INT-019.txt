@@ -1,0 +1,32 @@
+INTERVIEW_ID: INT-019
+DATE: 2024-10-03
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Nina Kowalczyk, ML Platform Engineer, Healthcare SaaS (~700 employees)
+PRODUCT_AREA: Mosaic AI, Model Serving, Notebooks
+---
+
+Sarah: Nina, you recently migrated your LLM workloads to Mosaic AI. What prompted that?
+
+Nina: We were running everything on self-managed infrastructure — our own GPU servers, custom deployment stack. It was a maintenance burden. Mosaic AI promised to take that overhead off us. In some ways it has. In some ways it's traded one set of problems for another.
+
+Sarah: What's improved?
+
+Nina: Deployment is genuinely easier. I can go from a fine-tuned model in MLflow to a serving endpoint in about 20 minutes. The autoscaling works well for variable traffic patterns. And the HIPAA compliance coverage — Databricks is on our BAA — means we don't have to manage compliance for the infrastructure layer ourselves.
+
+Sarah: What are the new problems?
+
+Nina: Observability. When I was running my own serving stack, I had full access to logs — every request, every response, latency at every layer, error rates by model version. On Databricks Model Serving, the monitoring is surface-level. I can see total request count, average latency, error rate. But I can't see: which specific requests are slow, whether latency is correlated with prompt length, what error messages are being returned to callers. It feels like I handed my car to a valet and now I can only see whether the car is in the parking lot, not what's happening inside it.
+
+Sarah: What specifically would you want to see?
+
+Nina: Request-level logging with full request and response payload, opt-in. I understand there are privacy reasons why this isn't on by default. But for debugging, I need to be able to sample 1% of requests and see what's going through the system. Right now when a user reports a bad model response, I have no way to reproduce it from the serving layer — I only know it happened.
+
+Sarah: How about the notebook experience for your team?
+
+Nina: My data scientists still prefer local Jupyter for exploratory work. The main reason is familiarity, but a close second is the variable inspector. Databricks notebooks have no variable inspector — there's no way to see what's in memory at a glance. We've had a few OOM incidents because someone had 10 large DataFrames cached from earlier analysis and didn't realize it.
+
+Sarah: Any wins you want to call out?
+
+Nina: Mosaic AI fine-tuning with the healthcare domain datasets we're working with has been impressive. The data privacy is handled, the fine-tuning API is clean, and the results on our benchmark tasks have been good. The platform direction is right — it just needs more operational depth.
+
+---

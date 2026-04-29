@@ -1,23 +1,25 @@
+RETRO_ID: RETRO-007
+DATE: 2024-08-09
+MEETING_TYPE: Quarterly PM Sync — User Pain Points Review
+ATTENDEES: Priya Shankar (PM, Data Platform), Daniel Osei (PM, Mosaic AI), Ananya Krishnan (PM, ML Platform), Sana Mirza (PM, Databricks SQL), Marcus Delgado (PM, Enterprise Platform)
+PRODUCT_AREA: Cross-Product
+SPRINT: Q3 Mid-Quarter Review
 ---
-MEETING_ID: RETRO-007
-DATE: July 19, 2024
-TEAM: Platform Reliability
-ATTENDEES: Steve M. (SRE), Nancy W. (Admin), Gary B. (Security), Fiona Q. (FinOps)
-SPRINT: Sprint 57
----
-### What went well
-* Implemented **Budget Policies** which successfully alerted us before we hit our quarterly DBU limit.
-* **Serverless SQL** adoption has reached 60%, reducing our management overhead for clusters significantly.
-* The **Unity Catalog** lineage UI has saved us hours during the recent GDPR audit.
 
-### What didn't go well
-* **IP Access Lists** are difficult to maintain as our remote workforce grows; we keep locking out legitimate users.
-* The **Account Console** doesn't provide granular enough cost attribution for shared "General Purpose" clusters.
-* **Databricks Workflows** job history only goes back 60 days in the UI, making year-over-year performance comparisons difficult.
-* Cross-workspace **Delta Sharing** setup was confusing; the recipient token management feels very manual.
+PAIN POINTS RAISED:
 
-### Action items
-* Develop a custom script to export Job Run metadata to a long-term Delta table for reporting (Steve M., Aug 1).
-* Automate IP Access List updates via a CI/CD pipeline and a central registry (Gary B., Aug 10).
-* Set up a tagging enforcement policy to improve DBU cost attribution (Fiona Q., Aug 15).
+1. Priya: "Cost visibility keeps coming up in every account review. We're hearing it from $500K customers and $2M customers alike. The ask is consistent: per-team cost breakdown without custom ETL. It's been on the radar for two quarters. We need to move it up the stack."
+
+2. Daniel: "Mosaic AI adoption is good but the feedback is that prompt versioning is the biggest missing feature. Users are iterating on prompts with no audit trail. Three enterprise customers in the last 6 weeks have mentioned that they can't use Playground in production workflows because there's no way to pin a specific prompt version."
+
+3. Ananya: "The Feature Store data leakage incident at the insurance company (INT-006) is a pattern, not a one-off. I've now heard a similar story from two other accounts. Point-in-time join validation needs to be on the ML roadmap. The reputational risk from a leaked model going to production is significant."
+
+DECISIONS:
+- Cost attribution feature to be prioritized for H2 planning — Priya to draft PRD by end of month.
+- Mosaic AI prompt versioning to be scoped as a Q4 feature — Daniel owns.
+- Feature Store temporal validation added to ML Platform backlog as High priority.
+
+OPEN QUESTION:
+Are the multi-workspace admin pain points (TKT-015, INT-011, INT-013) large enough to justify a dedicated Enterprise Admin workstream in Q4? Marcus to quantify affected ACV before next sync.
+
 ---

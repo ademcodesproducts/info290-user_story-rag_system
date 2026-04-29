@@ -21,6 +21,12 @@ def main():
     parser.add_argument("--judge-model", type=str, default="gpt-4o-mini")
     parser.add_argument("--test-ids", nargs="+", default=None)
     parser.add_argument("--output", type=str, default=None)
+    parser.add_argument(
+        "--eval-set",
+        type=str,
+        default="data/eval/test_set.json",
+        help="Path to evaluation set JSON (e.g. data/eval/qa_validation.json)",
+    )
     args = parser.parse_args()
 
     api_key = os.getenv("OPENAI_API_KEY")
@@ -28,7 +34,12 @@ def main():
         print("Error: OPENAI_API_KEY not set.")
         sys.exit(1)
 
-    print(f"top_k={args.top_k} | model={args.model} | llm_eval={args.llm_eval}\n")
+    eval_set_path = Path(args.eval_set)
+    if not eval_set_path.exists():
+        print(f"Error: eval set not found: {eval_set_path}")
+        sys.exit(1)
+
+    print(f"top_k={args.top_k} | model={args.model} | llm_eval={args.llm_eval} | eval_set={eval_set_path.name}\n")
 
     collection = get_collection(openai_api_key=api_key)
     openai_client = OpenAI(api_key=api_key)
@@ -41,6 +52,7 @@ def main():
         llm_eval=args.llm_eval,
         judge_model=args.judge_model,
         test_ids=args.test_ids,
+        test_set_path=eval_set_path,
     )
 
     agg = aggregate_metrics(results)

@@ -1,0 +1,37 @@
+PRD_ID: PRD-015
+DATE: 2025-01-08
+AUTHOR: Sana Mirza, PM — Data Platform
+PRODUCT_AREA: Auto Loader / Workflows
+STATUS: Approved
+---
+TITLE: Built-In Pipeline SLA Monitoring and Alerting
+
+PERSONA:
+Role: Data Engineer / Platform Admin
+Company size: 200–10,000 employees
+Context: Operates 10–50 ingestion pipelines (Auto Loader, DLT, Structured Streaming) each with different SLA requirements. Currently builds custom monitoring for each pipeline — a 12-hour engineering investment per pipeline, with monitoring jobs that themselves can fail silently.
+Job-to-be-done: Define an SLA on any Databricks pipeline or job and receive an alert if the SLA is breached — without writing custom monitoring code.
+
+PAIN POINTS:
+1. "We have 23 Auto Loader streams. Setting up 'alert if no progress in 6 hours' monitoring for each one takes 12 hours per stream. And the monitoring jobs fail too." — Data Engineer, e-commerce (TKT-006, INT-002).
+2. Databricks Workflows job alerts only notify on failure — there is no "alert if job hasn't started by X time" or "alert if job took more than Y minutes."
+3. Streaming pipeline health monitoring requires polling the stream progress API — there is no event-driven alert mechanism for stalled streams.
+4. Multi-pipeline SLA dashboards don't exist natively — teams build them in Databricks SQL against system.lakeflow.pipeline_events, recreating the same dashboard over and over.
+
+REQUIREMENTS:
+1. SLA configuration on jobs: jobs have an optional sla block: { expected_start_by: "08:00 UTC", expected_duration_minutes: 45, alert_on_breach: [email, webhook] }. If the job hasn't started by expected_start_by or hasn't completed within expected_duration_minutes, an alert fires.
+2. Stream health SLA on DLT/Auto Loader: pipelines have an optional no_progress_alert_minutes field. If a streaming pipeline has not processed any records within the window, an alert fires. Alert includes: pipeline name, last processing timestamp, and a link to the pipeline run.
+3. SLA dashboard: a workspace-level "Pipeline Health" view showing all jobs and pipelines with configured SLAs, their current status (on-time / at-risk / breached), and a 7-day SLA compliance history.
+4. Alert routing: alerts route to email, Slack webhook, PagerDuty webhook, or Microsoft Teams webhook. Alert message includes: pipeline name, SLA type breached, breach duration, and a direct link to the pipeline or job run.
+5. Programmatic SLA configuration: SLA parameters are part of the Jobs API and DLT pipeline API — configurable via Terraform and the CLI.
+
+SUCCESS CRITERIA:
+- A data engineer configures SLA alerting on a new pipeline in under 5 minutes from the Workflows UI with no custom code.
+- SLA breach alerts fire within 5 minutes of the breach occurring.
+- The Pipeline Health dashboard loads and displays current status for up to 100 pipelines in under 10 seconds.
+
+OPEN QUESTIONS:
+- Should SLA configuration be available on all job types (notebook, Python wheel, SQL, dbt) or initially limited to streaming pipelines?
+- How do we handle expected_start_by for jobs in different time zones?
+
+---

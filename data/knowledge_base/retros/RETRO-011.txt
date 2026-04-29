@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-011
+DATE: 2024-11-15
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Ben Nakamura (Platform Admin), Kenji Matsuda (SecOps), Sandra Volkov (Platform Eng), Amara Diallo (Sr Platform Eng)
+PRODUCT_AREA: Security / Unity Catalog / Multi-workspace
+SPRINT: Q4 Sprint 5
+---
+
+PAIN POINTS RAISED:
+
+1. Kenji: "We had a departed employee still showing as active in Databricks for 5 hours after Okta deactivation this sprint. The compensating Lambda control Ben built caught it at the 15-minute mark, not 5 hours — so improvement. But we need to explain to auditors why there's a 15-minute window at all. The answer 'the SCIM endpoint returns 500 errors sometimes' is not confidence-inspiring."
+
+2. Sandra: "I did the cross-workspace audit this sprint — checked cluster policies are consistent across all 14 workspaces. Found 3 workspaces where the ML cluster policy was 2 versions behind because they weren't in the last Terraform apply batch. Inconsistent governance across workspaces is a risk we can't manage manually."
+
+3. Amara: "The Vault secret rotation this sprint took 4 hours and required steps from 3 different Databricks doc pages, one of which was out of date. We have 60 service principals each with their own secret. Rotating all of them is an all-day event. We do it quarterly. That's 4 days per year of senior engineer time just on secret rotation."
+
+DECISIONS:
+- Amara to write a consolidated secret rotation runbook as a single document, noting where the official docs are wrong or outdated. Share with Databricks CSM and request it be escalated to the docs team.
+- Sandra to build a Terraform CI pipeline that validates cluster policy consistency across all 14 workspaces on every PR — flag deviations as pipeline failures.
+
+OPEN QUESTION:
+Is there a Databricks-native way to integrate with HashiCorp Vault as a live secret backend (not a periodic sync)? Kenji to investigate.
+
+---

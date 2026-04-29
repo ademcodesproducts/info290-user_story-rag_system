@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-024
+DATE: 2024-09-20
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Yuki Tanaka (Data Scientist), Nadia Petrov (Sr Data Scientist), Omar Hassan (Data Scientist), Ravi Srinivasan (DS Lead)
+PRODUCT_AREA: Notebooks / Compute / Developer Experience
+SPRINT: Q4 Sprint 2
+---
+
+PAIN POINTS RAISED:
+
+1. Yuki: "We evaluated Hex this sprint as an alternative for collaborative work. Real-time co-editing, version history per cell, presence indicators. Honestly it's a better collaborative experience than Databricks notebooks right now. We're not switching — too much lock-in — but it's embarrassing that an external tool does collaboration better than the platform we're paying $500K a year for."
+
+2. Nadia: "Serverless compute is good for startup latency but I hit the package limitation again. I'm trying to use a package that requires a system-level C library. Serverless doesn't support it. I have to fall back to a regular cluster, which means 5-minute startup wait. The use cases where I most want fast startup are often the ones with complex package requirements."
+
+3. Omar: "I OOM'd my cluster again this sprint — third time this month. I had 8 DataFrames cached from earlier analysis that I forgot about. If I had a variable inspector showing memory usage per object, I would have seen the problem and called unpersist() before it crashed. This is a basic feature that Jupyter has had since 2014."
+
+DECISIONS:
+- Ravi to request from platform admin that personal cluster specs be upgraded from 16GB to 32GB RAM — should reduce OOM frequency for the 3 data scientists who have hit it this quarter.
+- Team to adopt a standard practice: at the start of each notebook, add a cell that calls spark.catalog.clearCache() and unpersists all DataFrames — clears stale state from previous sessions.
+
+OPEN QUESTION:
+Is there a magic command or dbutils function in Databricks notebooks that lists all cached DataFrames and their memory footprint? Yuki to investigate — if it exists, it partially solves the variable inspector problem.
+
+---

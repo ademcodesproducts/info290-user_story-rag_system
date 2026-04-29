@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-017
+DATE: 2024-02-23
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Tara Okonkwo (Sr Data Scientist), Carlos Reyes (ML Eng), Yuna Park (ML Platform Lead), Omar Hassan (Data Scientist)
+PRODUCT_AREA: Feature Store / MLflow
+SPRINT: Q1 Sprint 4
+---
+
+PAIN POINTS RAISED:
+
+1. Tara: "I validated the training set for our new churn model this sprint and found a data leakage issue — same pattern as what happened at the insurance company last year. The Feature Store joined on the wrong timestamp. I only caught it because I now plot the feature timestamp distribution as a manual sanity check. We should not be relying on manual vigilance for this."
+
+2. Carlos: "Feature discoverability is still broken. I built a 'customer recency' feature this sprint, spent 3 hours on it, and during code review Tara pointed out it's nearly identical to a feature in the payments feature table. We need search by column name at minimum. The current UI only searches by table name."
+
+3. Omar: "MLflow experiment naming is chaos. We have 900 experiments now. Half of them are named 'Untitled' or 'test' or some variation. There's no way to enforce a naming convention and the UI has no way to bulk-rename or archive. Finding a specific experiment from 3 months ago takes 10 minutes of scrolling."
+
+DECISIONS:
+- Tara to add temporal validation assertions to the shared model training template — every training set creation will now plot feature lag distributions as a standard step.
+- Yuna to draft an experiment naming convention policy (format: team/project/model_name/YYYY-MM) and enforce it via team code review until Databricks adds native enforcement.
+
+OPEN QUESTION:
+Should we build our own feature search index — maybe a Delta table with feature metadata that we query from a simple notebook? It's a workaround but might unblock the discoverability problem in the next sprint.
+
+---

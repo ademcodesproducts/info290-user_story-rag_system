@@ -1,0 +1,19 @@
+TICKET_ID: TKT-017
+DATE: 2024-07-03
+PLAN: Premium
+ROLE: Data Scientist
+PRODUCT_AREA: Feature Store
+SENTIMENT: Neutral
+---
+SUBJECT: Feature Store has no search by column name or description — feature discoverability is broken
+
+BODY:
+This is a feature request. Our team has ~400 feature definitions across 30 feature tables in the Databricks Feature Store (now unified with Unity Catalog). Feature discovery is a persistent problem: data scientists frequently build duplicate features because they don't know a feature already exists. We've confirmed this has happened at least 4 times in the past 6 months.
+
+The current search in the Unity Catalog explorer allows searching by table name only. It does not search by column name, column description, or tags. If I want to find "any feature related to customer payment history," I cannot do that with the search tool — I must browse all 30 feature tables manually or ask a colleague.
+
+Requested capabilities: (1) Full-text search across feature table column names, (2) Search by tag (e.g., search for all features tagged as "credit_risk"), (3) Search by column description text (when descriptions are populated), (4) A "similar features" suggestion when a user creates a new feature definition that might duplicate an existing one.
+
+This is particularly important as organizations scale their Feature Store usage. A feature catalog with 400 features is only useful if features are discoverable. Without discovery, teams rebuild features redundantly, training data is inconsistent across models, and the Feature Store becomes a write-only system.
+
+---

@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-001
+DATE: 2024-01-24
+MEETING_TYPE: PM Discovery — Customer Pain Points
+ATTENDEES: Priya Shankar (PM, Data Platform), Marcus Webb (Data Eng, customer), Fatima Al-Hassan (Data Eng Lead, customer), Anjali Mehta (CSM)
+PRODUCT_AREA: DLT / Workflows
+---
+
+USER PAIN POINTS RAISED:
+
+Marcus: "Last week we had a DLT pipeline failure and the only thing in the event log was 'unexpected runtime error.' I had to open a ticket and wait 6 hours to find out it was a metastore blip. In that 6 hours our silver tables were stale and 4 analysts were blocked. The error message is the problem — if it had said 'metastore connectivity failure, retry in 10 minutes,' I would have been fine on my own."
+
+Fatima: "We're also really constrained by the lack of task-level retry in Workflows. Our DAG has a 45-minute upstream task. If the downstream task fails on a transient error, the job retries from the start and we re-burn 45 minutes every retry. That's been a blocker for us setting more aggressive retry policies."
+
+DECISIONS:
+- Priya to add DLT error diagnostics to the H1 roadmap discovery queue.
+- Anjali to share the product feedback portal link — Marcus to submit formal feature request for task-level retry.
+
+OPEN QUESTION:
+Is the metastore connectivity error happening because of workspace config or a Databricks infrastructure issue? Priya to loop in the on-call engineering team to check incident logs for this customer's workspace.
+
+---

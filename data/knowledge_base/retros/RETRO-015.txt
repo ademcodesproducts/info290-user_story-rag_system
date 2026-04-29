@@ -1,0 +1,22 @@
+RETRO_ID: RETRO-015
+DATE: 2024-12-13
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Rafael Montoya (Data Platform Lead), Isabel Fernández (Data Eng), Devon Okafor (Staff Eng), Tomás Rivera (Eng Manager)
+PRODUCT_AREA: Workflows / Multi-workspace / Cost Management
+SPRINT: Q4 Sprint 8
+---
+
+PAIN POINTS RAISED:
+
+1. Rafael: "We expanded to a 6th regional workspace this sprint — Peru. The first thing I had to do was log into 6 workspaces individually to update the cluster policies. Then I had to add the new workspace to my cost reporting ETL. Then I had to provision all 8 data engineers on the new workspace. Every new workspace is a 4-hour setup process that should take 20 minutes."
+
+2. Devon: "The cross-workspace polling hack for our pipeline dependencies is getting brittle. We now have 6 regional workspaces feeding the central job. If any one of the 6 polling sub-tasks fails, the whole central job is stuck. We had a 3-hour delay this sprint because the Peru workspace polling task got a 429 (rate limit) from the Jobs API and our error handling didn't retry it correctly."
+
+3. Isabel: "I want to flag something positive for once. Delta Sharing has been reliable and performant since we added Peru. We're sharing 12 tables from the regional workspaces to the central workspace via Delta Sharing, zero data movement, latency is acceptable. That part of the multi-workspace architecture is working well."
+
+DECISIONS:
+- Devon to add exponential backoff with jitter to all cross-workspace API polling tasks — the rate limit handling needs to be robust now that we have 6 regional workspaces.
+- Rafael to build a Terraform module for "new regional workspace setup" that automates cluster policy provisioning and user setup — reduces new workspace onboarding from 4 hours to ideally under 30 minutes.
+
+OPEN QUESTION:
+At what number of regional workspaces does our current polling-based cross-workspace orchestration break down entirely? Devon to model the failure probability as a function of workspace count — we're planning 3 more regional expansions in H1.

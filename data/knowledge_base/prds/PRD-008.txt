@@ -1,0 +1,38 @@
+PRD_ID: PRD-008
+DATE: 2024-09-18
+AUTHOR: Ananya Krishnan, PM — ML Platform
+PRODUCT_AREA: MLflow / Model Registry
+STATUS: Approved
+---
+TITLE: Model Promotion Approval Workflows in Unity Catalog Model Registry
+
+PERSONA:
+Role: ML Engineer / Compliance Officer
+Company size: 500–20,000 employees (regulated industries: finance, healthcare, insurance)
+Context: Operates in a regulated environment where production model promotions must be reviewed by a designated approver and produce an auditable record. Currently enforces this process via Slack messages and spreadsheets — entirely outside Databricks.
+Job-to-be-done: Require and record human approval of model promotions within the Databricks platform, so that audit evidence is automatically generated and stored alongside the model artifact.
+
+PAIN POINTS:
+1. "Our process is: post in Slack, get a thumbs up, then click Promote. A Slack message does not satisfy our FINRA auditors." — ML Engineer, broker-dealer (TKT-014).
+2. Any user with EXECUTE privilege on a model can promote it to Production unilaterally — no approval gate, no required reviewer.
+3. Promotion events are recorded in system.access.audit but contain no information about whether a review occurred, who reviewed, or what criteria were evaluated.
+4. The Model Registry has lifecycle stages but no workflow engine connecting them — it's a label, not a process.
+5. Teams in regulated industries are blocking Databricks adoption because they cannot demonstrate model governance to auditors without building custom tooling.
+
+REQUIREMENTS:
+1. Required approvers: model owners configure 1–3 required approvers (users or Unity Catalog groups) per registered model. Promotions to "Production" stage are blocked until all required approvals are received.
+2. Approval request flow: when a user attempts to promote a model version, if required approvers are configured, the promotion is paused and an approval request is created. Configured approvers receive an email notification with a link to the approval UI.
+3. Approval UI: approvers see the model version, linked MLflow experiment run, evaluation metrics, and a comment field. They choose "Approve" or "Reject" with a required comment.
+4. Audit record: each approval decision is written to system.access.audit as a dedicated event type (MODEL_PROMOTION_APPROVED / MODEL_PROMOTION_REJECTED) containing: model name, version, approver identity, timestamp, decision, and comment. This record is immutable.
+5. Bypass with justification: workspace admins can bypass the approval requirement for emergency promotions, but must provide a written justification that is also written to the audit log.
+
+SUCCESS CRITERIA:
+- Zero model versions promotable to Production without all required approvals — the Databricks UI, CLI, and API all enforce this constraint.
+- Approval audit records are queryable via SQL in system.access.audit within 60 seconds of the approval decision.
+- A compliance officer can produce a full model governance audit report (all promotions, approvers, decisions, timestamps) for any 12-month window using a single SQL query.
+
+OPEN QUESTIONS:
+- Should approval requests expire (e.g., after 7 days with no response)? If so, what happens to the pending model version?
+- How do we handle models registered before this feature ships — do existing models get a grace period?
+
+---

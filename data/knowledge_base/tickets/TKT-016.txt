@@ -1,0 +1,17 @@
+TICKET_ID: TKT-016
+DATE: 2024-05-17
+PLAN: Enterprise
+ROLE: ML Engineer
+PRODUCT_AREA: Mosaic AI / Fine-tuning
+SENTIMENT: Frustrated
+---
+SUBJECT: Fine-tuning job failed after 11 hours with "internal infrastructure error" — no checkpoint, no recovery, $300 of compute lost
+
+BODY:
+We submitted a fine-tuning job via the Mosaic AI Fine-tuning API (model: meta-llama/Llama-3-8B-Instruct, training dataset: ~50K examples in JSONL format, 3 epochs). The job ran for 11 hours and 23 minutes before failing with the following error surfaced in the job run details: "Training job failed due to an internal infrastructure error. Please retry the job." No additional context, no error code, no partial output.
+
+The job consumed approximately $285 in compute (confirmed via system.billing_usage, job_id: ft-20240517-adb1c2d3). We re-ran the job the next day and it completed successfully with no changes to configuration. This suggests a transient infrastructure failure — but with no checkpoint mechanism, we lost the entire 11-hour run. For a 3-epoch training run on a 50K-example dataset, checkpointing should be standard behavior.
+
+Requested: (1) Explanation of the infrastructure error (even post-hoc), (2) Confirmation that fine-tuning jobs now checkpoint at regular intervals (e.g., every epoch) so that a transient failure is recoverable, (3) If checkpointing is not implemented, a timeline for when it will be. We have 24-hour fine-tuning runs planned for Q3 and cannot accept a scenario where a 20-hour run fails with no recovery path.
+
+---

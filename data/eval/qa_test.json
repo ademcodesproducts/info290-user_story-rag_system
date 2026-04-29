@@ -1,0 +1,1498 @@
+[
+  {
+    "query": "What are the unmet needs of large Databricks customers regarding workspace administration?",
+    "expected_pain_keywords": [
+      "multi-workspace administration",
+      "cost dashboard",
+      "manual reporting",
+      "centralized management",
+      "governance layer"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "TKT-015.txt"
+    ],
+    "id": "Q361"
+  },
+  {
+    "query": "What are the unmet needs of teams in regulated industries using Databricks?",
+    "expected_pain_keywords": [
+      "model governance",
+      "custom tooling",
+      "auditors",
+      "promotion approval"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Compliance Officer"
+    ],
+    "expected_sources": [
+      "PRD-008.txt"
+    ],
+    "id": "Q362"
+  },
+  {
+    "query": "What are the key unmet needs expressed by data scientists regarding Databricks?",
+    "expected_pain_keywords": [
+      "collaboration",
+      "serverless limitations",
+      "crash recovery",
+      "memory inspection"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "RETRO-024.txt"
+    ],
+    "id": "Q363"
+  },
+  {
+    "query": "How do users currently manage prompt versions, and what issues do they face?",
+    "expected_pain_keywords": [
+      "confluence confusion",
+      "no saved history",
+      "repeated rewrites",
+      "inefficient tracking"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-002.txt"
+    ],
+    "id": "Q364"
+  },
+  {
+    "query": "What unmet needs do users have regarding real-time collaborative editing in notebooks?",
+    "expected_pain_keywords": [
+      "real-time collaboration",
+      "conflict prevention",
+      "exclusive editing",
+      "cumbersome workarounds"
+    ],
+    "expected_story_roles": [
+      "Data Scientist",
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-017.txt"
+    ],
+    "id": "Q365"
+  },
+  {
+    "query": "What improvements are needed to reduce the number of support tickets for DLT pipeline issues?",
+    "expected_pain_keywords": [
+      "self-diagnosable",
+      "error code surfacing",
+      "persisted logs",
+      "30-day reduction",
+      "diagnostic steps"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "PRD-018.txt"
+    ],
+    "id": "Q366"
+  },
+  {
+    "query": "What issues does Tara encounter when trying to build features in the Feature Store?",
+    "expected_pain_keywords": [
+      "feature duplication",
+      "poor discoverability",
+      "manual browsing",
+      "lack of search"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "INT-017.txt"
+    ],
+    "id": "Q367"
+  },
+  {
+    "query": "What unmet needs do Data Engineers have regarding error handling in Delta Live Tables?",
+    "expected_pain_keywords": [
+      "root cause",
+      "error information",
+      "self-diagnose",
+      "offending record",
+      "error catalog"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "PRD-018.txt"
+    ],
+    "id": "Q368"
+  },
+  {
+    "query": "What are the main challenges faced in managing model approvals for production?",
+    "expected_pain_keywords": [
+      "audit record",
+      "Slack history",
+      "approval tracking",
+      "time-consuming",
+      "missing approvals"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-021.txt"
+    ],
+    "id": "Q369"
+  },
+  {
+    "query": "Can you summarize the problems with batch inference performance?",
+    "expected_pain_keywords": [
+      "inconsistent performance",
+      "runtime variation",
+      "support response",
+      "partition layout"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-002.txt"
+    ],
+    "id": "Q370"
+  },
+  {
+    "query": "How has Unity Catalog improved compliance processes for users?",
+    "expected_pain_keywords": [
+      "SOC 2 audit",
+      "compliance team",
+      "audit logging",
+      "data governance"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "TKT-012.txt"
+    ],
+    "id": "Q371"
+  },
+  {
+    "query": "What are the main frustrations data scientists face when collaborating on notebooks in Databricks?",
+    "expected_pain_keywords": [
+      "data loss",
+      "silent overwrite",
+      "no conflict detection",
+      "lack of version history"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "TKT-011.txt"
+    ],
+    "id": "Q372"
+  },
+  {
+    "query": "What challenges does Sandra face with cluster policy management?",
+    "expected_pain_keywords": [
+      "dynamic policies",
+      "policy inheritance",
+      "templating",
+      "unwieldy",
+      "manual updates"
+    ],
+    "expected_story_roles": [
+      "Data Platform Engineer"
+    ],
+    "expected_sources": [
+      "INT-011.txt"
+    ],
+    "id": "Q373"
+  },
+  {
+    "query": "What key issues are associated with the fine-tuning jobs that could impact future workloads?",
+    "expected_pain_keywords": [
+      "lack of checkpoints",
+      "infrastructure reliability",
+      "failed jobs",
+      "compute waste"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "TKT-016.txt"
+    ],
+    "id": "Q374"
+  },
+  {
+    "query": "How do current DLT pipeline processes affect Data Engineers' efficiency?",
+    "expected_pain_keywords": [
+      "4-8 hours",
+      "full pipeline restart",
+      "large bronze tables",
+      "complex configurations"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-013.txt"
+    ],
+    "id": "Q375"
+  },
+  {
+    "query": "What feature requests have been made by users regarding query editing in Databricks SQL?",
+    "expected_pain_keywords": [
+      "presence indicators",
+      "soft locking",
+      "query version history",
+      "conflict dialog"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer",
+      "Data Analyst"
+    ],
+    "expected_sources": [
+      "PRD-010.txt"
+    ],
+    "id": "Q376"
+  },
+  {
+    "query": "What unmet needs do Databricks users have in terms of workspace management?",
+    "expected_pain_keywords": [
+      "workspace-level resource visibility",
+      "manual dashboard assembly",
+      "policy change propagation",
+      "data flow lineage"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-004.txt"
+    ],
+    "id": "Q377"
+  },
+  {
+    "query": "What feature requests were mentioned for improving the governance process?",
+    "expected_pain_keywords": [
+      "workspace provisioned alert",
+      "automated governance bootstrap",
+      "Terraform drift detection",
+      "feature request",
+      "real-time Vault integration"
+    ],
+    "expected_story_roles": [
+      "Platform Admin",
+      "Engineering Manager"
+    ],
+    "expected_sources": [
+      "RETRO-023.txt"
+    ],
+    "id": "Q378"
+  },
+  {
+    "query": "Can you describe the challenges faced with key rotation and documentation in Databricks?",
+    "expected_pain_keywords": [
+      "key rotation",
+      "manual process",
+      "scattered documentation",
+      "contradictory information"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-005.txt"
+    ],
+    "id": "Q379"
+  },
+  {
+    "query": "What are the key pain points with batch inference in MLflow?",
+    "expected_pain_keywords": [
+      "parallelization",
+      "performance",
+      "initialization cost",
+      "documentation",
+      "Databricks Runtime",
+      "executor processes"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "INT-008.txt"
+    ],
+    "id": "Q380"
+  },
+  {
+    "query": "What are the key frustrations related to the Okta SCIM integration for Databricks users?",
+    "expected_pain_keywords": [
+      "scim sync failure",
+      "user access retention",
+      "security incidents",
+      "compliance issue",
+      "manual deactivation"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "TKT-003.txt"
+    ],
+    "id": "Q381"
+  },
+  {
+    "query": "Can you describe a feature request that would significantly improve your workflow?",
+    "expected_pain_keywords": [
+      "cross-workspace task dependencies",
+      "unified user provisioning",
+      "single cost dashboard",
+      "operational efficiency"
+    ],
+    "expected_story_roles": [
+      "Data Platform Lead"
+    ],
+    "expected_sources": [
+      "INT-020.txt"
+    ],
+    "id": "Q382"
+  },
+  {
+    "query": "What are the main frustrations related to setting up new regional workspaces?",
+    "expected_pain_keywords": [
+      "setup process",
+      "4-hour setup",
+      "individual logins",
+      "cost reporting",
+      "provisioning users"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-015.txt"
+    ],
+    "id": "Q383"
+  },
+  {
+    "query": "What frustrations do Data Engineers experience when diagnosing DLT pipeline failures?",
+    "expected_pain_keywords": [
+      "cryptic runtime errors",
+      "support ticket",
+      "generic runtime error",
+      "event log",
+      "missing logs"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "PRD-018.txt"
+    ],
+    "id": "Q384"
+  },
+  {
+    "query": "What unmet needs do users have regarding query performance explanations?",
+    "expected_pain_keywords": [
+      "plain-English explanation",
+      "query was slow",
+      "Spark query plan",
+      "better queries"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer",
+      "Data Analyst"
+    ],
+    "expected_sources": [
+      "RETRO-019.txt"
+    ],
+    "id": "Q385"
+  },
+  {
+    "query": "What frustrations did the team express regarding fine-tuning jobs?",
+    "expected_pain_keywords": [
+      "checkpoint",
+      "recovery",
+      "transient infrastructure",
+      "blocking issue",
+      "GPU compute"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Sr ML Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-020.txt"
+    ],
+    "id": "Q386"
+  },
+  {
+    "query": "What are the main frustrations Data Engineers face with the current task execution methods in Databricks Workflows?",
+    "expected_pain_keywords": [
+      "hacking",
+      "fragile",
+      "custom parsing",
+      "no way to pass",
+      "unsupported"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "PRD-011.txt"
+    ],
+    "id": "Q387"
+  },
+  {
+    "query": "What challenges are analysts experiencing in managing dashboards?",
+    "expected_pain_keywords": [
+      "finding dashboards",
+      "no tagging system",
+      "official vs personal",
+      "dashboard maintenance"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-012.txt"
+    ],
+    "id": "Q388"
+  },
+  {
+    "query": "What are the main frustrations you have with dbt integration in Databricks?",
+    "expected_pain_keywords": [
+      "metadata sync",
+      "manual sync",
+      "documentation",
+      "unity catalog"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "INT-009.txt"
+    ],
+    "id": "Q389"
+  },
+  {
+    "query": "What specific feature requests do Platform Admins have for improving cluster policies?",
+    "expected_pain_keywords": [
+      "budget-triggered escalation",
+      "policy templates",
+      "policy simulation",
+      "cross-workspace push"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-019.txt"
+    ],
+    "id": "Q390"
+  },
+  {
+    "query": "What are your frustrations with managing multiple workspaces?",
+    "expected_pain_keywords": [
+      "operational consistency",
+      "configuration changes",
+      "Terraform automation",
+      "feature updates",
+      "fleet management"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "INT-013.txt"
+    ],
+    "id": "Q391"
+  },
+  {
+    "query": "How can we improve auditing for model explanations?",
+    "expected_pain_keywords": [
+      "audit trail",
+      "SHAP values",
+      "model card format",
+      "standardization"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "RETRO-010.txt"
+    ],
+    "id": "Q392"
+  },
+  {
+    "query": "What frustrations did analysts experience with the dbt model migration?",
+    "expected_pain_keywords": [
+      "missing descriptions",
+      "adapter gap",
+      "analysts confusion",
+      "schema.yml"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer",
+      "Data Analyst"
+    ],
+    "expected_sources": [
+      "RETRO-003.txt"
+    ],
+    "id": "Q393"
+  },
+  {
+    "query": "What feature requests have been suggested by users regarding token management in Databricks Connect?",
+    "expected_pain_keywords": [
+      "warning badge",
+      "token expiry notification",
+      "clear instructions",
+      "improved error messages"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "TKT-005.txt"
+    ],
+    "id": "Q394"
+  },
+  {
+    "query": "What unmet needs exist in the compliance workflow for HIPAA-regulated workloads?",
+    "expected_pain_keywords": [
+      "compliance workflow UX",
+      "coherent workflow",
+      "compliance checklist",
+      "compliance readiness"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-005.txt"
+    ],
+    "id": "Q395"
+  },
+  {
+    "query": "What frustrations do ML Engineers face regarding the approval process for model promotions?",
+    "expected_pain_keywords": [
+      "slack messages",
+      "audit evidence",
+      "unilateral promotion",
+      "no workflow engine"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-008.txt"
+    ],
+    "id": "Q396"
+  },
+  {
+    "query": "What feature requests were discussed to improve feature search capabilities?",
+    "expected_pain_keywords": [
+      "feature search index",
+      "Delta table",
+      "metadata",
+      "discoverability"
+    ],
+    "expected_story_roles": [
+      "ML Platform Lead"
+    ],
+    "expected_sources": [
+      "RETRO-017.txt"
+    ],
+    "id": "Q397"
+  },
+  {
+    "query": "How does the lack of retention policies affect users managing MLflow experiments?",
+    "expected_pain_keywords": [
+      "accumulating artifacts",
+      "no native tooling",
+      "indefinite accumulation",
+      "bulk deletion",
+      "storage costs"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-016.txt"
+    ],
+    "id": "Q398"
+  },
+  {
+    "query": "What are the key issues with the current merge conflict resolution process in notebooks?",
+    "expected_pain_keywords": [
+      "incomprehensible JSON",
+      "merge conflict resolution",
+      "notebook-aware",
+      "cell-level"
+    ],
+    "expected_story_roles": [
+      "Data Scientist",
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-017.txt"
+    ],
+    "id": "Q399"
+  },
+  {
+    "query": "What features in Databricks SQL are underutilized by users?",
+    "expected_pain_keywords": [
+      "system tables",
+      "billing data",
+      "query history",
+      "expensive query patterns",
+      "undocumented features"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "INT-010.txt"
+    ],
+    "id": "Q400"
+  },
+  {
+    "query": "What challenges do Platform Admins face in implementing their governance rules?",
+    "expected_pain_keywords": [
+      "no time-of-day restriction",
+      "manual application",
+      "no template inheritance",
+      "no preview tool"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-019.txt"
+    ],
+    "id": "Q401"
+  },
+  {
+    "query": "What unmet needs do users have regarding feature search capabilities?",
+    "expected_pain_keywords": [
+      "full-text search",
+      "search by tag",
+      "search by description",
+      "similar features suggestion"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "TKT-017.txt"
+    ],
+    "id": "Q402"
+  },
+  {
+    "query": "What are the main pain points mentioned regarding LLMOps tooling in Mosaic AI?",
+    "expected_pain_keywords": [
+      "llmops tooling",
+      "prompt version management",
+      "evaluation harness",
+      "request-level logging"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "TKT-019.txt"
+    ],
+    "id": "Q403"
+  },
+  {
+    "query": "What are some key feature requests from Data Engineers for improving pipeline SLA management?",
+    "expected_pain_keywords": [
+      "SLA configuration",
+      "alert routing",
+      "dashboard for all jobs",
+      "breach alerts",
+      "no custom code"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-015.txt"
+    ],
+    "id": "Q404"
+  },
+  {
+    "query": "What frustrations did the Data Engineer experience with the Jobs API after the recent update?",
+    "expected_pain_keywords": [
+      "breaking change",
+      "task dependency",
+      "Terraform configs",
+      "data correctness",
+      "unannounced",
+      "silent change",
+      "poor communication"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-009.txt"
+    ],
+    "id": "Q405"
+  },
+  {
+    "query": "What frustrations do ML Engineers have with data leakage when using the Databricks Feature Store?",
+    "expected_pain_keywords": [
+      "data leakage",
+      "look-ahead bias",
+      "silent model failure",
+      "wrong timestamp",
+      "fraud detection"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "PRD-003.txt"
+    ],
+    "id": "Q406"
+  },
+  {
+    "query": "What specific issues does Lena encounter with the integration of prompt versioning and model deployment?",
+    "expected_pain_keywords": [
+      "separate systems",
+      "production prompt",
+      "disconnected tracking",
+      "version behind"
+    ],
+    "expected_story_roles": [
+      "AI/ML Engineer"
+    ],
+    "expected_sources": [
+      "INT-016.txt"
+    ],
+    "id": "Q407"
+  },
+  {
+    "query": "What are the pain points related to model promotion in the Unity Catalog Model Registry?",
+    "expected_pain_keywords": [
+      "approval workflow",
+      "audit trail",
+      "review process",
+      "regulatory compliance"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "TKT-014.txt"
+    ],
+    "id": "Q408"
+  },
+  {
+    "query": "What pain points do users encounter with Databricks Workflows job alerts?",
+    "expected_pain_keywords": [
+      "notify on failure",
+      "alert if job hasn't started",
+      "polling stream progress",
+      "recreating dashboards",
+      "lack of native support"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-015.txt"
+    ],
+    "id": "Q409"
+  },
+  {
+    "query": "Why is feature discoverability critical as organizations scale their Feature Store usage?",
+    "expected_pain_keywords": [
+      "scalability",
+      "feature redundancy",
+      "training data inconsistency",
+      "feature catalog usefulness"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "TKT-017.txt"
+    ],
+    "id": "Q410"
+  },
+  {
+    "query": "Can you summarize the pain points related to model serving in Databricks for low-traffic models?",
+    "expected_pain_keywords": [
+      "cold start",
+      "latency SLA",
+      "provisioned throughput",
+      "no-op inference"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "TKT-002.txt"
+    ],
+    "id": "Q411"
+  },
+  {
+    "query": "What unmet needs does Tara express regarding model monitoring after deployment?",
+    "expected_pain_keywords": [
+      "model monitoring",
+      "data drift",
+      "native monitoring",
+      "alert system"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "INT-017.txt"
+    ],
+    "id": "Q412"
+  },
+  {
+    "query": "How does the current tagging system affect cost tracking?",
+    "expected_pain_keywords": [
+      "manual discipline",
+      "15% untagged",
+      "tagging system",
+      "enforce tagging"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "TKT-008.txt"
+    ],
+    "id": "Q413"
+  },
+  {
+    "query": "What concerns do users have regarding cluster management and DBU costs?",
+    "expected_pain_keywords": [
+      "DBU costs",
+      "blunt cluster policies",
+      "autoscaling limitations",
+      "separate dashboards"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "INT-001.txt"
+    ],
+    "id": "Q414"
+  },
+  {
+    "query": "What workaround are Data Engineers using in response to DLT limitations?",
+    "expected_pain_keywords": [
+      "split pipelines",
+      "management overhead",
+      "separate monitoring",
+      "downstream consumers"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-013.txt"
+    ],
+    "id": "Q415"
+  },
+  {
+    "query": "How do current processes hinder compliance for healthcare data in Databricks?",
+    "expected_pain_keywords": [
+      "manual evaluation",
+      "policy templates",
+      "classification review",
+      "data privacy"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-009.txt"
+    ],
+    "id": "Q416"
+  },
+  {
+    "query": "What are the concerns related to Auto Loader's checkpoint file management?",
+    "expected_pain_keywords": [
+      "checkpoint files",
+      "pruning",
+      "cost",
+      "manual deletion"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-016.txt"
+    ],
+    "id": "Q417"
+  },
+  {
+    "query": "What did the team suggest to improve the error handling for DLT pipeline failures?",
+    "expected_pain_keywords": [
+      "wrapper function",
+      "event_log() output",
+      "Delta table",
+      "error messages"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "Data Eng Lead"
+    ],
+    "expected_sources": [
+      "RETRO-001.txt"
+    ],
+    "id": "Q418"
+  },
+  {
+    "query": "What issues do users face with the FeatureLookup API regarding timestamp validation?",
+    "expected_pain_keywords": [
+      "timestamp_lookup_key",
+      "no validation",
+      "silent joins",
+      "future-state features",
+      "data leakage"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "PRD-003.txt"
+    ],
+    "id": "Q419"
+  },
+  {
+    "query": "What are the frustrations regarding the evaluation process for RAG pipelines?",
+    "expected_pain_keywords": [
+      "no versioning",
+      "inconsistent experiments",
+      "quality metrics",
+      "evaluation integration"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-023.txt"
+    ],
+    "id": "Q420"
+  },
+  {
+    "query": "Can you summarize the pain points related to the data pipeline setup across multiple workspaces?",
+    "expected_pain_keywords": [
+      "dependency chain",
+      "latency",
+      "failure detection",
+      "stale data",
+      "polling task"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "TKT-018.txt"
+    ],
+    "id": "Q421"
+  },
+  {
+    "query": "What feature requests do ML engineers have for improving model endpoint performance?",
+    "expected_pain_keywords": [
+      "keep-warm ping",
+      "shared warm pool",
+      "cost-effective",
+      "amortized startup cost"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "TKT-002.txt"
+    ],
+    "id": "Q422"
+  },
+  {
+    "query": "What unmet needs were identified in relation to DLT pipeline health monitoring?",
+    "expected_pain_keywords": [
+      "pipeline health",
+      "manual checks",
+      "event log",
+      "push notifications"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-022.txt"
+    ],
+    "id": "Q423"
+  },
+  {
+    "query": "What unmet needs are expressed regarding the integration between dbt and Unity Catalog?",
+    "expected_pain_keywords": [
+      "native solution",
+      "adapter",
+      "stale",
+      "description field",
+      "model materialization"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "TKT-004.txt"
+    ],
+    "id": "Q424"
+  },
+  {
+    "query": "How do untagged resources affect cost reporting for engineering leadership?",
+    "expected_pain_keywords": [
+      "untagged compute",
+      "incomplete attribution",
+      "manual effort",
+      "awkward conversations"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-001.txt"
+    ],
+    "id": "Q425"
+  },
+  {
+    "query": "What workarounds are users frequently encountering while using the Databricks platform?",
+    "expected_pain_keywords": [
+      "workaround",
+      "DLT error messages",
+      "cluster policy budget",
+      "multi-workspace admin"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-013.txt"
+    ],
+    "id": "Q426"
+  },
+  {
+    "query": "What issues does the user experience with the Repos functionality?",
+    "expected_pain_keywords": [
+      "merge conflicts",
+      "conflict resolution",
+      "basic UI",
+      "JSON diff"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-003.txt"
+    ],
+    "id": "Q427"
+  },
+  {
+    "query": "What unmet needs were identified concerning the training set creation process?",
+    "expected_pain_keywords": [
+      "temporal validation",
+      "training set",
+      "feature lag distributions",
+      "shared model template"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "RETRO-017.txt"
+    ],
+    "id": "Q428"
+  },
+  {
+    "query": "What are the unmet needs for multi-workspace admin pain points?",
+    "expected_pain_keywords": [
+      "multi-workspace admin",
+      "dedicated workstream",
+      "quantify affected ACV",
+      "Enterprise Admin"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "RETRO-007.txt"
+    ],
+    "id": "Q429"
+  },
+  {
+    "query": "What time-consuming tasks do Platform Admins face in managing Databricks workspaces?",
+    "expected_pain_keywords": [
+      "three hours for cost reports",
+      "individual policy updates",
+      "workspace assignment tracking",
+      "manual exports"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "PRD-004.txt"
+    ],
+    "id": "Q430"
+  },
+  {
+    "query": "What unmet needs do Data Scientists have regarding temporal validation in the Feature Store?",
+    "expected_pain_keywords": [
+      "temporal validation",
+      "training time",
+      "feature joining",
+      "event timestamp",
+      "data leakage detection"
+    ],
+    "expected_story_roles": [
+      "Data Scientist",
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-003.txt"
+    ],
+    "id": "Q431"
+  },
+  {
+    "query": "What reliability issues exist with Databricks SQL dashboards?",
+    "expected_pain_keywords": [
+      "dashboard reliability",
+      "silent failures",
+      "data discrepancies",
+      "stale data alerts",
+      "refresh issues"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "INT-010.txt"
+    ],
+    "id": "Q432"
+  },
+  {
+    "query": "What are the main pain points Lily experiences with watermarking and late data handling in Databricks?",
+    "expected_pain_keywords": [
+      "watermarking",
+      "late data",
+      "documentation",
+      "event log",
+      "monitoring"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-004.txt"
+    ],
+    "id": "Q433"
+  },
+  {
+    "query": "How does Lily feel about the operational challenges of updating DLT pipelines?",
+    "expected_pain_keywords": [
+      "full refresh",
+      "pipeline updates",
+      "reprocessing",
+      "iteration speed",
+      "deprecation"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-004.txt"
+    ],
+    "id": "Q434"
+  },
+  {
+    "query": "What are the unmet needs of Data Engineers regarding schema change alerts in Auto Loader?",
+    "expected_pain_keywords": [
+      "breaking changes",
+      "no graduated handling",
+      "specific column identification",
+      "alerting after failure"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "PRD-024.txt"
+    ],
+    "id": "Q435"
+  },
+  {
+    "query": "What unmet needs did the team express regarding schema evolution?",
+    "expected_pain_keywords": [
+      "all-or-nothing",
+      "accept new columns silently",
+      "alert on type changes",
+      "pre-ingestion validation"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-016.txt"
+    ],
+    "id": "Q436"
+  },
+  {
+    "query": "What features do you think are missing from Databricks SQL dashboards?",
+    "expected_pain_keywords": [
+      "cross-filter",
+      "interactions",
+      "limited features",
+      "mature BI tools"
+    ],
+    "expected_story_roles": [
+      "Analytics Engineer"
+    ],
+    "expected_sources": [
+      "INT-009.txt"
+    ],
+    "id": "Q437"
+  },
+  {
+    "query": "What improvements are needed for integration with external secret management tools?",
+    "expected_pain_keywords": [
+      "HashiCorp Vault",
+      "live secret backend",
+      "periodic sync",
+      "integration challenges"
+    ],
+    "expected_story_roles": [
+      "SecOps",
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "RETRO-011.txt"
+    ],
+    "id": "Q438"
+  },
+  {
+    "query": "What feature improvements do Data Engineers want for job parameters in Databricks?",
+    "expected_pain_keywords": [
+      "unified model",
+      "accessor pattern",
+      "cross-type injection",
+      "refactoring safety"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-020.txt"
+    ],
+    "id": "Q439"
+  },
+  {
+    "query": "What issues were encountered with parameter passing in the Jobs orchestration?",
+    "expected_pain_keywords": [
+      "silent fallback",
+      "default date",
+      "parameter passing",
+      "broke silently"
+    ],
+    "expected_story_roles": [
+      "Data Engineer",
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "RETRO-025.txt"
+    ],
+    "id": "Q440"
+  },
+  {
+    "query": "How does Databricks handle cost allocation and what are the pain points?",
+    "expected_pain_keywords": [
+      "cost-center tag",
+      "enforcing tags",
+      "policy constraints",
+      "untagged resources",
+      "warehouse costs"
+    ],
+    "expected_story_roles": [
+      "FinOps"
+    ],
+    "expected_sources": [
+      "INT-011.txt"
+    ],
+    "id": "Q441"
+  },
+  {
+    "query": "What frustrations do users face with the current monitoring setup for Auto Loader?",
+    "expected_pain_keywords": [
+      "engineering time",
+      "failed monitoring job",
+      "stalled stream detection",
+      "workaround",
+      "metrics table"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-006.txt"
+    ],
+    "id": "Q442"
+  },
+  {
+    "query": "What limitations does Omar encounter when using Databricks Repos?",
+    "expected_pain_keywords": [
+      "large data files",
+      "slow git operations",
+      "no .gitignore support",
+      "repo browser limitations"
+    ],
+    "expected_story_roles": [
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "INT-015.txt"
+    ],
+    "id": "Q443"
+  },
+  {
+    "query": "What are the common pain points related to post-hoc leakage detection for ML models?",
+    "expected_pain_keywords": [
+      "post-hoc leakage",
+      "custom code",
+      "production incident",
+      "feature_ts distributions",
+      "data leakage"
+    ],
+    "expected_story_roles": [
+      "ML Engineer",
+      "Data Scientist"
+    ],
+    "expected_sources": [
+      "PRD-003.txt"
+    ],
+    "id": "Q444"
+  },
+  {
+    "query": "What are the main frustrations ML Engineers face with low-traffic model endpoints?",
+    "expected_pain_keywords": [
+      "cold start",
+      "idle costs",
+      "latency SLA",
+      "infrastructure maintenance"
+    ],
+    "expected_story_roles": [
+      "ML Engineer"
+    ],
+    "expected_sources": [
+      "PRD-006.txt"
+    ],
+    "id": "Q445"
+  },
+  {
+    "query": "What frustrations do data engineers face when tagging columns for sensitive data in Databricks?",
+    "expected_pain_keywords": [
+      "manual tagging",
+      "custom enforcement",
+      "no automation",
+      "schema changes"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "PRD-009.txt"
+    ],
+    "id": "Q446"
+  },
+  {
+    "query": "What unmet needs do Data Engineers have regarding file processing in S3 with Databricks?",
+    "expected_pain_keywords": [
+      "SLA alerting",
+      "processing time",
+      "configurable time window",
+      "stream progress",
+      "data engineering teams"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "TKT-006.txt"
+    ],
+    "id": "Q447"
+  },
+  {
+    "query": "How does the user feel about cluster policies?",
+    "expected_pain_keywords": [
+      "not expressive enough",
+      "budget guardrail",
+      "idle termination",
+      "cluster type restrictions"
+    ],
+    "expected_story_roles": [
+      "Data Engineer"
+    ],
+    "expected_sources": [
+      "INT-003.txt"
+    ],
+    "id": "Q448"
+  },
+  {
+    "query": "What unmet needs do you have regarding cluster policies?",
+    "expected_pain_keywords": [
+      "user workarounds",
+      "incentivize usage",
+      "startup time",
+      "policy enforcement"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "INT-012.txt"
+    ],
+    "id": "Q449"
+  },
+  {
+    "query": "What issues arise from manually tagging PHI columns in Unity Catalog?",
+    "expected_pain_keywords": [
+      "manual tagging",
+      "compliance requirement",
+      "no scanner",
+      "inefficient process",
+      "grep and intuition"
+    ],
+    "expected_story_roles": [
+      "Platform Admin"
+    ],
+    "expected_sources": [
+      "RETRO-021.txt"
+    ],
+    "id": "Q450"
+  }
+]

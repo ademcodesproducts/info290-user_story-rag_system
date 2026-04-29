@@ -1,0 +1,37 @@
+PRD_ID: PRD-018
+DATE: 2025-02-19
+AUTHOR: Priya Shankar, PM — Data Platform
+PRODUCT_AREA: Delta Live Tables / Error Handling
+STATUS: Approved
+---
+TITLE: Actionable Error Diagnostics in DLT Pipelines
+
+PERSONA:
+Role: Data Engineer
+Company size: 200–10,000 employees
+Context: Operates production DLT pipelines that occasionally fail with cryptic runtime errors. Currently, failure diagnosis requires opening a support ticket and waiting hours for a response, because the error information surfaced in the pipeline event log is insufficient to self-diagnose.
+Job-to-be-done: When a DLT pipeline fails, immediately understand the root cause — which table, which transformation, which input record — without opening a support ticket.
+
+PAIN POINTS:
+1. "The error was 'An unexpected error occurred in the Delta Live Tables runtime.' That's it. We were down for 6 hours." — Data Engineer, fintech (TKT-001, INT-001).
+2. DLT executor logs are not persisted after cluster termination — by the time an engineer investigates, the logs are gone.
+3. Error messages for common failure modes (schema mismatch, malformed input record, metastore connectivity) are all surfaced as the same generic runtime error string.
+4. The DLT event log (accessible via the event_log() function) contains event types but often lacks the original exception class, stack trace, or offending record.
+
+REQUIREMENTS:
+1. Structured error catalog: DLT failures are classified into a taxonomy of error types with unique error codes (e.g., DLT_SCHEMA_MISMATCH, DLT_METASTORE_CONNECTIVITY, DLT_MALFORMED_RECORD). Each code has a documentation page with cause, diagnostic steps, and common fixes.
+2. Error code surfacing: the pipeline event log always includes the structured error code and a human-readable summary. Example: "DLT_SCHEMA_MISMATCH: Table 'silver.transactions' received a column 'amount' with type DOUBLE, expected DECIMAL(18,2). Source: Auto Loader stream 'raw.transactions_incoming', file: s3://bucket/2024/03/15/part-00041.parquet."
+3. Offending record capture: for DLT_MALFORMED_RECORD errors, the event log includes the first offending record (truncated to 1KB) and its source file path.
+4. Log persistence: DLT cluster driver and executor logs are persisted to a workspace-configurable storage location for 30 days after pipeline termination. A "View Logs" button in the pipeline UI links directly to these persisted logs.
+5. Runbook links: each structured error code in the event log UI is hyperlinked to its documentation page on docs.databricks.com.
+
+SUCCESS CRITERIA:
+- >80% of DLT pipeline failures are self-diagnosable by a data engineer (no support ticket required) using the error information in the event log — measured by a 30-day reduction in DLT-related support tickets post-launch.
+- Structured error codes are present in the event log for all DLT failures within 60 seconds of failure.
+- Persisted logs are accessible via the "View Logs" link within 2 minutes of pipeline termination.
+
+OPEN QUESTIONS:
+- What is the right retention policy for persisted logs — 30 days by default with admin override, or user-configurable?
+- How do we handle error classification for custom UDFs called inside DLT transformations?
+
+---

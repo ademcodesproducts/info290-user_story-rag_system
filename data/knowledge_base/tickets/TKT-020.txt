@@ -1,0 +1,19 @@
+TICKET_ID: TKT-020
+DATE: 2024-11-12
+PLAN: Enterprise
+ROLE: Data Engineer
+PRODUCT_AREA: Workflows / Jobs API
+SENTIMENT: Neutral
+---
+SUBJECT: Feature request: unified parameter model for Databricks Workflows across all task types
+
+BODY:
+This is a feature request affecting teams that use Databricks Workflows with multiple task types in the same job. We run a data pipeline that includes notebook tasks, Python wheel tasks, and SQL tasks in a single Workflows DAG. We want to pass a single job-level parameter (e.g., run_date: "2024-11-12") to all tasks, regardless of type.
+
+Current behavior: the parameter passing model is inconsistent across task types. Notebook tasks receive parameters as widget values, accessed via dbutils.widgets.get("run_date"). Python wheel tasks receive parameters as named arguments in the task's python_params list, requiring custom argument parsing. SQL tasks cannot receive job-level parameters directly — they must reference a job parameter via a job_parameters lookup that uses different syntax than notebook or Python wheel tasks. SQL tasks also don't support all parameter types that Python tasks support.
+
+This inconsistency has caused three bugs in our pipeline in the past 2 months, all caused by a task type change during refactoring that broke the parameter passing convention for that task type. Each bug was non-obvious because the parameter silently falls back to a default value rather than erroring on missing parameter.
+
+Requested: a unified job parameter model where a parameter defined at the job level (job.parameters.run_date = "2024-11-12") is accessible in all task types via a consistent accessor pattern — ideally the same syntax regardless of task type. If backward compatibility requires keeping the current per-type accessors, at minimum provide a cross-type parameter injection that works for all task types without custom adapter code.
+
+This would reduce pipeline fragility and make refactoring tasks (e.g., converting a notebook task to a Python wheel task) safe with respect to parameter passing.

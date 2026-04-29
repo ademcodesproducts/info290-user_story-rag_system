@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-006
+DATE: 2024-07-19
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Lily Bergström (Data Eng), Rohit Menon (Sr Data Eng), Isabel Fernández (Data Eng), Tomás Rivera (Eng Manager)
+PRODUCT_AREA: DLT Streaming / Auto Loader
+SPRINT: Q3 Sprint 2
 ---
-MEETING_ID: RETRO-006
-DATE: June 14, 2024
-TEAM: AI/ML Innovations
-ATTENDEES: Dr. Aris S. (Data Scientist), Bella L. (ML Engineer), Carlos D. (Product), Diane H. (DE)
-SPRINT: Sprint 54
----
-### What went well
-* Using **MLflow Model Serving** for our real-time recommendation engine; latency is under 50ms.
-* The **Feature Store** (Unity Catalog integrated) has made features discoverable across three different pods.
-* The **Mosaic AI Model Training** platform allowed us to fine-tune Llama-3 with our proprietary docs in record time.
 
-### What didn't go well
-* **GPU availability** in the `us-east-1` region is a constant battle; jobs keep getting stuck in "Pending" for 30+ minutes.
-* We're hitting the **MLflow experiment limit** in the workspace, making it hard to find historical runs for the churn model.
-* **Vector Search** indexing is slow to update when the underlying Delta table changes; there's a noticeable lag in RAG response freshness.
-* Notebook-based training is hard to unit test; we need to move towards **Databricks Asset Bundles (DABs)**.
+PAIN POINTS RAISED:
 
-### Action items
-* Set up "Spot Instance" fallback for non-critical ML training tasks (Bella L., June 20).
-* Migrate the Recommendation Engine project to Databricks Asset Bundles (Carlos D., June 30).
-* Investigate "Triggered" vs "Continuous" Vector Search sync modes (Diane H., July 5).
+1. Lily: "We still haven't figured out why our event counts were off last quarter. I'm now pretty sure it was the watermark threshold silently dropping late-arriving events. I added explicit logging in the DLT pipeline to count late events — and sure enough, we're dropping about 2% of events that arrive more than 4 hours late. The DLT docs on watermarking are sparse. I pieced this together from Stack Overflow."
+
+2. Rohit: "We need to update the gold table transformation logic. In a normal world, I'd just update the code and run a targeted refresh. In DLT world, that means an 8-hour full pipeline refresh. We've been putting this change off for 3 sprints because nobody wants to own the 8-hour refresh window."
+
+3. Isabel: "Auto Loader schema evolution bit us again. An upstream team added a column to their Kafka output. Auto Loader picked it up fine. But they also changed an existing column from string to JSON — and Auto Loader failed the stream with an incompatible schema error. We were down for 2 hours while I diagnosed it."
+
+DECISIONS:
+- Lily to write internal documentation on DLT watermarking behavior and late data handling — the tribal knowledge should be written down.
+- Team agrees to split the problematic pipeline into two smaller ones before the gold table logic update, to reduce the refresh scope. Tomás to add the split work to the Q3 backlog.
+
+OPEN QUESTION:
+Is there a way to do a "schema-only refresh" in DLT that updates the pipeline definition without reprocessing data? Rohit to research and report back.
+
 ---

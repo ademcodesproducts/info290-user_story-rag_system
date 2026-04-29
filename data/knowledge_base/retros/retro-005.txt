@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-005
+DATE: 2024-06-07
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Yuki Tanaka (Data Scientist), Omar Hassan (Data Scientist), Nadia Petrov (Sr Data Scientist), Ravi Srinivasan (DS Lead)
+PRODUCT_AREA: Notebooks / Repos / Compute
+SPRINT: Q2 Sprint 6
 ---
-MEETING_ID: RETRO-005
-DATE: May 22, 2024
-TEAM: Pipelines & Streaming
-ATTENDEES: Victor N. (Data Engineer), Yuri T. (Streaming Lead), Alicia C. (DevOps), Mike B. (SRE)
-SPRINT: Sprint 52
----
-### What went well
-* **Auto Loader** handled the Black Friday traffic spike without a single manual intervention or OOM (Out of Memory) error.
-* **Checkpoints** saved in Delta Lake allowed us to recover quickly from a regional AWS outage.
-* The move to **m7g (Graviton)** instances for our worker nodes saved us 20% on compute costs.
 
-### What didn't go well
-* **Z-Order clustering** on our massive `events` table is taking longer than the actual data processing; we need to optimize the frequency of `OPTIMIZE` commands.
-* **Watermarking** in Structured Streaming is behaving inconsistently with late-arriving data, leading to duplicate records in the silver layer.
-* **Databricks Workflows** "Repair Run" feature didn't work for our multi-task job because the failure happened in a Python wheel dependency check.
-* We are seeing significant "Small File Problem" issues on our older tables that aren't yet using **Auto-Optimize**.
+PAIN POINTS RAISED:
 
-### Action items
-* Enable `autoOptimize.optimizeWrite` and `autoOptimize.autoCompact` on all silver-tier tables (Victor N., June 1).
-* Test "Liquid Clustering" as a replacement for Z-Ordering to handle high-cardinality columns (Yuri T., June 10).
-* Refactor streaming logic to use `foreachBatch` for manual deduplication of late data (Victor N., June 15).
+1. Yuki: "I lost 45 minutes this week because of a Databricks Connect auth error that said 'connection refused.' It was a PAT expiry. 'Connection refused' does not mean 'your token expired.' I've seen three people on the team hit this exact same thing this quarter."
+
+2. Omar: "My morning setup ritual — start cluster, install packages, reload data, redefine functions — is 25 minutes every day. That's over 2 hours per week of setup that produces zero value. I've started keeping a cluster alive overnight just to avoid it, which I know is wasteful."
+
+3. Nadia: "The notebook merge conflict this sprint was bad. Yuki and I were both working on the feature engineering notebook. We resolved it eventually but the JSON diff was completely unreadable. We ended up manually reconstructing both changes from memory because comparing the JSON was harder than just rewriting."
+
+DECISIONS:
+- Ravi to request platform admin set personal cluster idle termination to 4 hours instead of 1 hour — reduces the overnight cost trade-off.
+- Team to add PAT expiry date to team wiki and set a shared calendar reminder 7 days before expiry. Workaround for missing token expiry warnings in the extension.
+
+OPEN QUESTION:
+Should we evaluate Databricks Serverless compute for interactive work? Removes cluster startup latency entirely but Ravi is unsure about cost implications for our workload profile. Action: compare 1-week cost of current setup vs. serverless.
+
 ---

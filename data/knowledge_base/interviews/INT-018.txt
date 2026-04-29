@@ -1,0 +1,32 @@
+INTERVIEW_ID: INT-018
+DATE: 2024-08-14
+INTERVIEWER: Rachel Torres
+PARTICIPANT: Chidi Eze, Platform Architect, Global investment bank (~120,000 employees)
+PRODUCT_AREA: Multi-workspace, Unity Catalog, Compliance
+---
+
+Rachel: Chidi, you're managing Databricks at a scale most people don't encounter. How many workspaces are we talking?
+
+Chidi: Officially 34. Unofficially, probably 38 — there are some that were spun up by business lines without full platform team involvement. That's actually one of our problems.
+
+Rachel: Let's start with that — workspace sprawl.
+
+Chidi: We have no mechanism for discovering all the Databricks workspaces in our cloud accounts automatically. I know about the ones my team provisioned. But business lines can provision workspaces directly through cloud vendor accounts we don't fully control. From a governance perspective, that's a risk — there could be a workspace somewhere with sensitive data and no Unity Catalog governance. The Account Console shows the workspaces registered to our account admin, but that's not all of them.
+
+Rachel: How do you handle cross-workspace data governance?
+
+Chidi: We've standardized on Unity Catalog with a shared metastore, which helps. But the privilege model at the account boundary is too coarse. Our equities desk and our fixed income desk share a metastore but must never see each other's data — we call these "Chinese walls" in financial services. Unity Catalog doesn't have a native concept of data domain isolation within a single metastore. We use catalog-level separation but catalog names are visible to everyone, which leaks information about what data exists even if it can't be accessed.
+
+Rachel: What about audit and compliance capabilities?
+
+Chidi: The audit logs are good — system.access.audit is comprehensive. But the volume is overwhelming at our scale. We generate 50 million audit events per day. We've built a separate pipeline that streams audit logs to our SIEM system (Splunk). The gap is that Databricks has no native alerting on top of the audit logs. I want to say "if any user outside group X queries table Y, page me immediately." That has to be built outside Databricks.
+
+Rachel: How much of your team's time goes to managing the platform vs. using it?
+
+Chidi: Too much. I have 4 full-time engineers whose primary job is managing Databricks infrastructure — cluster policies, cost attribution, workspace config, compliance validation. In a well-designed platform, I'd have 1. The operational overhead is too high. A lot of that is because of the lack of a central admin surface. Every workspace is an island.
+
+Rachel: What would you tell Databricks if you had 10 minutes with the CEO?
+
+Chidi: You've built an exceptional data and ML platform. Now build the enterprise management layer to go with it. Cost governance, fleet administration, compliance workflows, audit alerting — all of the things that a bank's CISO asks about. Right now the answer to every one of those questions is "we built it ourselves." That's not a sustainable answer for a $10B ARR company.
+
+---

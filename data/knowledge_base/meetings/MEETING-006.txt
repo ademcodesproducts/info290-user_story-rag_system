@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-006
+DATE: 2024-06-21
+MEETING_TYPE: CSM Account Review — Enterprise FinTech Customer
+ATTENDEES: Anjali Mehta (CSM), Sandra Volkov (Platform Eng, customer), Kenji Matsuda (SecOps, customer), Marcus Delgado (PM, Enterprise Platform — observer)
+PRODUCT_AREA: Unity Catalog / Security / Multi-workspace
+---
+
+USER PAIN POINTS RAISED:
+
+Sandra: "We're spending $1.2M a year on Databricks. I think it's worth it. But every QBR I have to explain to my CTO why I spent 3 hours this month building cost reports by hand. He asks why we pay for an enterprise platform if the enterprise features require enterprise DIY. I don't have a good answer."
+
+Kenji: "The SCIM failures are a written finding in our last security audit. We have a compensating control but it's not a fix. If Databricks can't commit to a timeline for fixing the SCIM endpoint reliability, I need to document that risk formally in our risk register. That's not a threat — it's just compliance."
+
+DECISIONS:
+- Marcus to share the multi-workspace admin console roadmap item and get Sandra's input on priority features — use this account's specific pain points to shape the v1 scope.
+- Anjali to get Databricks security team to provide a written statement on the SCIM reliability fix timeline — needed for Kenji's risk register.
+
+OPEN QUESTION:
+Is the SCIM reliability issue widespread or specific to this customer's Okta configuration? Marcus to check with support team on ticket volume for SCIM 500 errors.
+
+---

@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-004
+DATE: 2024-05-03
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Sandra Volkov (Platform Eng), Ben Nakamura (Platform Admin), Kenji Matsuda (SecOps), Amara Diallo (Sr Platform Eng)
+PRODUCT_AREA: Unity Catalog / Cost Management
+SPRINT: Q2 Sprint 3
 ---
-MEETING_ID: RETRO-004
-DATE: April 18, 2024
-TEAM: Data Governance & Security
-ATTENDEES: Robert G. (CISO Liaison), Maya D. (Security Engineer), Oscar P. (Data Gov Lead), Linda E. (Platform Admin)
-SPRINT: Sprint 49
----
-### What went well
-* **System Tables** (Beta) are finally giving us a clear view of who is accessing what data via `access_events`.
-* External Locations in **Unity Catalog** have replaced our messy mount points (`/mnt/`), making the storage layer much more secure.
-* SCIM provisioning is now fully automated via Azure AD.
 
-### What didn't go well
-* **Credential Passthrough** is incompatible with Unity Catalog, which broke several legacy legacy workflows that relied on user-identity-based S3 access.
-* Managing **Row-Level Security** (RLS) filters in UC is becoming a maintenance nightmare as we scale to 500+ users.
-* The **Audit Logs** arrive in the storage bucket with a 24-hour delay, which is too slow for real-time security incident response.
-* We found several "Shadow IT" workspaces that were created outside of our central **Account Console** governance.
+PAIN POINTS RAISED:
 
-### Action items
-* Draft a migration plan for legacy "Mount Point" code to UC "Volumes" (Linda E., Apr 30).
-* Evaluate "Dynamic Views" as a more scalable alternative to RLS filters (Oscar P., May 5).
-* Configure the "Workspace Bindings" feature to restrict catalog visibility (Maya D., May 10).
+1. Sandra: "Finance asked me again this week for a team-level cost breakdown. I spent 3 hours assembling it from billing exports and tag data. Same 3 hours I spend every week. We have 14 workspaces. I cannot keep doing this manually."
+
+2. Ben: "The SCIM sync failed twice this sprint. Both times we had users who should have been deprovisioned still showing as active in Databricks for 4–6 hours. Kenji's team flagged it as a security issue. The SCIM endpoint returns a 500 with 'internal server error' — there's nothing I can do to fix it on my end."
+
+3. Amara: "We pushed a cluster policy update to 14 workspaces this sprint. Fourteen. Separate. Logins. I updated the same policy field 14 times. If I missed one — which I have done before — we have inconsistent governance across workspaces with no way to detect it."
+
+DECISIONS:
+- Ben to implement a compensating control: a Lambda function that checks Okta deactivations every 15 minutes and directly calls the Databricks SCIM API to deactivate the user. Not a fix, but reduces the exposure window from 6 hours to 15 minutes.
+- Sandra to document the cost reporting process as a runbook so it can be delegated. Tag it as a candidate for automation once Databricks ships a proper cost attribution feature.
+
+OPEN QUESTION:
+Is Terraform the right tool for managing cluster policies across 14 workspaces consistently? Amara to prototype a Terraform module and demo next sprint.
+
 ---

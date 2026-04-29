@@ -1,0 +1,23 @@
+MEETING_ID: MEETING-004
+DATE: 2024-04-18
+MEETING_TYPE: UX Research Debrief — Data Scientist Workflow Study
+ATTENDEES: Sarah Chen (UX Researcher), Rachel Torres (UX Researcher), Yuki Tanaka (Data Scientist, participant), Omar Hassan (Data Scientist, participant), Nadia Petrov (Data Scientist, participant)
+PRODUCT_AREA: Notebooks / Developer Experience
+---
+
+USER PAIN POINTS RAISED:
+
+Yuki: "I timed my morning setup today for this study. 27 minutes from opening my laptop to running my first actual analysis cell. Package installs, data reload, redefine functions. 27 minutes every single morning. I've stopped taking holidays because I dread the 27-minute penalty of coming back to a cold environment."
+
+Nadia: "The thing nobody talks about is the mental context switch cost. It's not just 27 minutes of time — it's that by the time my environment is set up, I've lost the thread of what I was thinking about yesterday. The environment isn't just compute, it's cognitive context."
+
+Omar: "I want a variable inspector. In Jupyter I can see all my objects, their types, their sizes. In Databricks notebooks I'm flying blind. I've OOM'd my cluster three times this month because I didn't realize I had 12 cached DataFrames from earlier in the session."
+
+DECISIONS:
+- Sarah to write up findings as a research report with severity ratings — distribute to the Developer Experience PM and notebook engineering team.
+- "Morning setup ritual" identified as a top-3 pain point for data scientists — to be added to the PRD backlog as a first-class feature opportunity (environment snapshots or cluster hibernate).
+
+OPEN QUESTION:
+Is the 27-minute setup time representative across different user types, or specific to heavy exploratory workloads? Rachel to run a broader time-diary study with 15 additional participants.
+
+---

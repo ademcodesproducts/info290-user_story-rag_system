@@ -1,0 +1,21 @@
+TICKET_ID: TKT-019
+DATE: 2024-09-25
+PLAN: Enterprise
+ROLE: ML Engineer
+PRODUCT_AREA: Mosaic AI / Model Serving
+SENTIMENT: Positive
+---
+SUBJECT: NPS Response — Score: 8 — Mosaic AI deployment is excellent, LLMOps tooling is the gap
+
+BODY:
+NPS verbatim (collected via CSM quarterly check-in, September 2024):
+
+"I want to separate two things: the infrastructure and the tooling. The Mosaic AI infrastructure for fine-tuning and serving is genuinely excellent. I went from a model artifact in MLflow to a production endpoint with autoscaling in about 20 minutes last week. The HIPAA BAA coverage means I don't have to manage compliance for the infrastructure layer. The latency on provisioned throughput endpoints is good and the autoscaling behavior is predictable. If I were rating just the infrastructure, it would be a 9 or 10.
+
+The gap is LLMOps tooling — the things that sit on top of the infrastructure to make LLM applications production-ready. Prompt version management doesn't exist. Evaluation harness for RAG pipelines doesn't exist. Request-level logging with payload sampling doesn't exist. Fine-tuning checkpoint recovery doesn't exist. When I was using self-managed infrastructure, I had to build all of this myself but at least I could. On Databricks, some of these things are simply not available — I can't add request-level logging even if I want to.
+
+The direction is right. The roadmap conversations with our account team give me confidence that these features are coming. I'm a conditional 8 — the score goes to 9 when prompt versioning ships and 10 when the evaluation harness is in place. If those ship in H1 as promised, we're renewing and expanding."
+
+CSM note: Customer is $400K ACV, renewal Q2 next year. Mosaic AI is the primary use case. Flagged as reference customer for LLMOps workload once prompt versioning ships.
+
+---

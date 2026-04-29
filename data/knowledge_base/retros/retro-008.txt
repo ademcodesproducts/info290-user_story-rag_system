@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-008
+DATE: 2024-09-13
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Andile Dlamini (ML Eng), Fatima Al-Hassan (Data Eng Lead), Jordan Kim (Analytics Eng), Sandra Volkov (Platform Eng)
+PRODUCT_AREA: MLflow / Unity Catalog / Model Registry
+SPRINT: Q3 Sprint 5
 ---
-MEETING_ID: RETRO-008
-DATE: August 11, 2024
-TEAM: BI & Visualization
-ATTENDEES: Mark P. (BI Lead), Susan R. (Analyst), David K. (DE), Emily T. (Stakeholder)
-SPRINT: Sprint 59
----
-### What went well
-* **Databricks Dashboards** (the new Lakeview) is much faster and more intuitive than the legacy dashboarding tool.
-* Sharing insights is easier now that we can use **Unity Catalog** namespacing in our SQL queries.
-* Performance for large `JOIN` queries improved significantly after we ran `ANALYZE TABLE` on our core dimensions.
 
-### What didn't go well
-* The **SQL Warehouse** "Scaling" settings are aggressive; we saw 4 clusters spin up for just 10 users because of a few heavy queries.
-* There's no way to "Schedule" a Lakeview dashboard to PDF/Email yet, which is a major blocker for executive reporting.
-* **Visualizations** in notebooks don't always match the formatting in the SQL editor, causing confusion for analysts.
-* The **Metadata** tab in the Catalog Explorer is missing descriptions for 40% of our production columns.
+PAIN POINTS RAISED:
 
-### Action items
-* Run a "Documentation Hackathon" to populate Unity Catalog descriptions (Susan R., Aug 20).
-* Optimize the SQL Warehouse scaling policy to "Cost Optimized" instead of "Reliability" (Mark P., Aug 25).
-* Beta test the new "Export to PDF" feature for Dashboards as soon as it's available (Mark P., Sept 1).
+1. Andile: "We promoted a model to production this sprint using the new Unity Catalog Model Registry. The promotion took one API call and there was no approval gate, no review, no audit record. For a fraud detection model that influences financial decisions, that's a governance problem. Our compliance team is asking us how we demonstrate oversight. I don't have an answer."
+
+2. Fatima: "UC migration completed this sprint — final 400 tables migrated. But we lost lineage history for about 15% of the tables. The migration tool didn't transfer lineage edges from the old metastore. We now have tables in Unity Catalog with no upstream lineage and we have to reconstruct it manually by reading pipeline code."
+
+3. Jordan: "Analysts are now using the Unity Catalog explorer regularly which is great. But the search is weak. You can search by table name but not by column name or by description. If an analyst wants to find 'which table has a column about customer lifetime value,' they can't. They ask me instead, and I've become a human catalog search engine."
+
+DECISIONS:
+- Andile to document the manual approval process (Slack → confirmation → promote) as a formal SOP while waiting for native approval workflows.
+- Fatima to file a bug with Databricks on lineage migration gaps — include a specific list of affected table types with reproducible examples.
+
+OPEN QUESTION:
+Does Unity Catalog support full-text search on column descriptions and tags? If not, is it on the roadmap? Fatima to check the roadmap session from Data + AI Summit recordings.
+
 ---

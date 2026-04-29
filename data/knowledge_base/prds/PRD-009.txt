@@ -1,0 +1,37 @@
+PRD_ID: PRD-009
+DATE: 2024-10-07
+AUTHOR: Marcus Delgado, PM — Enterprise Platform
+PRODUCT_AREA: Unity Catalog / Data Governance
+STATUS: In Review
+---
+TITLE: Automated PHI/PII Column Classification and Policy Enforcement
+
+PERSONA:
+Role: Data Engineer / Platform Admin (Healthcare, Finance)
+Company size: 300–50,000 employees
+Context: Manages tables containing personally identifiable information or protected health information. Uses Unity Catalog column tags to mark sensitive columns but has to manually apply tags and manually build policy enforcement on top of them.
+Job-to-be-done: Automatically detect sensitive columns, apply classification tags, and enforce data access policies based on those tags — without writing custom enforcement logic.
+
+PAIN POINTS:
+1. "We tag columns as PHI but Databricks doesn't do anything with those tags automatically. They're just metadata. We built our own enforcement layer." — Data Engineer, healthcare analytics (INT-005).
+2. Initial classification of 3,000+ tables and their columns is manual — there is no automated scanning to suggest PII candidates based on column names or data patterns.
+3. Tag-based policy enforcement requires custom row-level security definitions per table — there is no "if tagged as PHI, apply this access policy automatically" capability.
+4. Re-classification after schema changes is entirely manual — new columns added by upstream pipelines are never automatically evaluated.
+
+REQUIREMENTS:
+1. Automated classifier: a Unity Catalog scanner that analyzes column names and (optionally, on sampled data) column content to suggest PII/PHI classifications. Runs on-demand or on a schedule per catalog/schema. Suggestions require human confirmation before tags are applied.
+2. Classification tag taxonomy: a built-in system tag set for common sensitive data categories: PII_NAME, PII_EMAIL, PII_SSN, PII_DOB, PHI_DIAGNOSIS, PHI_MEDICATION, FINANCIAL_ACCOUNT. Custom categories can be added.
+3. Policy templates: admins define policy templates tied to classification tags. Example: "Any column tagged PHI_DIAGNOSIS is masked to NULL for any user not in group phi_authorized_users." Templates apply automatically to all tables with matching tags.
+4. Change detection: when a new column is added to a tagged table, Unity Catalog flags it for classification review in the admin UI within 24 hours.
+5. Compliance report: a queryable report in system.information_schema listing all classified columns, their tags, the policies applied, and the last review timestamp.
+
+SUCCESS CRITERIA:
+- Automated classifier correctly identifies >85% of PII columns in a benchmark dataset of 500 tables (measured against human ground-truth labels).
+- Policy templates apply automatically to all new tables matching the tag criteria within 15 minutes of table creation.
+- A compliance officer can produce a list of all PHI columns in the platform and their access policies with a single SQL query against system tables.
+
+OPEN QUESTIONS:
+- Should data sampling for content-based classification be opt-in (default off) due to data privacy concerns?
+- How do we handle classification conflicts when a column is suggested for multiple categories?
+
+---

@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-014
+DATE: 2024-11-29
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Lena Brückner (ML Eng), Nina Kowalczyk (ML Platform Eng), Andile Dlamini (ML Eng), Yuna Park (ML Platform Lead)
+PRODUCT_AREA: Mosaic AI / LLMOps
+SPRINT: Q4 Sprint 6
+---
+
+PAIN POINTS RAISED:
+
+1. Lena: "Our production LLM application had a quality regression this sprint. I still don't know exactly why. My best guess is we updated the system prompt two weeks ago and the new version performs worse on edge cases. But I can't verify this because I can't retrieve the exact prompt that was live two weeks ago. It's not in version control, it's not in MLflow, it might be in a Confluence page that got edited. This is a production incident with no root cause."
+
+2. Nina: "We ran a model evaluation this sprint — 200 test cases, manual scoring by two annotators. It took 3 days. We're evaluating every 2 weeks. That's 6 annotator-days per month just on evaluation. We need an LLM-as-judge setup and I know it's technically doable, but there's no harness in Databricks to make it easy. Every team that wants to do eval builds their own from scratch."
+
+3. Andile: "Cold start is still a problem for our less-used model endpoints. I documented it this sprint: our compliance summary model gets 3-5 requests per day, all from a scheduled overnight job. Every time, the endpoint is cold, the first request takes 38 seconds, the scheduled job has a 10-second timeout, the job fails, a human retries it. This happens 3 nights a week. It's a known issue with a known cause and no solution."
+
+DECISIONS:
+- Lena to implement a deployment artifact in MLflow — every production deployment logs the system prompt version, model endpoint ID, and deployment timestamp as a tagged MLflow run. Imperfect but creates an audit trail going forward.
+- Nina to prototype an LLM-as-judge evaluation notebook that the team can share — reduce the per-evaluation time from 3 days to ideally 3 hours.
+
+OPEN QUESTION:
+Is there a way to increase the warm-pool timeout for low-traffic endpoints beyond what Databricks currently exposes? Andile to ask the CSM whether this is configurable.
+
+---

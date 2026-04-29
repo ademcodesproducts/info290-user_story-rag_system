@@ -1,0 +1,37 @@
+PRD_ID: PRD-024
+DATE: 2024-12-09
+AUTHOR: Priya Shankar, PM — Data Platform
+PRODUCT_AREA: Auto Loader / Delta Lake
+STATUS: In Review
+---
+TITLE: Auto Loader Schema Evolution Guardrails and Breaking Change Alerts
+
+PERSONA:
+Role: Data Engineer
+Company size: 200–10,000 employees
+Context: Uses Auto Loader to ingest data from upstream sources (Kafka, S3, GCS) where schema changes are frequent and often uncoordinated. Currently, non-additive schema changes (type changes, column renames, column deletions) cause stream failures with minimal diagnostic information.
+Job-to-be-done: Know immediately when an upstream schema change would break a running stream — and understand exactly what changed and what action is required — before the stream fails.
+
+PAIN POINTS:
+1. "Auto Loader picks up new columns fine. But a column type change from string to JSON failed the stream and we were down 2 hours diagnosing it. The error just said 'schema mismatch.'" — Data Engineer, media company (RETRO-006).
+2. Auto Loader's schema evolution modes (additive, rescue, failOnNewColumns) handle additive changes gracefully but provide no graduated handling for breaking changes — the only option is to fail.
+3. When a stream fails on a schema change, the error message identifies the stream but not the specific column that changed or what the old vs. new type is.
+4. There is no proactive alerting — engineers learn about a breaking upstream schema change only after the stream has already failed and data has stopped flowing.
+
+REQUIREMENTS:
+1. Schema change classification: Auto Loader classifies each detected schema change as additive (new column), breaking (type change, column deletion, column rename), or structural (nesting change). Each class has a configurable response: additive → auto-evolve, breaking → alert + pause, structural → alert + fail.
+2. Breaking change alert: when a breaking schema change is detected, Auto Loader pauses the stream (does not fail), writes a SCHEMA_BREAKING_CHANGE event to the pipeline event log with: column name, old type, new type, first affected file path, and timestamp. Sends an alert via the configured SLA notification channel (from PRD-015).
+3. Human-in-the-loop resolution: a "Resolve schema conflict" UI in the pipeline detail page shows the old vs. new schema diff and offers resolution options: (a) accept the new schema (stream resumes with evolved schema), (b) cast the new type back to the old type (stream resumes with a coercion), (c) quarantine files with the new schema for manual review.
+4. Schema version history: the pipeline stores a schema version log (queryable via the event_log() function) showing every schema change event, its classification, the resolution taken, and who approved the resolution.
+5. Proactive schema drift detection (stretch goal): for pipelines with schema inference enabled, a background scanner checks new source files against the current schema every 15 minutes and sends a warning (not a failure) if a change is detected — before the change affects the running stream.
+
+SUCCESS CRITERIA:
+- Zero unplanned stream failures due to breaking schema changes for pipelines with guardrails enabled — all breaking changes result in a paused stream with an actionable alert, not a failed stream with a cryptic error.
+- Schema change alerts fire within 5 minutes of the first affected file being detected by Auto Loader.
+- A data engineer resolves a schema conflict (choose resolution option) in under 10 minutes using the UI, without filing a support ticket.
+
+OPEN QUESTIONS:
+- Should the stream pause on a breaking change be indefinite (wait for human resolution) or have a timeout after which it fails?
+- How do we handle schema changes in Kafka topics where the schema registry is the source of truth — should we integrate with Confluent Schema Registry for pre-flight validation?
+
+---

@@ -1,0 +1,35 @@
+PRD_ID: PRD-014
+DATE: 2024-12-17
+AUTHOR: Marcus Delgado, PM — Enterprise Platform
+PRODUCT_AREA: Unity Catalog / Lineage
+STATUS: In Review
+---
+TITLE: Cross-Workspace Column-Level Lineage in Unity Catalog
+
+PERSONA:
+Role: Platform Admin / Data Steward
+Company size: 2,000–50,000 employees
+Context: Manages data governance across multiple Databricks workspaces sharing a Unity Catalog metastore. Data flows from ingestion workspaces through transformation workspaces to analytics workspaces. Current lineage graph stops at workspace boundaries.
+Job-to-be-done: Trace a column's complete lineage — from raw source file to BI dashboard — across all workspaces in the account, to assess blast radius of upstream schema changes and answer compliance questions about data flow.
+
+PAIN POINTS:
+1. "I can trace lineage within one workspace fine. But our raw data lands in workspace A, gets transformed in workspace B, and gets queried from workspace C. The graph just stops." — Platform Admin, global consulting firm (INT-013, INT-011).
+2. Column-level lineage is not captured for all operation types — CREATE TABLE AS SELECT with complex subqueries and operations through JDBC connections produce no lineage entries.
+3. Lineage graph has no blast-radius analysis — given a column change upstream, there is no automated way to enumerate all downstream tables and dashboards affected.
+4. Data stewards cannot answer compliance questions like "show me every place this SSN column flows in our platform" without manual investigation across multiple workspaces.
+
+REQUIREMENTS:
+1. Cross-workspace lineage stitching: when a table in workspace B is derived from a table in workspace A (via Unity Catalog shared catalog), lineage edges cross workspace boundaries. The lineage graph in Unity Catalog shows the full end-to-end chain regardless of which workspace the user views it from.
+2. JDBC lineage capture: when a Databricks job reads from an external JDBC source and writes to a Unity Catalog table, Unity Catalog records the external source as a lineage node (with source type: jdbc, source_url: masked connection string).
+3. Blast-radius analysis: from any table or column node in the lineage graph, users can run "Impact Analysis" — which returns a list of all downstream tables, views, and dashboards that depend on this node, across all workspaces.
+4. Compliance export: a system table (system.lineage.column_lineage_full) provides a queryable flat table of all column-level lineage edges in the account, including cross-workspace edges, suitable for compliance reporting.
+5. Lineage completeness score: the Unity Catalog UI shows a "Lineage coverage" percentage per schema, indicating what fraction of tables have at least one lineage edge. Helps admins identify gaps.
+
+SUCCESS CRITERIA:
+- A data steward can trace end-to-end column lineage across 3 workspaces for >90% of columns in a benchmark set of 100 production tables.
+- Blast-radius analysis returns all downstream dependents for a given column in under 30 seconds for lineage graphs with up to 500 nodes.
+- Cross-workspace lineage edges appear in the lineage graph within 5 minutes of the producing job completing.
+
+OPEN QUESTIONS:
+- How do we handle lineage for data that passes through external systems (Kafka, Fivetran) between Databricks workspaces?
+- Should lineage edges be retained indefinitely or subject to a retention policy?

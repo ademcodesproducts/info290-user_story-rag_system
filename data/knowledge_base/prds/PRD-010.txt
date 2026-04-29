@@ -1,0 +1,37 @@
+PRD_ID: PRD-010
+DATE: 2024-10-21
+AUTHOR: Sana Mirza, PM — Databricks SQL
+PRODUCT_AREA: Databricks SQL / Collaboration
+STATUS: Draft
+---
+TITLE: Concurrent Query Editing with Conflict Detection
+
+PERSONA:
+Role: Analytics Engineer / Data Analyst
+Company size: 100–5,000 employees
+Context: Works in a team of 5–30 analysts sharing a Databricks SQL workspace. Multiple analysts may open and edit the same saved query simultaneously, currently resulting in silent overwrites with no conflict detection.
+Job-to-be-done: Edit shared SQL queries collaboratively without losing work — at minimum, be warned when another user has modified a query since you opened it.
+
+PAIN POINTS:
+1. "Analyst A saves a query that analyst B had open. B's changes are silently overwritten. No warning, no merge prompt, nothing. We've had this happen 3 times in one week." — Analytics Engineer, financial services (INT-010, TKT-011).
+2. The SQL editor has no version history for saved queries — if an overwrite occurs, the lost content is unrecoverable.
+3. There is no presence indicator showing that another user currently has a query open — users have no signal to coordinate before editing.
+4. Teams work around this with informal locking ("I'll post in Slack before I edit the shared query") — which fails regularly and doesn't scale past 5-6 people.
+
+REQUIREMENTS:
+1. Presence indicators: when a saved query is opened, a presence avatar appears in the query editor header showing the names of all users who currently have it open.
+2. Edit conflict detection: when a user attempts to save a query and the server version has changed since they last loaded it, show a conflict dialog: "This query was modified by [user] at [time]. Your changes will overwrite theirs. View diff / Merge / Overwrite."
+3. Diff view: the conflict dialog includes a side-by-side diff of the current server version and the user's local changes (SQL-aware diff, not line-by-line text diff).
+4. Query version history: all saves are recorded with timestamp and author. Users can view history and restore any prior version. History retained for 90 days.
+5. Soft locking (opt-in): workspace admins can enable exclusive editing mode, where only one user can edit a query at a time. Other users can view but not save while the lock is held. Lock auto-releases after 30 minutes of inactivity.
+
+SUCCESS CRITERIA:
+- Zero silent overwrites of saved queries in workspaces with conflict detection enabled.
+- Presence indicators load within 2 seconds of opening any saved query.
+- Query version history restores any prior version in under 5 seconds.
+
+OPEN QUESTIONS:
+- Should conflict detection apply to queries stored in personal folders, or only shared folders?
+- Is real-time co-editing (Google Docs style) in scope for v1 or v2?
+
+---

@@ -1,0 +1,37 @@
+PRD_ID: PRD-022
+DATE: 2024-11-01
+AUTHOR: Marcus Delgado, PM — Enterprise Platform
+PRODUCT_AREA: Unity Catalog / Security
+STATUS: Draft
+---
+TITLE: Real-Time Vault Integration for Databricks Secrets
+
+PERSONA:
+Role: Platform Admin / SecOps Engineer
+Company size: 1,000–100,000 employees
+Context: Uses HashiCorp Vault as the enterprise secrets store. Currently syncs secrets from Vault to Databricks secret scopes periodically — meaning Databricks holds copies of secrets that may be out of date. Rotated secrets in Vault don't propagate to Databricks until the next sync cycle.
+Job-to-be-done: Use Vault as the single source of truth for all secrets, with Databricks fetching secret values live from Vault at runtime — eliminating secret copies and ensuring rotated secrets take effect immediately.
+
+PAIN POINTS:
+1. "We rotate secrets in Vault and Databricks doesn't know for hours. We have secret copies in two systems. That's a security smell our CISO flags every quarter." — Platform Eng, global consulting firm (INT-013, RETRO-011).
+2. The current Vault-to-Databricks sync requires a custom Lambda/job that re-creates secret scopes on a schedule — 4 hours of senior engineer time per quarterly rotation cycle.
+3. During the sync window after a rotation, any Databricks job using the rotated secret will fail with an authentication error — causing production incidents on every rotation cycle.
+4. Secret scope contents are not auditable in Vault's audit log because Databricks holds its own copy — the access pattern "who used this secret when" is split across two audit systems.
+
+REQUIREMENTS:
+1. Vault backend for secret scopes: admins configure a secret scope with backend: vault, vault_path: secret/databricks/prod, vault_address: https://vault.company.com. Databricks fetches the secret value from Vault at runtime (on each dbutils.secrets.get() call), never persisting a copy.
+2. Authentication: Databricks authenticates to Vault using AppRole or Kubernetes auth method. Credentials for Vault auth are stored in a Databricks-managed bootstrap secret (one per workspace, rotated automatically by Databricks).
+3. Cache with TTL: to avoid per-call Vault latency, Databricks caches secret values in memory for a configurable TTL (default: 5 minutes, admin-configurable 1–60 minutes). After TTL expiry, the next access re-fetches from Vault. A rotated secret is therefore live within TTL minutes — no manual sync required.
+4. Audit unification: all Databricks secret accesses (dbutils.secrets.get()) are written to Vault's audit log via a Vault audit device in addition to the Databricks system.access.audit table. This gives a single audit trail in Vault.
+5. Fallback behavior: if Vault is unreachable, Databricks returns a clear error (VAULT_UNREACHABLE: secret fetch failed) rather than returning a stale cached value, to prevent jobs from running with expired credentials.
+
+SUCCESS CRITERIA:
+- A secret rotated in Vault is live in all Databricks jobs within the configured TTL (≤5 minutes with default settings) — zero manual sync steps required.
+- Zero secret copies stored in Databricks persistent storage when Vault backend is configured.
+- A SecOps engineer can answer "which Databricks jobs accessed secret X in the last 30 days" using a single Vault audit log query.
+
+OPEN QUESTIONS:
+- Should the Vault TTL cache be per-cluster or per-job-run? Per-cluster risks one job using a stale secret after rotation; per-job-run increases Vault load.
+- How do we handle secrets that are stored in both Databricks-native scopes and Vault scopes — is mixed-backend supported?
+
+---

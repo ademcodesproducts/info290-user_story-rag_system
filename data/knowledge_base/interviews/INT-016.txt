@@ -1,0 +1,32 @@
+INTERVIEW_ID: INT-016
+DATE: 2024-04-09
+INTERVIEWER: Sarah Chen
+PARTICIPANT: Lena Brückner, AI/ML Engineer, German automotive OEM (~80,000 employees)
+PRODUCT_AREA: Mosaic AI, MLflow, Model Serving
+---
+
+Sarah: Lena, you're working with Mosaic AI — that's a relatively new area for Databricks. What's your use case?
+
+Lena: We're building a suite of LLM-powered applications for internal use — document summarization for engineering specs, a Q&A assistant over our maintenance manuals, that kind of thing. We use Mosaic AI for fine-tuning and deployment, and MLflow for tracking.
+
+Sarah: Where are you hitting friction?
+
+Lena: Prompt management is the biggest mess. My team is 6 ML engineers all working on different prompts for different applications. There is no single place where I can see "here is the current production prompt for the maintenance Q&A app." Right now it lives in a Confluence page that someone updates when they remember to. I've deployed a version to production that turned out to be two versions behind what we thought was current. Users noticed the quality drop before we did.
+
+Sarah: How are you managing that today?
+
+Lena: Git, mostly. We store prompts as text files in a repo. It works but it's disconnected from the model deployment lifecycle. When I look at a deployed model endpoint in Databricks, I can see the model version — but I can't see which prompt version is paired with it. The model and the prompt are deployed as a unit but tracked in completely separate systems.
+
+Sarah: Tell me about fine-tuning on Mosaic AI. What's your experience?
+
+Lena: The fine-tuning API itself is clean. I can submit a fine-tuning job via the API, specify a base model, give it a training dataset in the right format, and it runs. The problem is evaluation after fine-tuning. The fine-tuning job gives me loss curves and perplexity, but it doesn't run any task-specific evaluation. I have to set that up separately — write evaluation code, run it against the fine-tuned model, log the results to MLflow manually. That's a 2-3 day integration project every time we fine-tune a new model.
+
+Sarah: Any reliability issues?
+
+Lena: One significant one. We had a fine-tuning job that ran for 11 hours and then failed with "internal infrastructure error." No further information. The job was gone — no partial model, no checkpoint, nothing. 11 hours of GPU compute, maybe $300, just gone. We re-ran it and it worked. But the unexplained failure with no checkpoint recovery is not acceptable for jobs we might eventually run for 24+ hours.
+
+Sarah: What would make you a stronger Databricks advocate?
+
+Lena: First-class LLMOps. Right now we have MLOps for classical ML and it's pretty good. But for LLM applications, which is where all our new development is, the tooling feels like a first draft. Prompt versioning, evaluation harness, fine-tuning with checkpointing — these need to be mature before I'd tell our CTO this is production-ready for LLM workloads.
+
+---

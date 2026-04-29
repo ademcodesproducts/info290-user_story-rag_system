@@ -1,0 +1,38 @@
+PRD_ID: PRD-019
+DATE: 2025-03-04
+AUTHOR: Marcus Delgado, PM — Enterprise Platform
+PRODUCT_AREA: Cluster Policies / Cost Control
+STATUS: Draft
+---
+TITLE: Dynamic Cluster Policies with Time-Based and Budget-Based Rules
+
+PERSONA:
+Role: Platform Admin
+Company size: 500–20,000 employees
+Context: Manages cluster policies for multiple teams. Current cluster policies are static — they apply uniformly regardless of time of day, budget consumed, or cluster purpose. Needs more expressive policies to enforce cost governance without blocking legitimate use.
+Job-to-be-done: Express governance rules like "ML team gets GPU access during business hours only" and "this team's cluster policy becomes more restrictive after they hit $5,000 in monthly spend" — without writing custom enforcement automation.
+
+PAIN POINTS:
+1. "I manage 23 cluster policies. They're all-or-nothing. I want time-based rules, budget rules, team-specific rules. None of that exists." — Platform Admin, enterprise telecom (INT-011, INT-012).
+2. Cluster policies have no budget awareness — there is no way to say "after this team spends $X, restrict them to smaller instance types."
+3. Night/weekend cluster usage is expensive and often unnecessary for business workloads, but there is no time-of-day restriction in cluster policy syntax.
+4. Cluster policy updates are applied per-workspace manually — no template inheritance or propagation across workspaces.
+5. There is no policy simulation tool — admins cannot preview the effect of a policy on past cluster usage before activating it.
+
+REQUIREMENTS:
+1. Time-based policy rules: cluster policies support a schedule block defining different effective_policy windows: business_hours (Mon–Fri, 08:00–18:00 UTC), off_hours (all other times). Each window can have different instance type restrictions, max size, and DBU limits.
+2. Budget-triggered policy escalation: policies support a budget_gate: { monthly_dbu_limit: 5000, escalate_to_policy_id: "restricted-tier" }. When a team tag's monthly DBU consumption exceeds the limit, the escalated (more restrictive) policy automatically becomes effective for the remainder of the month.
+3. Policy templates and inheritance: a template policy defines base constraints; derived policies inherit from the template and can override specific fields. Updating a template propagates changes to all derived policies.
+4. Policy simulation: admins upload a cluster usage log (from system.billing_usage) and simulate how a proposed policy would have affected cluster creation requests — showing which requests would have been blocked, and estimated cost savings.
+5. Cross-workspace policy push: from the Account Console, admins push a policy (or policy update) to all selected workspaces in one operation.
+
+SUCCESS CRITERIA:
+- A platform admin implements time-based GPU access restrictions (business hours only) for the ML team in under 15 minutes using the policy UI, with no custom API automation required.
+- Budget-triggered escalation activates within 15 minutes of the DBU threshold being crossed.
+- Policy simulation report generates in under 60 seconds for 30 days of cluster usage history.
+
+OPEN QUESTIONS:
+- Should budget gates reset on the 1st of each calendar month, or on a rolling 30-day window?
+- How do we handle in-flight clusters when a budget gate triggers mid-run — terminate, or let the current run complete?
+
+---

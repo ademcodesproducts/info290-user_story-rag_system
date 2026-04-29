@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-019
+DATE: 2024-04-26
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Farida Osei (Analytics Eng), Jordan Kim (Analytics Eng), Binta Kouyaté (Data Analyst), Kwame Asante (Analytics Lead)
+PRODUCT_AREA: Databricks SQL / Performance
+SPRINT: Q2 Sprint 2
+---
+
+PAIN POINTS RAISED:
+
+1. Jordan: "Query performance variance is still the top complaint from our analysts. Same query, 5 seconds one day, 3 minutes the next. This sprint I finally dug into the query history and found the slow runs all happened on Monday mornings when the warehouse was cold. But there's no way for an analyst to know that — they just see 'slow' with no explanation."
+
+2. Binta: "I got told by a senior analyst that my query was 'doing a full table scan' and should use a filter. I had no idea — the query just ran slow. I don't know how to read a Spark query plan. Is there a way to get a plain-English explanation of why a query was slow? That would actually help me write better queries."
+
+3. Farida: "We have 40+ dbt models and some of them are really slow on first run after a table OPTIMIZE. I think it's because the query compilation cache is cold after the metadata changes. I can't verify this because there's no compilation-time vs. execution-time breakdown in the query history."
+
+DECISIONS:
+- Jordan to add a "pre-warm" notebook to the Monday morning automated jobs — runs a trivial query against each warehouse to warm it up before analysts arrive at 9am. Cheap workaround.
+- Kwame to schedule an OPTIMIZE run for all major Delta tables every Sunday evening to ensure fresh file statistics before the Monday morning query rush.
+
+OPEN QUESTION:
+Does Databricks have plans for a query advisor or query explainer feature that gives analysts plain-language performance guidance? Farida to ask the CSM at the next QBR.
+
+---

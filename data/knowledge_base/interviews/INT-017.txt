@@ -1,0 +1,36 @@
+INTERVIEW_ID: INT-017
+DATE: 2024-06-25
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Tara Okonkwo, Senior Data Scientist, Credit risk firm (~1,500 employees)
+PRODUCT_AREA: Feature Store, MLflow, Mosaic AI
+---
+
+James: Tara, tell me about how you use the Feature Store in your credit risk workflow.
+
+Tara: We build credit scoring models — predicting default probability, credit limit recommendations. Feature engineering is a huge part of our work. We use the Feature Store to share features across models and ensure consistency between training and serving time.
+
+James: What's working?
+
+Tara: The training-serving consistency guarantee is genuinely valuable. Before Feature Store, we had a lot of train-serve skew bugs where the feature computation at training time was slightly different from serving time, and the model would degrade in production in ways that were hard to trace. That problem is basically gone now.
+
+James: And what's not working?
+
+Tara: Feature discoverability is poor. We have about 400 feature definitions across 30 feature tables. If I want to know whether anyone has already built a "days since last payment" feature before I build my own, I have to manually browse the Feature Store UI or ask my colleagues. There's no search by feature semantics or by tags. I've built the same feature twice now because I didn't know it already existed.
+
+James: That's interesting. Is there a tagging system at all?
+
+Tara: You can add tags, yes, but nobody uses them consistently. There's no enforced taxonomy. And even if you tag, the search only searches feature table names, not the tags or descriptions. It's essentially a flat list you have to scroll through.
+
+James: What about the point-in-time join functionality?
+
+Tara: We've been careful since hearing about the data leakage incidents at other firms. We added our own validation step — after creating a training dataset, we plot the distribution of (event_timestamp - feature_timestamp) for each feature table. If any feature has values that postdate the event, we know we have a leakage problem. But this is custom code we wrote ourselves. It should be built in.
+
+James: How about model monitoring after deployment?
+
+Tara: Really immature on Databricks. We deployed a credit scoring model 6 months ago and we track data drift and model performance metrics using a combination of custom Databricks Jobs and a third-party monitoring tool. The Feature Store has no native monitoring — I can't set up an alert for "if this feature's distribution shifts significantly, tell me." I have to build that myself or pay for a separate monitoring platform.
+
+James: What's your one-line summary of the Feature Store today?
+
+Tara: Great at solving the training-serving skew problem, not yet useful as a feature discovery and governance platform.
+
+---

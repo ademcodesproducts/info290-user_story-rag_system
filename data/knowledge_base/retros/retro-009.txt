@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-009
+DATE: 2024-10-04
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Lily Bergström (Data Eng), Isabel Fernández (Data Eng), Nadia Petrov (Sr Data Scientist), Yuki Tanaka (Data Scientist)
+PRODUCT_AREA: Notebooks / Streaming / Developer Experience
+SPRINT: Q4 Sprint 1
 ---
-MEETING_ID: RETRO-009
-DATE: September 28, 2024
-TEAM: Data Science Platform
-ATTENDEES: Leo J. (Lead DS), Rachel Z. (ML Engineer), Toby M. (DE), Sarah W. (Admin)
-SPRINT: Sprint 63
----
-### What went well
-* **Databricks Runtime for ML** (14.x) pre-installed all the libraries we needed for the new CV project.
-* **Hyperopt** integration with MLflow simplified our parameter tuning significantly.
-* The **Notebook Collaboration** features (comments and co-presence) are working great for pair programming.
 
-### What didn't go well
-* **Package management** via `%pip install` in notebooks is slow and re-runs every time the cluster restarts.
-* The **MLflow Tracking Server** latency is high when logging thousands of parameters in a single sweep.
-* We're hitting **Workspace Files** storage limits because people are accidentally saving large datasets in their `/Users/` folder instead of `/Volumes/`.
-* **Ray on Databricks** setup was finicky; the worker initialization kept failing due to an SSH key mismatch in the cluster init script.
+PAIN POINTS RAISED:
 
-### Action items
-* Switch from `%pip` to custom **Docker Containers** for clusters with heavy dependency needs (Rachel Z., Oct 5).
-* Move all transient data files from `/Users/` to a dedicated "Scratch" Volume in UC (Toby M., Oct 12).
-* Standardize the Ray-on-Databricks template and document the setup (Leo J., Oct 15).
+1. Yuki: "Hex released a notebook feature this week where you can see your teammate's cursor in real time. I showed it to Nadia. We both got a little sad. We've been asking Databricks for collaborative notebooks for two years. The gap is getting wider, not narrower."
+
+2. Nadia: "I've been testing Databricks serverless compute for interactive notebooks. No cluster startup time is genuinely life-changing — I open a notebook and it just runs. But the environment management is worse than regular clusters. I can't install packages that require system-level dependencies, and the package set resets every session. Still faster overall but the package limitation will block some of our work."
+
+3. Isabel: "We had an Auto Loader stream silently stall this sprint. No error, no alert, just... no new data processed for 6 hours. We found out because a downstream analyst noticed the data was stale. Our monitoring script caught it eventually but 6 hours of stale data in our pipeline is unacceptable. We need built-in stream health alerting."
+
+DECISIONS:
+- Isabel to prioritize implementing the stream health SLA monitoring script for all 12 of our Auto Loader streams before end of sprint. Tomás approved 3 days of engineering time.
+- Nadia to document which packages are incompatible with serverless compute and share with the team — helps others avoid hitting the same wall.
+
+OPEN QUESTION:
+Is the serverless compute package limitation (no system-level dependencies) a permanent architectural constraint or something Databricks plans to address? Ravi to ask the CSM.
+
 ---

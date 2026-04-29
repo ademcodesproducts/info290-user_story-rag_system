@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-003
+DATE: 2024-04-12
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Farida Osei (Analytics Eng), Jordan Kim (Analytics Eng), Binta Kouyaté (Data Analyst), Kwame Asante (Analytics Lead)
+PRODUCT_AREA: Databricks SQL / dbt
+SPRINT: Q2 Sprint 1
 ---
-MEETING_ID: RETRO-003
-DATE: March 05, 2024
-TEAM: Analytics Engineering
-ATTENDEES: Chloe S. (Lead Analytics Engineer), Ahmed F. (Data Analyst), Jenna M. (Senior DE), Tom W. (Product Manager)
-SPRINT: Sprint 46
----
-### What went well
-* **Delta Live Tables (DLT)** simplified our gold-layer materialization; the data lineage graph is a hit with the stakeholders.
-* The new **Databricks Assistant** (AI) helped the junior analysts write complex Window functions in SQL much faster.
-* Transitioning to **Photon** acceleration on our ETL jobs reduced runtime by 40%.
 
-### What didn't go well
-* DLT pipeline debugging is frustrating; the error messages in the event log are often cryptic and don't point to the specific line in the `.sql` file.
-* **Schema Evolution** in Delta Lake caused a downstream failure in PowerBI because it doesn't handle dropped columns gracefully.
-* **Databricks Workflows** lacks a "native" way to trigger a job based on an external S3 event without using a Lambda or a long-polling notebook.
-* The **SQL Editor** in the UI frequently loses its connection state, forcing a page refresh and losing unsaved query snippets.
+PAIN POINTS RAISED:
 
-### Action items
-* Set up a centralized "Query Snippet" Repo so analysts don't lose work on UI crashes (Ahmed F., Mar 10).
-* Implement "Fail-fast" data quality expectations in DLT to catch schema issues early (Jenna M., Mar 15).
-* Design a lightweight event-bridge for S3-to-Workflows triggering (Jenna M., Mar 20).
+1. Farida: "We finished the dbt model migration this sprint and the catalog looks great — beautiful table structure, clean schema. And zero column descriptions. Everything we wrote in schema.yml just... isn't there. Our analysts opened the catalog on day one and said 'all the descriptions are missing.' I had to explain that this is a known adapter gap, which is not a fun conversation."
+
+2. Jordan: "Three analysts this sprint reported the same thing: they ran a query, it took 5 seconds. They ran it again 20 minutes later, 3 minutes. Same query, same table, same warehouse. When I investigated it turned out the warehouse had scaled down and the query recompilation wasn't cached. But we have no way to tell users this is happening or why. They just think the platform is unreliable."
+
+3. Binta: "Two of us were working on the revenue attribution query simultaneously. We didn't know — no indicator in the UI that it was open. I saved my version and overwrote Kwame's 45 minutes of work. We only found out when Kwame tried to run his version and got my changes. There's no version history to recover from."
+
+DECISIONS:
+- Farida to implement the ALTER TABLE post-hook workaround for column comment sync. Accepted as technical debt — log it in backlog.
+- Team will adopt a naming convention for shared queries in the SQL workspace (prefix: SHARED_) and add a note in the team wiki asking people to Slack before editing shared queries.
+
+OPEN QUESTION:
+Is there a Databricks SQL setting for query result caching TTL that we can tune to reduce the variance analysts are experiencing? Kwame to investigate.
+
 ---

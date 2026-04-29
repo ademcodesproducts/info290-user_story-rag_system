@@ -1,0 +1,24 @@
+MEETING_ID: MEETING-002
+DATE: 2024-02-15
+MEETING_TYPE: Customer Advisory Board — ML Tooling
+ATTENDEES: Ananya Krishnan (PM, ML Platform), Andile Dlamini (ML Eng, insurance), Carlos Reyes (ML Eng, retail), Mei-Ling Zhao (ML Eng, AV startup), Daniel Osei (PM, Mosaic AI)
+PRODUCT_AREA: MLflow / Model Serving / Feature Store
+---
+
+USER PAIN POINTS RAISED:
+
+Andile: "The Model Registry has stages but no process. I can promote a model to production right now with one API call — no approval, no reviewer, no audit record. I'm a FINRA-registered firm. My compliance team is asking me how I demonstrate model oversight and I'm telling them 'we have a Slack message.' That's not going to pass an audit."
+
+Carlos: "Experiment management is a mess. I have 847 experiments in our workspace. There's no garbage collection. There's no retention policy. I estimate we're paying $2,000 a month in artifact storage for experiments nobody will ever look at again. The API has a delete method but there's no bulk delete and the rate limits make cleanup scripts take days to run."
+
+Mei-Ling: "Cold start on model endpoints is still a blocker. My least-active models take 45 seconds to respond from cold. My SLA is 5 seconds. The only options are always-on (too expensive for 12 low-traffic models) or accept the cold start (SLA violation). I need a third option."
+
+DECISIONS:
+- Model promotion approval workflows to be scoped for Q3 — Ananya to draft PRD with input from Andile's compliance requirements.
+- Experiment retention policies added to MLflow backlog — P1.
+- Multi-model endpoints: Daniel to evaluate technical feasibility and bring options back to CAB in 6 weeks.
+
+OPEN QUESTION:
+Are compliance requirements (FINRA, HIPAA) driving enough demand to justify a dedicated "Regulated Industries" feature track for ML governance? Daniel to survey CAB members and report back.
+
+---

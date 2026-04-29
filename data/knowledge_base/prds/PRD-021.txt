@@ -1,0 +1,37 @@
+PRD_ID: PRD-021
+DATE: 2024-10-14
+AUTHOR: Ananya Krishnan, PM — ML Platform
+PRODUCT_AREA: Feature Store / Unity Catalog
+STATUS: In Review
+---
+TITLE: Feature Discovery Search and Reuse Catalog
+
+PERSONA:
+Role: Data Scientist / ML Engineer
+Company size: 300–10,000 employees
+Context: Works in an organization with 200–500 existing feature definitions spread across 20–40 feature tables. Before building a new feature, needs to know if one already exists — but the current Unity Catalog search only matches table names, not column names, descriptions, or tags.
+Job-to-be-done: Find relevant existing features in under 2 minutes before building a new one, so duplicate feature engineering is eliminated and model training sets are consistent across teams.
+
+PAIN POINTS:
+1. "I've built the same 'days since last payment' feature twice. The second time I found out during a code review. There's no search by column name — I have to browse all 30 feature tables manually." — Data Scientist, credit risk firm (INT-017).
+2. Feature tables in Unity Catalog have no enforced description or tag taxonomy — most columns have empty descriptions, making text search useless even when it exists.
+3. Teams report that 15–20% of feature engineering time is spent rebuilding features that already exist somewhere in the platform — wasted effort estimated at 2–3 engineering days per month per ML team.
+4. No "similar feature" suggestion when creating a new feature definition — a data scientist who types feature_name: days_since_last_payment gets no warning that customer_days_since_payment already exists in another table.
+
+REQUIREMENTS:
+1. Full-text search across feature column names, descriptions, and tags in the Unity Catalog explorer and Feature Store UI. Query: "payment history" returns all columns across all feature tables whose name, description, or tag contains those terms.
+2. Tag taxonomy enforcement: workspace admins define a required tag set for feature tables (e.g., domain, model_type, data_freshness). Feature table creation is blocked without required tags; a tag completion UI surfaces valid values.
+3. Duplicate detection on feature creation: when a user defines a new feature with a name that fuzzy-matches an existing feature column (edit distance ≤ 2 or semantic similarity ≥ 0.85), show a banner: "Similar feature found: customer_days_since_payment in prod.features.payment_history. View details before creating a duplicate."
+4. Feature usage index: each feature table shows a "Used by N models" count linking to the registered models that include it as a FeatureLookup. Data scientists can see which features are battle-tested in production.
+5. Feature lineage: trace a feature column back to its source table and the pipeline that computes it, visible in the feature detail page.
+
+SUCCESS CRITERIA:
+- A data scientist can determine whether a relevant feature exists for a given concept (e.g., "customer recency") in under 2 minutes using search alone, without asking a colleague.
+- Duplicate feature detection fires for >90% of new feature definitions that semantically match an existing feature, measured against a benchmark set of 50 known duplicates.
+- Feature table tag completion rate reaches >80% for new tables created after enforcement is enabled (measured 30 days post-launch).
+
+OPEN QUESTIONS:
+- Should semantic similarity matching use an embedding model hosted on Databricks, or a lightweight rule-based approach for latency reasons?
+- How do we handle features that are intentionally similar but distinct (e.g., 7-day vs. 30-day rolling average of the same metric)?
+
+---

@@ -1,0 +1,38 @@
+PRD_ID: PRD-012
+DATE: 2024-11-19
+AUTHOR: Daniel Osei, PM — Mosaic AI
+PRODUCT_AREA: Mosaic AI / LLM Tooling
+STATUS: Approved
+---
+TITLE: Mosaic AI Agent Evaluation Framework
+
+PERSONA:
+Role: ML Engineer / AI Engineer
+Company size: 200–5,000 employees
+Context: Building and iterating on LLM-powered agents (RAG pipelines, tool-calling agents, multi-step reasoners) deployed via Databricks. Has no systematic way to evaluate agent quality beyond manual spot-checking outputs.
+Job-to-be-done: Measure agent quality quantitatively across multiple dimensions (answer correctness, groundedness, tool use accuracy, latency) and track quality changes across agent versions.
+
+PAIN POINTS:
+1. "I have no idea if my RAG pipeline is getting better or worse when I change the retrieval strategy. I compare 20 outputs manually and call it good. That is not science." — ML Engineer, user research session, Q3 2024.
+2. LLM-as-judge evaluation patterns require boilerplate setup — there's no first-class evaluation harness in Databricks for agent workloads.
+3. Agent evaluation results are not tracked in MLflow alongside model metrics — there is no unified quality view across both classical ML models and LLM agents.
+4. Regression detection is entirely manual — engineers must remember to re-run evaluations after each agent change and manually compare results.
+5. Ground truth dataset management is ad hoc — evaluation sets are typically stored as CSV files in notebooks with no versioning or governance.
+
+REQUIREMENTS:
+1. Evaluation harness: a mlflow.evaluate()-compatible API for agent workloads. Input: a ground truth dataset (question, expected_answer, optional context). Output: per-question and aggregate scores logged to an MLflow run.
+2. Built-in scorers: LLM-as-judge scorers for answer_correctness, groundedness (answer supported by retrieved context), relevance (retrieved context relevant to question), and tool_call_accuracy (correct tool selected and parameterized). Each scorer uses a configurable judge model (default: DBRX Instruct).
+3. Latency and cost tracking: each evaluation run logs per-question latency (retrieval + generation) and estimated token cost.
+4. Version comparison: the MLflow UI shows agent evaluation results alongside model metrics, with a diff view comparing two agent versions on the same evaluation set.
+5. Ground truth dataset management: evaluation datasets are registered as Unity Catalog tables with version history, so the same dataset is used consistently across evaluations.
+
+SUCCESS CRITERIA:
+- An ML engineer runs a complete agent evaluation (100 question-answer pairs, 4 scorers) in under 10 minutes, with results in MLflow.
+- Evaluation results are queryable from the MLflow API for automated regression detection in CI/CD pipelines.
+- Built-in scorers achieve >0.80 correlation with human rater scores on a benchmark dataset of 500 QA pairs.
+
+OPEN QUESTIONS:
+- Should the judge model be user-configurable per scorer, or fixed to a single model for consistency?
+- How do we handle evaluation of multi-turn conversations vs. single-turn QA?
+
+---

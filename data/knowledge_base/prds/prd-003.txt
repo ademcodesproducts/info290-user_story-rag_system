@@ -1,78 +1,37 @@
-[PRD] MLflow Experiment Comparison View with Model Lineage Tracking
+PRD_ID: PRD-003
+DATE: 2024-05-08
+AUTHOR: Ananya Krishnan, PM — ML Platform
+PRODUCT_AREA: Feature Store / MLflow
+STATUS: In Review
+---
+TITLE: Feature Store Temporal Validation and Data Leakage Detection
 
-TL;DR
-Data Scientists struggle to compare hundreds of MLflow runs across different notebooks or versions of code, often losing track of which data version produced which metric. This feature introduces a high-density, side-by-side comparison dashboard that links MLflow runs directly to their Unity Catalog data lineage and Git commit hash.
+PERSONA:
+Role: ML Engineer / Data Scientist
+Company size: 300–10,000 employees
+Context: Training supervised ML models using point-in-time feature lookups from the Databricks Feature Store. Needs confidence that training data does not contain future-state feature values relative to the label timestamp (look-ahead bias).
+Job-to-be-done: Know immediately — at training time, not 6 weeks into production — if a feature join has introduced temporal data leakage.
+
+PAIN POINTS:
+1. "We found a data leakage issue 6 weeks after deployment because our precision dropped from 0.91 to 0.84. Six weeks of a wrong fraud detection model. The Feature Store joined on the wrong timestamp and said nothing." — ML Engineer, insurance company (TKT-007, INT-006).
+2. The FeatureLookup API accepts a timestamp_lookup_key parameter but does not validate whether the joined feature values predate the event timestamp — it silently joins regardless.
+3. Data leakage from look-ahead bias is the #1 silent model quality failure pattern in supervised learning, yet the Feature Store has no detection layer.
+4. Post-hoc leakage detection requires custom code (comparing feature_ts distributions against event_ts), which most teams don't write until after a production incident.
+
+REQUIREMENTS:
+1. Temporal validation parameter on FeatureLookup: leakage_check="warn" | "error" | "off" (default: "warn"). When enabled, after the training set join, Databricks computes the fraction of rows where any feature_timestamp > event_timestamp.
+2. Warning threshold: if >1% of rows have future-state features, emit a DataLeakageWarning with the table name, column name, and percentage of affected rows.
+3. Error threshold: if >10% of rows have future-state features and leakage_check="error", raise DataLeakageError and halt training set creation.
+4. Leakage report artifact: log a JSON artifact to the associated MLflow run containing per-feature temporal distribution statistics (mean lag, p5, p95 of feature_ts - event_ts).
+5. Documentation update: add a "Common pitfalls: temporal leakage" section to the Feature Store training data creation guide with worked examples of correct and incorrect timestamp_lookup_key specification.
+
+SUCCESS CRITERIA:
+- A training set with >1% future-state features always produces a visible warning in the notebook output and in the MLflow run UI — no silent incorrect behavior.
+- The leakage check adds no more than 60 seconds of overhead for training sets up to 10M rows.
+- Zero new data leakage incidents attributable to Feature Store point-in-time joins in the 6 months post-launch (tracked via support ticket analysis).
+
+OPEN QUESTIONS:
+- Should the leakage check run on a sample (e.g., 1% of rows) for performance, or always on the full dataset?
+- How do we handle features that intentionally lag (e.g., 7-day rolling averages) where feature_ts will always predate event_ts by design?
 
 ---
-Problem Definition, Opportunity, and Outcome
-
-The current MLflow UI is excellent for tracking individual runs but fails when a Data Scientist needs to compare metrics across different "Experiments" or when they need to see if a model's performance was due to a code change or a data shift in Delta Lake.
-
-Users currently "hack" this by exporting run data to Excel or using multiple browser tabs. This is costly because it hides the "Data Lineage"—if a model was trained on a version of a table that has since been `VACUUM`ed or updated, it's impossible to reproduce. By integrating MLflow runs with Unity Catalog lineage and Repos, we ensure "Perfect Reproducibility."
-
-Users & Use Cases
-
-1. PRIMARY USERS: Data Scientists, ML Engineers
-   • A Data Scientist is tuning a BERT model and has 50 runs with varying hyperparameters.
-   • [Pain]: Can't easily see a "Difference" view that highlights only the changed parameters.
-   • An ML Engineer needs to audit a model in production.
-   • [Pain]: Can't see exactly which version of the `training_set` in Unity Catalog was used to generate the model artifact.
-
-2. SECONDARY USERS (Edge Cases): Compliance/Audit
-   • An auditor needs to verify that a model wasn't trained on "PII" data.
-   • [Pain]: No easy way to trace from the Model Registry back to the source table's sensitivity tags.
-
-Opportunity
-This positions Databricks as the only "End-to-End" ML platform that treats data versioning (Delta) and model versioning (MLflow) as a single unit. It goes beyond Weights & Biases or Neptune by leveraging the native Unity Catalog integration.
-
-JTDBs
-• When comparing runs, I want to see a heatmap of my metrics, so I can instantly identify the best hyperparameters.
-• When looking at a model in the Registry, I want to see the exact Delta Table Version (timestamp) used for training.
-• When I have a "Best Run," I want to see the specific Git commit from Databricks Repos that generated it.
-• When I have many failed runs, I want to hide them from my comparison view based on a metric threshold (e.g., "Accuracy > 0.5").
-
----
-Requirements and Product Definition
-
-M0: Advanced Comparison & Git Linking - Min Viable
-
-P0: Parallel Coordinates Plot & Heatmap
-   • Integrated UI within MLflow to visualize hyperparameter sweeps.
-   • Highlighting of "Winning" runs based on user-selected metrics.
-
-P0: Git Commit Attribution
-   • Automatically capture and display the Databricks Repo commit hash in the MLflow run sidebar.
-
-M1: Unity Catalog Integration - Advanced Usability
-
-P0: Data Lineage Link
-   • In the MLflow "Artifacts" tab, display the source Delta Table name and version number (`versionAsOf`).
-   • Clickable link to the Catalog Explorer for that specific table version.
-
-P1: "Diff" View for Parameters
-   • A toggle that hides all parameters that are identical across selected runs, showing only the deltas.
-
-P2: Multi-Experiment Comparison
-   • Ability to select runs from different MLflow Experiments (e.g., "Project_A_Phase_1" and "Project_A_Phase_2") and compare them in one view.
-
-User Experience: Bella, an ML Engineer, is comparing three versions of a churn model.
-   • (J1) She selects the three best runs in the MLflow UI and clicks "Deep Compare."
-   • (J2) The "Diff" view shows that the only difference was the `learning_rate` and the `source_table` version.
-   • (J3) She clicks the source table link and sees that the second run used a version of the data that included a new "Region" column.
-   • (J4) Satisfied, she promotes the run to "Production" in the Model Registry, knowing the full lineage is captured.
-
----
-Success Metrics
-
-Focus on Satisfaction and Efficiency (Reproducibility).
-
-Objectives:
-   • Efficiency: Reduce the time spent manually "diffing" models or tracking down data versions by 40%.
-   • Adoption: 50% of ML-heavy workspaces use the "Deep Compare" view weekly.
-   • Satisfaction: Users report higher confidence in model reproducibility.
-
-| | SIGNALS | KPI |
-|---|---|---|
-| 1. Efficiency | Time to identify "Best Run" factors | -40% time spent in MLflow UI |
-| 2. Adoption | % of Model Registry entries with UC links | 80% of new models linked to UC |
-| 3. Satisfaction | User rating of MLflow UI | Increase from 3.5 to 4.5/5 |

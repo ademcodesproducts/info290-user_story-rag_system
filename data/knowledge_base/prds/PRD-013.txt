@@ -1,0 +1,38 @@
+PRD_ID: PRD-013
+DATE: 2024-12-03
+AUTHOR: Ananya Krishnan, PM — ML Platform
+PRODUCT_AREA: Developer Experience / Notebooks
+STATUS: Draft
+---
+TITLE: Persistent Notebook Environment Snapshots
+
+PERSONA:
+Role: Data Scientist / ML Researcher
+Company size: 100–5,000 employees
+Context: Performs iterative exploratory analysis in Databricks notebooks. Work sessions span multiple days. Each morning, must reinstall packages, reload datasets, and redefine functions because overnight cluster termination wipes all in-memory state.
+Job-to-be-done: Resume a notebook session exactly where it was left off — with all packages, loaded DataFrames, and defined functions restored — without any manual re-setup.
+
+PAIN POINTS:
+1. "My morning routine is: start cluster, install packages, load data, redefine helper functions. 20–30 minutes before I can do any actual work. Every single day." — Data Scientist, healthcare AI (INT-015, INT-014).
+2. Interactive clusters auto-terminate after the idle timeout (typically 30–60 minutes), destroying all Python state. There is no way to pause rather than terminate.
+3. Package installation on cluster startup requires either a cluster init script (requires admin) or manual pip install in a notebook cell (fragile, not reproducible).
+4. For GPU training runs, losing a partially-computed result due to cluster termination means restarting compute-intensive operations from scratch.
+5. The only current alternative — keeping a cluster running 24/7 — is expensive and wasteful; a $0.60/DBU cluster left running overnight costs ~$15–20 for idle time.
+
+REQUIREMENTS:
+1. Environment snapshot: a "Save Environment" button in the notebook toolbar captures: (a) installed package list with exact versions, (b) defined Python functions and classes (serialized), (c) a manifest of loaded DataFrames with their source query/path. Does NOT capture full DataFrame contents — only the recipe to reconstruct them.
+2. Snapshot restore: when starting a new cluster and opening a notebook with a saved snapshot, Databricks offers "Restore environment." Clicking it: installs packages (from snapshot manifest), re-runs the cell sequence that loaded DataFrames, and re-defines functions. Estimated restore time shown before confirmation.
+3. Snapshot storage: snapshots stored in the user's Unity Catalog volume. Retained for 30 days by default (admin-configurable). Max snapshot size: 50MB (package manifest + function code).
+4. Cluster hibernate (stretch goal): instead of terminating, a cluster can be hibernated — compute is released but environment state is serialized to storage. On resume, compute restarts and state is deserialized. Hibernate/resume cycle completes in under 5 minutes.
+5. Personal cluster defaults: users define a default package set that is always installed when they start a personal cluster, without requiring admin-level init scripts.
+
+SUCCESS CRITERIA:
+- A data scientist resumes a notebook session (environment restore from snapshot) in under 5 minutes, vs. the current 20–30 minute manual setup.
+- Environment snapshots are created and stored in under 60 seconds.
+- Personal cluster default packages install in under 3 minutes for package sets of up to 20 packages.
+
+OPEN QUESTIONS:
+- How do we handle snapshots that include packages with security vulnerabilities discovered after snapshot creation?
+- Should DataFrame reconstruction be automatic (run source cells silently) or manual (user must trigger per-DataFrame)?
+
+---

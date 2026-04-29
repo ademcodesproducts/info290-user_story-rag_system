@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-018
+DATE: 2024-03-15
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Rafael Montoya (Data Platform Lead), Devon Okafor (Staff Eng), Kenji Matsuda (SecOps), Sandra Volkov (Platform Eng)
+PRODUCT_AREA: Multi-workspace / Security
+SPRINT: Q1 Sprint 5
+---
+
+PAIN POINTS RAISED:
+
+1. Rafael: "We added a 5th regional workspace this sprint — Colombia. Onboarding took 4 hours: cluster policy setup, user provisioning across two workspaces, cost tagging conventions, adding it to the cost attribution pipeline. Every new workspace is a 4-hour project that should be a 20-minute checklist."
+
+2. Kenji: "The Colombia workspace was provisioned by the local IT team without going through my checklist. I found out when they asked for help with Unity Catalog setup. If they'd put production data in it before governance was in place, we'd have a compliance issue. We have no way to detect 'new workspace provisioned without security review' automatically."
+
+3. Sandra: "Cost attribution for the multi-workspace setup is getting out of hand. We now have 5 workspaces, each with slightly different tag schemas because each country team used their own conventions before we standardized. The normalization in my cost ETL is 400 lines of special-case logic."
+
+DECISIONS:
+- Rafael to build a "new workspace onboarding" Terraform module that provisions cluster policies, UC setup, and cost tagging in one apply. Target: reduce onboarding from 4 hours to 30 minutes.
+- Kenji to implement a Cloud Trail / Azure Monitor alert that fires when a new Databricks workspace is created in any of our cloud accounts — gives him visibility before governance gaps accumulate.
+
+OPEN QUESTION:
+Is there an Account-level API that enumerates all Databricks workspaces across all cloud accounts we own? Kenji to investigate whether the Account Console API covers all workspaces or only account-registered ones.
+
+---

@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-010
+DATE: 2024-10-25
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Carlos Reyes (ML Eng), Andile Dlamini (ML Eng), Omar Hassan (Data Scientist), Yuna Park (ML Platform Lead)
+PRODUCT_AREA: MLflow / Feature Store / Batch Inference
+SPRINT: Q4 Sprint 3
 ---
-MEETING_ID: RETRO-010
-DATE: October 30, 2024
-TEAM: Global Data Engineering
-ATTENDEES: Ivan K. (VP Data), Maria G. (Architect), Chris B. (Lead DE), Anya S. (DE)
-SPRINT: Sprint 65
----
-### What went well
-* Global rollout of **Unity Catalog** is complete across all regions (US, EU, AP).
-* **Delta Sharing** is now being used to provide clean datasets to our external partners without moving the data.
-* **System Tables** are providing excellent visibility into our "Top 10 Most Expensive Queries."
 
-### What didn't go well
-* Cross-region **Unity Catalog** replication is slow; there is a significant lag between schema updates in US-East and EU-West.
-* **Databricks Workflows** "Task Orchestration" is getting messy; we have a "God Job" with 25+ dependencies that is a single point of failure.
-* **Vacuum** commands were run prematurely on a critical table, making it impossible to perform a `RESTORE` after a buggy update.
-* The **Jobs UI** becomes sluggish when trying to view the run history of a task that runs every 5 minutes.
+PAIN POINTS RAISED:
 
-### Action items
-* Break the "God Job" into smaller, modular Workflows using the `run_job` task type (Chris B., Nov 10).
-* Update the Data Retention Policy to ensure `VACUUM` only purges files older than 30 days (Maria G., Nov 15).
-* Investigate the "UC-to-UC" sharing feature for better cross-region metadata sync (Maria G., Nov 20).
+1. Carlos: "We're paying for MLflow artifact storage that's completely useless. I queried the experiment list this week — we have 847 experiments, most of them abandoned. Artifacts going back 18 months that nobody will ever look at. There's no way to bulk clean them up from the UI. I started writing a cleanup script but it's going to take a week to run through the API rate limits."
+
+2. Omar: "I found a data leakage issue in our churn model this sprint — the same look-ahead bias problem that the insurance team reported. Our Feature Store point-in-time join was using the wrong timestamp column. Six weeks in production before we caught it, same story. We caught it earlier this time only because I happened to plot the feature timestamp distribution as a sanity check. There should be a built-in check for this."
+
+3. Andile: "Model explainability for our credit scoring model is becoming urgent — regulators are asking for decision explanations. We're using SHAP but it's all custom code outside MLflow. The SHAP values aren't logged anywhere auditable. If we get an audit, I have to hope I can reconstruct the exact model version and SHAP computation from Git history."
+
+DECISIONS:
+- Carlos to open a feature request for MLflow artifact retention policies — attach a script that demonstrates the API-rate-limited cleanup problem as evidence of why native tooling is needed.
+- Omar to add temporal validation checks as standard pre-training assertions in the team's model training template notebook.
+
+OPEN QUESTION:
+Should we standardize on a model card format and log it as an MLflow artifact for every model that enters staging? Would help with both explainability and audit trail. Yuna to draft a template.
+
 ---

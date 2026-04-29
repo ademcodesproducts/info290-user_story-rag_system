@@ -1,0 +1,38 @@
+PRD_ID: PRD-016
+DATE: 2025-01-22
+AUTHOR: Ananya Krishnan, PM — ML Platform
+PRODUCT_AREA: MLflow
+STATUS: Draft
+---
+TITLE: MLflow Experiment Retention Policies and Artifact Lifecycle Management
+
+PERSONA:
+Role: ML Engineer / Platform Admin
+Company size: 200–10,000 employees
+Context: Manages a Databricks workspace with hundreds of MLflow experiments and thousands of runs. Artifact storage costs are growing unchecked — artifacts from abandoned experiments never get cleaned up, and there is no native tooling to define or enforce retention policies.
+Job-to-be-done: Define artifact and experiment retention policies so that storage costs are bounded and stale experiment data is automatically cleaned up — without manual intervention or custom scripts.
+
+PAIN POINTS:
+1. "We have hundreds of experiments with poor naming, no tags, and artifacts accumulating forever. I estimate we're paying thousands per month in S3 storage for artifacts nobody will ever look at." — ML Engineer, retail analytics (INT-008).
+2. MLflow has no native concept of experiment or artifact retention — everything accumulates indefinitely unless manually deleted via the API.
+3. Bulk deletion of experiments requires iterating the API — there is no UI bulk-delete or policy-based cleanup.
+4. Artifacts from runs that were never promoted to the Model Registry are functionally orphaned but indistinguishable from artifacts from runs that are still relevant.
+5. Storage costs for MLflow artifacts are not surfaced in Databricks cost reporting — they appear as opaque S3/ADLS storage costs with no experiment-level attribution.
+
+REQUIREMENTS:
+1. Retention policy API: workspace admins define retention policies at the experiment level or globally. Policy fields: delete_runs_older_than_days, delete_artifacts_for_non_promoted_runs_after_days, delete_empty_experiments_after_days.
+2. Policy preview: before a policy activates, a dry-run report shows: number of runs that would be deleted, total artifact storage that would be freed, oldest run that would be retained. User must confirm.
+3. Exclusion rules: runs tagged with keep=true or linked to a registered model version are excluded from retention policy deletion regardless of age.
+4. Artifact storage dashboard: a view in the MLflow UI showing artifact storage consumption broken down by experiment, with estimated monthly cost at the current cloud storage rate.
+5. Bulk experiment management UI: multi-select experiments from the experiment list and perform bulk operations: delete, archive, set tag, apply retention policy.
+
+SUCCESS CRITERIA:
+- A workspace admin defines and activates a retention policy that frees >50% of orphaned artifact storage in under 30 minutes, including dry-run review.
+- No run linked to a registered model version is ever deleted by a retention policy (exclusion rules are enforced 100%).
+- Artifact storage dashboard loads and shows cost attribution for up to 500 experiments in under 15 seconds.
+
+OPEN QUESTIONS:
+- Should retention policies apply retroactively to existing runs at activation, or only to future runs?
+- How do we handle artifacts stored in customer-managed storage (BYOS) vs. Databricks-managed storage?
+
+---

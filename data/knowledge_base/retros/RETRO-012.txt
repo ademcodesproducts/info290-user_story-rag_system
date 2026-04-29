@@ -1,0 +1,24 @@
+RETRO_ID: RETRO-012
+DATE: 2024-12-06
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Farida Osei (Analytics Eng), Jordan Kim (Analytics Eng), Tomás Rivera (Eng Manager), Kwame Asante (Analytics Lead)
+PRODUCT_AREA: Databricks SQL / Dashboards
+SPRINT: Q4 Sprint 7
+---
+
+PAIN POINTS RAISED:
+
+1. Jordan: "The executive dashboard showed stale data in the Monday all-hands — again. The scheduled refresh showed as 'Succeeded' but the chart tiles were rendering cached data from 6 hours earlier. We can't keep having this conversation with the VP of Sales. She's started asking us to 'double-check the dashboard before every important meeting,' which means someone manually running SQL queries to verify the dashboard numbers. That's not a data platform."
+
+2. Farida: "Three analysts this sprint came to me saying their queries were slow. Two of them had accidentally opened the wrong warehouse — they thought they were on the fast serverless warehouse but were on the legacy classic warehouse because the selector defaults to the last-used warehouse per session. The warehouse picker in the SQL editor is really easy to miss."
+
+3. Kwame: "We have 40 dashboards in the workspace now and finding the right one is getting hard. There's no tagging system for dashboards, no ability to mark a dashboard as 'official' vs. personal/experimental. Analysts can't tell which dashboards are maintained and trusted vs. someone's test from 8 months ago."
+
+DECISIONS:
+- Jordan to add a data freshness watermark to all executive dashboards using a SQL macro that shows the max(updated_at) from the underlying table — workaround for the stale render bug.
+- Kwame to create a naming convention for official dashboards (prefix: [OFFICIAL]) and communicate it to all analysts this week.
+
+OPEN QUESTION:
+Is the dashboard stale data rendering issue a known bug? Tomás to open a support ticket with a reproducible case — dashboard ID, refresh job run history, and query result timestamps.
+
+---

@@ -17,7 +17,7 @@ from src.evaluation.metrics import (
 from src.rag.pipeline import RAGResult, run_query
 from src.rag.retriever import format_context_block
 
-TEST_SET_PATH = Path("data/eval/test_set.json")
+DEFAULT_TEST_SET_PATH = Path("data/eval/test_set.json")
 
 
 @dataclass
@@ -34,7 +34,7 @@ class TestCaseResult:
     invest: list = field(default_factory=list)
 
 
-def load_test_set(path: Path = TEST_SET_PATH) -> list[dict]:
+def load_test_set(path: Path = DEFAULT_TEST_SET_PATH) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -46,8 +46,9 @@ def run_evaluation(
     llm_eval: bool = False,
     judge_model: str = "gpt-4o-mini",
     test_ids: list[str] | None = None,
+    test_set_path: Path = DEFAULT_TEST_SET_PATH,
 ) -> list[TestCaseResult]:
-    test_cases = load_test_set()
+    test_cases = load_test_set(test_set_path)
     if test_ids:
         test_cases = [t for t in test_cases if t["id"] in test_ids]
 

@@ -1,0 +1,21 @@
+MEETING_ID: MEETING-008
+DATE: 2024-09-10
+MEETING_TYPE: Design Review — Model Approval Workflow Mockups
+ATTENDEES: Ananya Krishnan (PM, ML Platform), Andile Dlamini (ML Eng, customer — design partner), Fatima Al-Hassan (Data Eng Lead), UX Designer (Databricks)
+PRODUCT_AREA: MLflow / Model Registry
+---
+
+USER PAIN POINTS RAISED:
+
+Andile: "The mockup looks right directionally. My one concern is the approval request notification — if it goes to email, our compliance team won't see it reliably. They need it in Slack. Whatever you build needs to support Slack webhook routing or it won't work for our team."
+
+Fatima: "I also want to flag that 'required approvers' needs to work with Unity Catalog groups, not just individual users. Our approval group changes when people join or leave the ML review team. I don't want to update every model's approval config every time someone joins the team."
+
+DECISIONS:
+- Notification routing to support email + Slack webhook + generic webhook in v1. PagerDuty in v2.
+- Required approvers to accept both individual users and UC groups — Ananya to confirm with engineering that UC group membership is evaluatable at approval request time.
+
+OPEN QUESTION:
+What happens to a pending approval request if the required approver leaves the company and their Databricks account is deactivated? Need a fallback approver or admin override path defined before launch.
+
+---

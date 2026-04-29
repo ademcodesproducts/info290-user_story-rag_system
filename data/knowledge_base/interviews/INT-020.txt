@@ -1,0 +1,30 @@
+INTERVIEW_ID: INT-020
+DATE: 2024-11-07
+INTERVIEWER: James Okonkwo
+PARTICIPANT: Rafael Montoya, Data Platform Lead, Latin American logistics company (~5,000 employees)
+PRODUCT_AREA: Multi-workspace, Workflows, Cost Management
+---
+
+James: Rafael, you're managing Databricks across multiple countries — that adds some unique complexity.
+
+Rafael: Yes — we have workspaces in Brazil, Mexico, Colombia, and a central workspace in the US for cross-regional analytics. Each country has its own data residency requirements, so the regional workspaces are mandatory. But coordinating across 5 workspaces for a team of 40 data professionals is operationally heavy.
+
+James: What's the biggest coordination challenge?
+
+Rafael: Job scheduling across time zones. We have jobs that need to run in a specific sequence — extract in Brazil, transform centrally, load back to regional. Databricks Workflows doesn't have native cross-workspace task dependencies. I can't create a single DAG that says "when Brazil workspace job X finishes, trigger central workspace job Y." I have to use polling — a job in the central workspace that queries the Brazil workspace Jobs API every 5 minutes to check for completion. It's fragile and adds latency.
+
+James: How are you handling costs at this scale?
+
+Rafael: We have a custom cost attribution system that I built over 6 months. It pulls billing data from all 5 workspaces via the system.billing_usage tables, normalizes the tag schemas (each country team has slightly different tagging conventions — my fault for not enforcing standards from the start), and lands it in a Delta table that feeds a Databricks SQL dashboard. It works. But 6 months of a senior engineer's time to build basic cost reporting is absurd.
+
+James: What about access management across workspaces?
+
+Rafael: We use Unity Catalog with a shared metastore, which has been a huge improvement for governance. But user management is per-workspace. If a data scientist needs access to the Brazil workspace and the central workspace, I have to provision them in both. And deprovision from both when they leave. We've had two incidents this year where a departing employee retained access to one workspace we forgot to remove them from.
+
+James: What do you wish existed?
+
+Rafael: Three things. One: cross-workspace task dependencies in Workflows — just let me define a DAG that spans multiple workspaces. Two: unified user provisioning where I manage access at the account level and it propagates to the right workspaces automatically. Three: a single cost dashboard that doesn't require me to maintain a custom ETL pipeline. Those three things would probably save me and my team 20 hours a week.
+
+James: Is there anything that's working better than you expected?
+
+Rafael: Delta Sharing. We use it to share read-only tables from the Brazil workspace to the central workspace without copying data. It's been reliable, the access controls work, and it's much cheaper than the ETL pipelines we were running before. That feature is underrated.

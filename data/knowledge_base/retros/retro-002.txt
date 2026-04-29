@@ -1,23 +1,24 @@
+RETRO_ID: RETRO-002
+DATE: 2024-03-22
+MEETING_TYPE: Sprint Retrospective
+ATTENDEES: Andile Dlamini (ML Eng), Carlos Reyes (ML Eng), Mei-Ling Zhao (Sr ML Eng), Yuna Park (ML Platform Lead)
+PRODUCT_AREA: MLflow / Model Serving
+SPRINT: Q1 Sprint 6
 ---
-MEETING_ID: RETRO-002
-DATE: February 12, 2024
-TEAM: ML Platform Team
-ATTENDEES: Elena V. (MLOps Lead), Jordan K. (ML Engineer), Sam B. (Data Scientist), Lin H. (Backend Dev)
-SPRINT: Sprint 44
----
-### What went well
-* Standardized model deployment using **MLflow Recipes**, which significantly cut down on boilerplate code for the Forecasting project.
-* The integration of **Mosaic AI** for fine-tuning our internal LLM showed promising initial latency benchmarks.
-* Successfully set up **Model Serving** endpoints with auto-scaling enabled.
 
-### What didn't go well
-* **Databricks Repos** (Git Integration) struggled with large notebook files; we had several merge conflicts that were nearly impossible to resolve in the UI.
-* The **MLflow Model Registry** is becoming cluttered; we lack a clear lifecycle policy for "Archived" vs. "Deleted" models.
-* Feature engineering jobs are failing because the **Unity Catalog** doesn't support some legacy UDFs (User Defined Functions) we brought over from the Hive Metastore.
-* Python dependency hell: A library update on the Shared Cluster broke three production notebooks because of a pip version mismatch in the **Cluster Log Delivery**.
+PAIN POINTS RAISED:
 
-### Action items
-* Implement a "Git-flow" training session focused on Databricks Repo best practices (Jordan K., Feb 18).
-* Create an automated script to prune old MLflow model versions older than 90 days (Elena V., Feb 25).
-* Migrate legacy UDFs to Unity Catalog-compatible Python/SQL functions (Sam B., Mar 1).
+1. Andile: "I'm still manually building experiment comparison dashboards because the MLflow UI can't handle comparing 50 runs across 10 hyperparameters legibly. This sprint I spent a full day rebuilding the same dashboard I built last quarter because someone deleted the queries. This should be a native feature."
+
+2. Mei-Ling: "We had two GPU training jobs fail this sprint because of spot preemption. Both were 8-hour runs. Both restarted from scratch because the Databricks job system doesn't know about our PyTorch checkpoints. We need checkpoint-aware retry — restart from the last checkpoint, not from epoch 0."
+
+3. Carlos: "The batch inference UDF performance is still inconsistent. Same model, same cluster config, same data size — runtime varied from 18 minutes to 2 hours across three runs this sprint. I opened a support ticket two weeks ago. The response was 'it depends on partition layout.' Not actionable."
+
+DECISIONS:
+- Mei-Ling to add a post-run hook to all GPU training jobs that writes the latest checkpoint path to a job output parameter — so manual reruns can be seeded from the checkpoint even if Databricks doesn't do it automatically.
+- Team agreed to standardize on mlflow.set_experiment() with a consistent naming convention (team/project/model_name) before next sprint — current experiment naming is chaos.
+
+OPEN QUESTION:
+Should we evaluate moving batch inference to a dedicated Databricks Jobs Compute cluster with consistent partition configuration instead of using shared interactive clusters? Yuna to cost-model.
+
 ---

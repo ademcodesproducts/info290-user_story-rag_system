@@ -1,0 +1,37 @@
+PRD_ID: PRD-011
+DATE: 2024-11-04
+AUTHOR: Priya Shankar, PM — Data Platform
+PRODUCT_AREA: Workflows / Jobs Orchestration
+STATUS: In Review
+---
+TITLE: Native Conditional Branching and Dynamic Task Graphs in Databricks Workflows
+
+PERSONA:
+Role: Data Engineer / Analytics Engineer
+Company size: 200–10,000 employees
+Context: Builds multi-task Databricks Workflows DAGs where downstream task execution should depend on the runtime output of upstream tasks (e.g., skip reprocessing if a data quality check passes, branch to different logic based on a row count threshold).
+Job-to-be-done: Define conditional execution paths in a Workflow DAG without hacking notebook exit values or maintaining separate orchestration code.
+
+PAIN POINTS:
+1. "I want to say: if task A returns X, skip tasks B and C and go straight to D. I'm hacking it with notebook widgets and exit values, which feels wrong and breaks CI/CD." — Data Engineer, fintech (INT-001).
+2. Current workaround using dbutils.notebook.exit() with parsed return values is undocumented as a branching mechanism and fragile — any change to the return value format breaks downstream tasks silently.
+3. Multi-task jobs have no way to pass typed outputs between tasks — only string-serialized notebook exit values, which requires custom parsing logic in every downstream task.
+4. Dynamic parallelism is unsupported — if a task produces a list of N items that need to be processed in parallel (fan-out pattern), there is no way to spawn N downstream tasks dynamically.
+
+REQUIREMENTS:
+1. Task output variables: tasks can declare typed output variables (string, integer, boolean, JSON) that are produced at completion. Example: a Python task sets output.row_count = spark_df.count().
+2. Conditional task execution: tasks have an if_condition field that references upstream task output variables using a simple expression syntax: if_condition: "tasks.data_quality_check.output.passed == true". If the condition is false, the task is skipped (not failed).
+3. Branch routing: a new Branch task type takes a condition expression and has two outgoing edges: on_true and on_false, routing execution to different downstream subgraphs.
+4. Dynamic fan-out: a ForEach task type takes a list-typed task output and spawns one child task run per element, executing in parallel up to a configurable concurrency limit.
+5. Job run UI: the run visualization shows conditional branches with visual indicators of which path was taken and why (e.g., "Skipped: condition 'row_count > 0' evaluated to false").
+
+SUCCESS CRITERIA:
+- A data engineer implements a "skip if no new data" branching pattern in under 30 minutes using the Workflows UI with no notebook exit value hacking.
+- Conditional skip events appear in job run history with the evaluated condition expression and its result value.
+- ForEach task fan-out supports up to 100 concurrent child tasks per parent.
+
+OPEN QUESTIONS:
+- Should condition expressions support Python eval or be limited to a safe expression DSL?
+- How do we display dynamic fan-out runs (potentially 100 child tasks) in the run visualization without overwhelming the UI?
+
+---
