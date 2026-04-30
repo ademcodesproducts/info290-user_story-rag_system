@@ -113,6 +113,24 @@ python query.py "DLT pipeline failures" --json
 | `--filter-type` | none | Restrict to `interview`, `retro`, `prd`, or `ticket` |
 | `--json` | false | Output raw JSON instead of formatted text |
 
+### Run the live demo (poster day)
+
+A small FastAPI server (`app.py`) wraps the RAG pipeline and serves a single-page demo UI from `static/`.
+
+```bash
+# After ingest.py has populated chroma_db/ and OPENAI_API_KEY is set
+uvicorn app:app --reload --port 8000
+```
+
+Then open <http://localhost:8000>. The page lets you:
+
+- Pick a generation **variant** — V1 (gpt-4o-mini + baseline), V2 (gpt-4o-mini + enhanced), or V3 (gpt-4o + enhanced).
+- Adjust **top-k** (3 / 5 / 10) and filter by **doc type** (interview, prd, retro, ticket).
+- Click an example query chip or type your own.
+- See the structured output rendered as cards: **summary**, **pain points** (with severity badges and source citations), **Connextra user stories** (with rationale + citations), and the **retrieved evidence chunks** (collapsible).
+
+The same pipeline that backs the CLI (`query.py`) also backs the API endpoint (`POST /api/query`), so the demo always shows the real system.
+
 ### Evaluate
 
 ```bash

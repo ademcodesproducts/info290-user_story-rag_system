@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quorum — Document-Aware RAG for PMs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span class="brand-name">Quorum</span>
+    <span class="brand-tagline">Document-Aware RAG for Product Management · <em>"Cursor for PMs"</em></span>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="demo">Live Demo</button>
+    <button class="tab" data-tab="benchmarks">Benchmarks</button>
+  </nav>
+  <div class="topbar-right">
+    <span class="kb-badge"><span id="kb-stat">…</span></span>
+    <a class="repo-link" href="https://github.com/ademcodesproducts/info290-user_story-rag_system" target="_blank" rel="noopener">github&nbsp;↗</a>
+  </div>
+</header>
+
+<main class="container" id="page-demo">
+
+  <section class="hero">
+    <h1 class="hero-title">Ask <span>Quorum</span> about your product.</h1>
+    <p class="hero-sub">
+      Quorum retrieves grounded evidence from PM artefacts — interviews,
+      PRDs, retros, support tickets, meeting notes — and returns
+      <strong>pain points</strong>,
+      <strong>Connextra user stories</strong>, and a
+      <strong>summary</strong> as structured JSON, with source citations.
+    </p>
+
+    <form id="query-form" class="query-form" autocomplete="off">
+      <textarea
+        id="query-input"
+        placeholder="e.g. What are the top pain points around Unity Catalog lineage for data engineers?"
+        rows="3"
+        required></textarea>
+
+      <div class="examples">
+        <span class="examples-label">Try:</span>
+        <div id="examples-row" class="examples-row"></div>
+      </div>
+
+      <div class="controls">
+        <fieldset class="control-group">
+          <legend>Variant</legend>
+          <label><input type="radio" name="variant" value="v1"> <span>V1 · mini · baseline</span></label>
+          <label><input type="radio" name="variant" value="v2" checked> <span>V2 · mini · enhanced ★</span></label>
+          <label><input type="radio" name="variant" value="v3"> <span>V3 · gpt-4o · enhanced</span></label>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>Top-k</legend>
+          <label><input type="radio" name="topk" value="3"> <span>3</span></label>
+          <label><input type="radio" name="topk" value="5"> <span>5</span></label>
+          <label><input type="radio" name="topk" value="10" checked> <span>10</span></label>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>Doc type</legend>
+          <label><input type="radio" name="filter" value="" checked> <span>all</span></label>
+          <label><input type="radio" name="filter" value="interview"> <span>interview</span></label>
+          <label><input type="radio" name="filter" value="prd"> <span>prd</span></label>
+          <label><input type="radio" name="filter" value="retro"> <span>retro</span></label>
+          <label><input type="radio" name="filter" value="ticket"> <span>ticket</span></label>
+        </fieldset>
+
+        <button id="submit-btn" type="submit" class="btn-primary">
+          <span class="btn-label">Ask Quorum</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section id="result" class="result" hidden>
+
+    <div class="result-meta">
+      <span id="meta-variant" class="meta-chip"></span>
+      <span id="meta-topk" class="meta-chip"></span>
+      <span id="meta-time" class="meta-chip meta-chip-dim"></span>
+    </div>
+
+    <article class="card card-summary">
+      <div class="card-header">
+        <span class="card-num">§</span>
+        <h2>Summary</h2>
+      </div>
+      <p id="summary-text"></p>
+    </article>
+
+    <article class="card card-pains">
+      <div class="card-header">
+        <span class="card-num">①</span>
+        <h2>Pain Points</h2>
+        <span id="pains-count" class="card-count"></span>
+      </div>
+      <div id="pains-grid" class="pains-grid"></div>
+    </article>
+
+    <article class="card card-stories">
+      <div class="card-header">
+        <span class="card-num">②</span>
+        <h2>User Stories <span class="card-header-sub">· Connextra format</span></h2>
+        <span id="stories-count" class="card-count"></span>
+      </div>
+      <div id="stories-list" class="stories-list"></div>
+    </article>
+
+    <details class="card card-sources">
+      <summary>
+        <div class="card-header">
+          <span class="card-num">③</span>
+          <h2>Retrieved Evidence <span class="card-header-sub">· top-k chunks</span></h2>
+          <span id="sources-count" class="card-count"></span>
+        </div>
+      </summary>
+      <div id="sources-list" class="sources-list"></div>
+    </details>
+
+  </section>
+
+  <section id="error-panel" class="error" hidden>
+    <strong>Something went wrong.</strong>
+    <p id="error-text"></p>
+  </section>
+
+</main>
+
+<main class="container" id="page-benchmarks" hidden>
+
+  <section class="bench-hero">
+    <h1 class="hero-title">Quorum on the <span>held-out test</span>.</h1>
+    <p class="hero-sub">
+      All numbers below are loaded live from <code>results/*.json</code> — the same
+      files the report and poster cite. The held-out test is a single-use,
+      90-question split that the system never saw during prompt or retrieval tuning.
+    </p>
+
+    <div id="bench-headline-config" class="bench-config"></div>
+    <div id="bench-stat-tiles" class="stat-tiles"></div>
+  </section>
+
+  <section class="bench-section">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-num">A/B</span>
+        <h2>Prompt Design · V1 baseline → V2 enhanced</h2>
+        <span class="card-header-sub">validation, n=360</span>
+      </div>
+      <p class="card-lead">
+        Same retriever, same model (<code>gpt-4o-mini</code>), same evaluation set —
+        only the prompt changes. V2's "enhanced" prompt adds severity definitions,
+        evidence rules, and stricter Connextra scaffolding. The story-format and
+        story-overall lifts are the headline result.
+      </p>
+      <div id="prompt-compare" class="compare"></div>
+    </div>
+  </section>
+
+  <section class="bench-section">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-num">k</span>
+        <h2>Retrieval Depth · top-k ablation</h2>
+        <span class="card-header-sub">validation, n=360</span>
+      </div>
+      <p class="card-lead">
+        How much does retrieval depth matter? Sweeping k = 3 → 5 → 10 with everything
+        else fixed shows the recall lift while story quality stays stable —
+        evidence that more context helps without diluting generation.
+      </p>
+      <div id="topk-compare" class="compare"></div>
+    </div>
+  </section>
+
+  <section class="bench-section">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-num">90</span>
+        <h2>Per-Case Results</h2>
+        <span class="card-header-sub">held-out test · click to expand</span>
+        <span id="cases-count" class="card-count"></span>
+      </div>
+
+      <div class="cases-toolbar">
+        <input id="cases-search" type="search" placeholder="filter by query, id, or source…" />
+        <div class="cases-filter">
+          <label><input type="radio" name="case-filter" value="all" checked> all</label>
+          <label><input type="radio" name="case-filter" value="hit"> recall = 1</label>
+          <label><input type="radio" name="case-filter" value="miss"> recall &lt; 1</label>
+        </div>
+      </div>
+
+      <div id="cases-list" class="cases-list"></div>
+      <div id="cases-empty" class="cases-empty" hidden>No cases match your filter.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>
+    Built for INFO 290 · GenAI · Spring 2026 ·
+    <span class="footer-team">Azad Jagtap · Vinay Thorat · Arno Demarteau · Romir Kar</span>
+  </div>
+  <div class="footer-stack">
+    text-embedding-3-small · ChromaDB · gpt-4o-mini / gpt-4o · constrained JSON
+  </div>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
