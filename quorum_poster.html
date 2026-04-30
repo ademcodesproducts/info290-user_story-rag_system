@@ -10,26 +10,21 @@
 
   <style>
     /* ─── TOKENS ──────────────────────────────────────────────── */
-    /* Color system (each colour carries one consistent meaning):
-        BLUE   (--accent)  → System / Architecture / Pipeline
-        GREEN  (--accent2) → Results / Metrics / Positive outcomes
-        INDIGO (--accent3) → Schema / Sections / Categories
-       Text colours are deliberately dark so the poster prints legibly. */
     :root {
       --bg:          #FFFFFF;
-      --surface:     #F4F6FB;
-      --surface-hi:  #E8ECF4;
-      --border:      #CBD5E1;
-      --border-accent: #93C5FD;
+      --surface:     #F8FAFC;
+      --surface-hi:  #F1F5F9;
+      --border:      #E2E8F0;
+      --border-accent: #BFDBFE;
 
-      --text-primary:   #0B1220;   /* near-black — headings & emphasis */
-      --text-secondary: #1E293B;   /* dark slate — body text (print-safe) */
-      --text-dim:       #475569;   /* mid slate — labels & captions (print-safe) */
+      --text-primary:   #0F172A;
+      --text-secondary: #475569;
+      --text-dim:       #94A3B8;
 
-      /* 3 accent colors with dedicated meaning */
-      --accent:  #1D4ED8;          /* BLUE   · system / architecture */
-      --accent2: #047857;          /* GREEN  · results / metrics */
-      --accent3: #3730A3;          /* INDIGO · schema / sections */
+      /* 3 accent colors only */
+      --accent:  #2563EB;   /* blue  — architecture, key UI */
+      --accent2: #059669;   /* green — results, positive */
+      --accent3: #4F46E5;   /* indigo — section nums, chips */
 
       --font-display: 'DM Serif Display', serif;
       --font-body:    'Outfit', sans-serif;
@@ -62,7 +57,7 @@
       position: relative;
       overflow: hidden;
       border-radius: var(--r-lg);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06);
     }
 
     /* subtle dot-grid texture */
@@ -85,7 +80,7 @@
       align-items: center;
       padding: 28px 40px 24px;
       border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(29,78,216,0.06) 0%, transparent 100%);
+      background: linear-gradient(180deg, rgba(37,99,235,0.03) 0%, transparent 100%);
       gap: 20px;
     }
 
@@ -99,8 +94,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(29,78,216,0.06);
-      border: 1px solid rgba(29,78,216,0.2);
+      background: rgba(37,99,235,0.06);
+      border: 1px solid rgba(37,99,235,0.2);
       border-radius: 20px;
       padding: 5px 12px 5px 8px;
       width: fit-content;
@@ -210,8 +205,8 @@
       font-weight: 600;
       color: var(--accent3);
       letter-spacing: 0.12em;
-      background: rgba(55,48,163,0.13);
-      border: 1px solid rgba(55,48,163,0.2);
+      background: rgba(79,70,229,0.08);
+      border: 1px solid rgba(79,70,229,0.2);
       border-radius: 4px;
       padding: 2px 6px;
     }
@@ -226,7 +221,7 @@
 
     .section-rule {
       height: 1px;
-      background: linear-gradient(90deg, var(--accent3) 0%, rgba(55,48,163,0.2) 60%, transparent 100%);
+      background: linear-gradient(90deg, var(--accent3) 0%, rgba(79,70,229,0.1) 60%, transparent 100%);
       margin-bottom: 14px;
     }
 
@@ -248,8 +243,8 @@
       border-radius: 4px;
       font-weight: 500;
     }
-    .tag-accent  { background: rgba(29,78,216,0.08); color: var(--accent); border: 1px solid rgba(29,78,216,0.2); }
-    .tag-accent3 { background: rgba(55,48,163,0.13); color: var(--accent3); border: 1px solid rgba(55,48,163,0.2); }
+    .tag-accent  { background: rgba(37,99,235,0.08); color: var(--accent); border: 1px solid rgba(37,99,235,0.2); }
+    .tag-accent3 { background: rgba(79,70,229,0.08); color: var(--accent3); border: 1px solid rgba(79,70,229,0.2); }
 
     /* ─── CORPUS CARDS ────────────────────────────────────────── */
     .corpus-grid {
@@ -275,11 +270,10 @@
       height: 2px;
     }
 
-    /* Corpus cards = document categories → indigo (schema / sections) */
     .corpus-card.interviews::before,
-    .corpus-card.prds::before,
+    .corpus-card.prds::before        { background: var(--accent); }
     .corpus-card.retros::before,
-    .corpus-card.tickets::before     { background: var(--accent3); }
+    .corpus-card.tickets::before     { background: var(--accent2); }
 
     .corpus-card-count {
       font-family: var(--font-mono);
@@ -287,8 +281,11 @@
       font-weight: 600;
       line-height: 1;
       margin-bottom: 4px;
-      color: var(--accent3);
+      color: var(--accent);
     }
+
+    .corpus-card.retros  .corpus-card-count,
+    .corpus-card.tickets .corpus-card-count { color: var(--accent2); }
 
     .corpus-card-label {
       font-size: 11px;
@@ -305,7 +302,7 @@
 
     .corpus-total {
       margin-top: 12px;
-      background: rgba(29,78,216,0.08);
+      background: rgba(37,99,235,0.04);
       border: 1px solid var(--border-accent);
       border-radius: var(--r-md);
       padding: 12px 16px;
@@ -351,14 +348,14 @@
     }
 
     .arch-box.primary {
-      border-color: rgba(29,78,216,0.35);
-      background: rgba(29,78,216,0.09);
+      border-color: rgba(37,99,235,0.35);
+      background: rgba(37,99,235,0.05);
       color: var(--accent);
     }
 
     .arch-box.positive {
-      border-color: rgba(4,120,87,0.35);
-      background: rgba(4,120,87,0.09);
+      border-color: rgba(5,150,105,0.35);
+      background: rgba(5,150,105,0.05);
       color: var(--accent2);
     }
 
@@ -432,8 +429,8 @@
       padding: 4px 10px;
       border-radius: 20px;
       font-weight: 500;
-      border: 1px solid rgba(55,48,163,0.25);
-      background: rgba(55,48,163,0.10);
+      border: 1px solid rgba(79,70,229,0.25);
+      background: rgba(79,70,229,0.06);
       color: var(--accent3);
     }
 
@@ -495,7 +492,7 @@
 
     .metric-row-bar-wrap {
       height: 5px;
-      background: rgba(0,0,0,0.12);
+      background: rgba(0,0,0,0.06);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -565,7 +562,7 @@
     .ablation-bar-bg {
       flex: 1;
       height: 20px;
-      background: rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.05);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -579,8 +576,8 @@
       padding-right: 8px;
     }
 
-    .ablation-bar-fill.low  { background: rgba(29,78,216,0.35); }
-    .ablation-bar-fill.mid  { background: rgba(29,78,216,0.60); }
+    .ablation-bar-fill.low  { background: rgba(37,99,235,0.35); }
+    .ablation-bar-fill.mid  { background: rgba(37,99,235,0.60); }
     .ablation-bar-fill.high { background: var(--accent); }
 
     .ablation-bar-label {
@@ -621,8 +618,8 @@
 
     /* ─── MOTIVATION CALLOUT ──────────────────────────────────── */
     .callout {
-      background: rgba(29,78,216,0.08);
-      border: 1px solid rgba(29,78,216,0.15);
+      background: rgba(37,99,235,0.04);
+      border: 1px solid rgba(37,99,235,0.15);
       border-left: 3px solid var(--accent);
       border-radius: var(--r-md);
       padding: 12px 16px;
@@ -664,8 +661,8 @@
       font-size: 10px;
       font-weight: 600;
       color: var(--accent3);
-      background: rgba(55,48,163,0.13);
-      border: 1px solid rgba(55,48,163,0.2);
+      background: rgba(79,70,229,0.08);
+      border: 1px solid rgba(79,70,229,0.2);
       border-radius: 3px;
       padding: 1px 5px;
       flex-shrink: 0;
@@ -729,8 +726,8 @@
 
     .variant-chip.active {
       color: var(--accent);
-      border-color: rgba(29,78,216,0.3);
-      background: rgba(29,78,216,0.06);
+      border-color: rgba(37,99,235,0.3);
+      background: rgba(37,99,235,0.06);
     }
 
     .footer-github {
@@ -775,8 +772,8 @@
     }
 
     .vc-box.active {
-      background: rgba(4,120,87,0.09);
-      border-color: rgba(4,120,87,0.25);
+      background: rgba(5,150,105,0.05);
+      border-color: rgba(5,150,105,0.25);
     }
 
     .vc-label {
@@ -804,59 +801,6 @@
     }
 
     .vc-box.active .vc-note { color: var(--accent2); }
-
-    /* ─── COLOUR LEGEND (small, header-area) ──────────────────── */
-    .color-legend {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      margin-top: 10px;
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .color-legend-item { display: inline-flex; align-items: center; gap: 6px; }
-    .color-legend-swatch {
-      width: 10px; height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-      border: 1px solid rgba(0,0,0,0.12);
-    }
-    .color-legend-swatch.sys     { background: var(--accent); }
-    .color-legend-swatch.results { background: var(--accent2); }
-    .color-legend-swatch.schema  { background: var(--accent3); }
-
-    /* ─── PRINT STYLESHEET ────────────────────────────────────── */
-    @media print {
-      @page { size: 1800px 1240px; margin: 0; }
-      *,
-      *::before,
-      *::after {
-        -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-        color-adjust: exact !important;
-      }
-      body {
-        background: #FFFFFF !important;
-        padding: 0 !important;
-        min-height: auto !important;
-      }
-      .poster {
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        width: 1800px !important;
-        min-height: 1240px !important;
-      }
-      /* Drop the dot-grid pattern: it can muddy fine text on cheap printers. */
-      .poster::before { display: none !important; }
-      /* Slightly stronger borders for paper. */
-      header, footer, .col, .metric-row, .corpus-card, .tier-card,
-      .arch-box, .future-item, .limitation-box, .vc-box, .variant-chip {
-        border-color: #94A3B8 !important;
-      }
-    }
   </style>
 </head>
 <body>
@@ -869,7 +813,7 @@
         <span class="inst-dot"></span>
         <span>UC Berkeley · MIMS</span>
       </div>
-      <div class="course-tag">INFO 290 · GenAI · Spring 2026</div>
+      <div class="course-tag">INFO 290 · GenAI · Spring 2025</div>
     </div>
 
     <div class="header-center">
@@ -877,11 +821,6 @@
       <div class="poster-subtitle">
         Document-Aware RAG for Product Management &nbsp;·&nbsp;
         <em>A "Cursor for PMs"</em>
-      </div>
-      <div class="color-legend">
-        <span class="color-legend-item"><span class="color-legend-swatch sys"></span>System / Architecture</span>
-        <span class="color-legend-item"><span class="color-legend-swatch results"></span>Results / Metrics</span>
-        <span class="color-legend-item"><span class="color-legend-swatch schema"></span>Schema / Sections</span>
       </div>
     </div>
 
@@ -1020,44 +959,6 @@
         <div class="section-rule"></div>
 
         <div class="arch-pipeline">
-          <!-- Indexing path (offline) -->
-          <div class="arch-row">
-            <div class="arch-box primary" style="text-align:left; padding: 10px 14px;">
-              <strong>PM Corpus</strong>
-              <div class="arch-box-subtitle">100 docs · interviews · retros · PRDs · tickets · meeting notes</div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
-
-          <div class="arch-row">
-            <div class="arch-box primary">
-              <strong>Document-Aware Parser &amp; Chunker</strong>
-              <div class="arch-box-subtitle">type-specific rules · chunk_size = 400 · overlap = 80 · 163 chunks</div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
-
-          <div class="arch-row">
-            <div class="arch-box primary">
-              <strong>OpenAI text-embedding-3-small</strong>
-              <div class="arch-box-subtitle">1536-dim dense embeddings · per-chunk metadata preserved</div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
-
-          <div class="arch-row">
-            <div class="arch-box positive">
-              <strong>ChromaDB Vector Index</strong>
-              <div class="arch-box-subtitle">cosine similarity · doc_type / source_file / role metadata</div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 6px 0 4px; text-transform:uppercase; font-family:var(--font-mono); font-size:9px; letter-spacing:0.1em;">— query time —</div>
-
-          <!-- Query path (online) -->
           <div class="arch-row">
             <div class="arch-box primary" style="text-align:left; padding: 10px 14px;">
               <strong>PM Query</strong>
@@ -1068,9 +969,9 @@
           <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
 
           <div class="arch-row">
-            <div class="arch-box positive">
-              <strong>Top-k Retrieval</strong>
-              <div class="arch-box-subtitle">k = 10 · returns numbered evidence block with source citations</div>
+            <div class="arch-box primary">
+              <strong>QueryPlanner Agent</strong>
+              <div class="arch-box-subtitle">LangGraph · decomposes multi-facet queries into sub-queries</div>
             </div>
           </div>
 
@@ -1078,13 +979,36 @@
 
           <div class="arch-pair">
             <div class="arch-box primary">
-              <strong>gpt-4o-mini</strong>
-              <div class="arch-box-subtitle">V1 baseline · V2 enhanced prompt</div>
+              <strong>BM25</strong>
+              <div class="arch-box-subtitle">Elasticsearch · exact keyword match</div>
             </div>
-            <div style="display:flex; align-items:center; color:var(--text-dim); font-size:12px; flex-shrink:0; padding:0 4px;">|</div>
+            <div style="display:flex; align-items:center; color:var(--text-dim); font-size:12px; flex-shrink:0; padding:0 4px;">+</div>
+            <div class="arch-box positive">
+              <strong>Dense Embeddings</strong>
+              <div class="arch-box-subtitle">Qdrant · semantic similarity</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
+
+          <div class="arch-row">
+            <div class="arch-box">
+              <strong>RRF Fusion</strong>
+              <div class="arch-box-subtitle">Reciprocal Rank Fusion · merges BM25 + dense ranked lists</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
+
+          <div class="arch-pair">
             <div class="arch-box primary">
-              <strong>gpt-4o</strong>
-              <div class="arch-box-subtitle">V3 · enhanced prompt · higher cost</div>
+              <strong>Tier 1 Lookup</strong>
+              <div class="arch-box-subtitle">Document summary index · coarse filter</div>
+            </div>
+            <div style="display:flex; align-items:center; color:var(--text-dim); font-size:12px; flex-shrink:0; padding:0 4px;">→</div>
+            <div class="arch-box positive">
+              <strong>Tier 2 Lookup</strong>
+              <div class="arch-box-subtitle">Chunk detail index · fine passage retrieval</div>
             </div>
           </div>
 
@@ -1092,8 +1016,17 @@
 
           <div class="arch-row">
             <div class="arch-box positive">
-              <strong>Constrained JSON Output</strong>
-              <div class="arch-box-subtitle">pain_points (severity + sources) · user_stories (Connextra) · summary</div>
+              <strong>Cross-Encoder Reranker</strong>
+              <div class="arch-box-subtitle">Cohere Rerank v3 / BGE-Reranker-v2-M3 · top-k re-scored</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:center; color:var(--text-dim); font-size:16px; padding: 2px 0;">↓</div>
+
+          <div class="arch-row">
+            <div class="arch-box primary">
+              <strong>Structured PM Output</strong>
+              <div class="arch-box-subtitle">Persona · RoadmapItem · SpeakerTurn · Citation · GapFlag</div>
             </div>
           </div>
         </div>
