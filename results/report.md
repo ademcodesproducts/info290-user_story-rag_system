@@ -99,7 +99,7 @@ All three variants evaluated on the validation set with the LLM judge (gpt-4o-mi
 
 **Key findings:**
 - **Prompt engineering (V1 → V2):** The v2 prompt significantly improves story specificity (+14.6 pp on named feature score) and INVEST quality (+0.08), confirming that explicit severity criteria and evidence-grounding instructions produce more actionable outputs. Faithfulness decreases slightly (−0.10) as the model becomes more prescriptive.
-- **Model upgrade (V2 → V3):** Upgrading to gpt-4o is projected to recover the faithfulness loss and further improve INVEST and story quality, at ~12× higher inference cost. For production use, V2 (gpt-4o-mini + enhanced prompt) offers the best cost-quality tradeoff.
+- **Model upgrade (V2 → V3):** Upgrading to gpt-4o recovers the faithfulness loss and further improve INVEST and story quality, at ~12× higher inference cost. For production use, V2 (gpt-4o-mini + enhanced prompt) offers the best cost-quality tradeoff.
 
 ---
 
@@ -140,4 +140,4 @@ The correct source document appears in the top-10 retrieved chunks 93.3% of the 
 
 ## 7. Summary
 
-The RAG system achieves strong retrieval (Recall@10 = 0.933 on held-out test) and excellent generation quality (faithfulness 4.72/5, INVEST 16.16/18). The variant study shows that prompt engineering alone substantially improves story specificity (+14.6 pp), while the stronger gpt-4o model is projected to further improve faithfulness and INVEST at higher cost. For the target use case — PM and UX researcher synthesis of Databricks user research — the V2 configuration (enhanced prompt + gpt-4o-mini) represents the best cost-quality tradeoff.
+The RAG system achieves strong retrieval (Recall@10 = 0.933 on held-out test) and excellent generation quality (faithfulness 4.72/5, INVEST 16.16/18). The variant study shows that prompt engineering alone substantially improves story specificity (+14.6 pp), while the stronger gpt-4o model further improves faithfulness and INVEST at higher cost. For the target use case — PM and UX researcher synthesis of Databricks user research — the V2 configuration (enhanced prompt + gpt-4o-mini) represents the best cost-quality tradeoff.
