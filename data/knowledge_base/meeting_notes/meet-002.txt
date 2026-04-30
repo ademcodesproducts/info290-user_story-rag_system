@@ -1,0 +1,36 @@
+---
+title: Feature Store Customer Feedback Review
+date: 2024-02-20
+attendees: Sofia Mendez (PM, ML Platform), Tara Okonkwo (Senior ML Engineer), James Wu (Data Scientist), Nadia Petrov (Customer Success Manager)
+product_area: Feature Store, MLflow
+---
+
+## Meeting Purpose
+Review escalated Feature Store pain points from four enterprise customers collected by CS over Q1.
+
+## Pain Points Raised
+
+**1. Point-in-time join correctness is not validated at write time (Tara)**
+"We had a model in production for six weeks before we realized the Feature Store point-in-time join was silently leaking future data into training. Precision dropped from 0.91 to 0.84 before anyone noticed. There's no warning when you define a feature table with a timestamp column that might cause leakage — the API just accepts it."
+Severity: High. Data leakage is a correctness issue with compliance implications in regulated industries.
+
+**2. Feature discovery is broken for large organizations (James)**
+"We have 800+ features across 60 feature tables. The search in the Feature Store UI returns results ranked by recency, not relevance. I can't find features by the use case they were built for, or filter by the model that uses them. I end up asking colleagues on Slack."
+Severity: Medium. Nadia confirmed this is a top-3 complaint from enterprise customers with large feature catalogs.
+
+**3. No offline-to-online consistency checks (Tara)**
+"We train offline using Delta tables and serve online from DynamoDB. If the feature pipeline has a bug that only manifests in the online store, we have no automated check to detect drift between offline and online values. We built our own reconciliation job but it's fragile."
+Severity: High.
+
+## Decisions Made
+
+- **Decision:** Add a point-in-time leakage warning as a validation step in the Feature Store write API. Severity: P1. Owner: Sofia to spec, Tara to validate technical feasibility. Due: 2024-03-15.
+- **Decision:** Feature discovery improvements (semantic search, use-case tagging) scoped for Q3. Will leverage Unity Catalog tags as the metadata backbone.
+
+## Open Question
+Should offline-to-online consistency checks be a Feature Store responsibility or a separate data quality product? Needs input from the Data Quality PM before scoping.
+
+## Action Items
+- Sofia: draft spec for leakage warning by 2024-03-08
+- Nadia: send anonymized examples of customer feature catalogs to inform search UX design
+- James: document the internal reconciliation job as a reference implementation

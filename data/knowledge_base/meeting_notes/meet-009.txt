@@ -1,0 +1,36 @@
+---
+title: Cost Management Chargeback Feature Planning Session
+date: 2024-01-25
+attendees: Ben Nakamura (Platform Admin), Ingrid Larsson (PM, Platform), Farida Osei (Analytics Engineer), Wei Zhang (FinOps Lead)
+product_area: Cost Management, System Tables, Workflows
+---
+
+## Meeting Purpose
+Planning session for the team-level cost attribution and chargeback reporting feature. Inputs from two enterprise customers with $100K+/month Databricks spend.
+
+## Pain Points Raised
+
+**1. $120K/month spend is completely untraceable to teams (Ben)**
+"We spend around $120,000 per month on Databricks. Our finance team asks me every quarter which team is responsible for which spend. I can see total DBU consumption in the account console but I cannot break it down by team, project, or cost center without building a custom attribution model on top of system tables. That model takes me 8 hours to maintain per quarter."
+Severity: High. Two customers independently reported the same problem with similar spend levels.
+
+**2. Budget alerts fire after the overage, not before (Wei)**
+"We set budget policies in Databricks but alerts are based on actual spend, which is reported with a 24-hour lag. By the time we get an alert that a team exceeded their monthly budget, they've already gone 15–20% over. We need forward-looking spend projections, not lagging actuals."
+Severity: High.
+
+**3. Ad-hoc cluster jobs bypass all budget controls (Farida)**
+"Analysts spin up all-purpose clusters from notebooks for ad-hoc analysis. These clusters don't inherit the team tag from the parent project, so their cost is invisible in chargeback reports. We've tried enforcing tags via cluster policies but analysts find workarounds."
+Severity: Medium. Tag enforcement gap undermines the entire chargeback model.
+
+## Decisions Made
+
+- **Decision:** Team-level cost attribution MVP (tag-based, monthly report, CSV export) scoped for Q2. Ingrid to write spec. Will use System Tables as the data source. Owner: Ingrid.
+- **Decision:** Spend projection (forward-looking budget forecast) deferred to Q3 due to engineering complexity. Wei to validate with finance team that Q3 timeline is acceptable.
+
+## Open Question
+Should cost attribution be a first-class Unity Catalog feature (tags as metadata) or a standalone cost management product? Architectural alignment with Unity Catalog PM needed.
+
+## Action Items
+- Ben: provide anonymized spend data to validate attribution model accuracy
+- Ingrid: draft cost attribution spec by 2024-02-08
+- Wei: confirm with finance team that Q3 projection feature is acceptable

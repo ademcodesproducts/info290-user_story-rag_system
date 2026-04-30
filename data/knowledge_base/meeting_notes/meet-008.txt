@@ -1,0 +1,36 @@
+---
+title: MLflow Experiment Tracking Improvements — Customer Advisory Session
+date: 2024-03-19
+attendees: Mei-Ling Zhao (Senior ML Engineer), Carlos Reyes (ML Engineer), Andile Dlamini (ML Engineer), Sofia Mendez (PM, ML Platform)
+product_area: MLflow, Model Registry
+---
+
+## Meeting Purpose
+Customer advisory session with three ML engineers from different companies to surface MLflow experiment tracking pain points ahead of the next major version.
+
+## Pain Points Raised
+
+**1. Experiment proliferation makes comparison across runs impossible (Mei-Ling)**
+"We have 3,000+ experiments in our MLflow workspace. There's no way to archive or organize them into folders. Search works by name prefix only — I can't search by tag, by model architecture, or by dataset version. Comparing runs across experiments requires exporting to a notebook. This is the single biggest productivity drain on my team."
+Severity: High. Confirmed by all three attendees as a top-3 MLflow pain point.
+
+**2. Artifact storage is not tiered — large artifacts slow everything down (Carlos)**
+"We log model weights, evaluation datasets, and SHAP plots as artifacts. The MLflow artifact viewer loads all artifacts at the same priority regardless of size. Opening an experiment with a 2GB model checkpoint artifact freezes the UI for 30 seconds. We want metadata-only views with lazy loading for large files."
+Severity: Medium.
+
+**3. No approval workflow for model promotion to production (Andile)**
+"Our regulatory compliance team requires a documented sign-off before any model moves to production. Today we implement this via a Jira ticket and a manual registry stage transition. If someone transitions a model to 'Production' without the Jira ticket, there's no audit trail in MLflow. We need approval workflows with required reviewers and a digital signature."
+Severity: High. Blocker for financial services and healthcare ML deployments.
+
+## Decisions Made
+
+- **Decision:** Experiment organization (folders/tags/archiving) prioritized for Q2 as the highest-impact MLflow UX improvement. Owner: Sofia to spec. Target: folder hierarchy + tag-based filtering.
+- **Decision:** Model promotion approval workflows scoped for Q3 with compliance use case as the primary driver. Owner: Sofia. Andile's company agreed to be design partner.
+
+## Open Question
+Should artifact lazy loading be an MLflow-level feature or a browser/client-side optimization? Performance profiling needed before architectural decision.
+
+## Action Items
+- Sofia: draft experiment organization spec incorporating input from all three attendees
+- Andile: share Jira-based approval workflow documentation as a reference for the product spec
+- Carlos: share artifact size distribution data from their workspace to inform lazy loading thresholds

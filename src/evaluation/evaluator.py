@@ -55,6 +55,9 @@ def load_test_set(path: Path = DEFAULT_TEST_SET_PATH) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+from typing import Generator
+
+
 def run_evaluation(
     collection: chromadb.Collection,
     openai_client: OpenAI,
@@ -66,7 +69,7 @@ def run_evaluation(
     test_set_path: Path = DEFAULT_TEST_SET_PATH,
     prompt_variant: str = "baseline",
     skip_ids: set[str] | None = None,
-) -> list[TestCaseResult]:
+) -> Generator[TestCaseResult, None, None]:
     test_cases = load_test_set(test_set_path)
     if test_ids:
         test_cases = [t for t in test_cases if t["id"] in test_ids]
@@ -74,7 +77,6 @@ def run_evaluation(
         test_cases = [t for t in test_cases if t["id"] not in skip_ids]
         print(f"  Resuming — skipping {len(skip_ids)} already-completed cases")
 
-    results = []
     for i, tc in enumerate(test_cases):
         print(f"  [{i+1}/{len(test_cases)}] {tc['id']}: {tc['query'][:60]}...")
 
@@ -121,9 +123,7 @@ def run_evaluation(
             if rag_result.user_stories:
                 tc_result.invest = invest_scores(openai_client, rag_result.user_stories[:3], model=judge_model)
 
-        results.append(tc_result)
-
-    return results
+        yield tc_result
 
 
 def aggregate_metrics(results: list[TestCaseResult]) -> dict:

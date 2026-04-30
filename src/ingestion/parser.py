@@ -8,6 +8,7 @@ DOC_TYPE_MAP = {
     "retros": "retro",
     "prds": "prd",
     "tickets": "ticket",
+    "meeting_notes": "meeting_note",
 }
 
 
@@ -67,11 +68,19 @@ def parse_ticket(text: str, filepath: Path) -> tuple[dict, str]:
     return metadata, body
 
 
+def parse_meeting_note(text: str, filepath: Path) -> tuple[dict, str]:
+    metadata, body = parse_header_block(text)
+    metadata["doc_type"] = "meeting_note"
+    metadata["source_file"] = filepath.name
+    return metadata, body
+
+
 PARSERS = {
     "interview": parse_interview,
     "retro": parse_retro,
     "prd": parse_prd,
     "ticket": parse_ticket,
+    "meeting_note": parse_meeting_note,
 }
 
 

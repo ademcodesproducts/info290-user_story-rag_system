@@ -1,0 +1,36 @@
+---
+title: Mosaic AI LLMOps PM Sync — Q2 Planning
+date: 2024-03-12
+attendees: Priya Anand (PM, AI Platform), Ravi Subramaniam (Senior ML Engineer), Camille Dufour (UX Researcher), Leo Hartmann (Engineering Manager)
+product_area: Mosaic AI, LLMOps
+---
+
+## Meeting Purpose
+Quarterly sync to surface top LLMOps friction points from ML engineering customers ahead of Q2 roadmap prioritization.
+
+## Pain Points Raised
+
+**1. No prompt versioning or diff tooling (Ravi)**
+"We have 40+ prompt templates stored in notebooks and a shared Confluence page. When a model quality regression happens, we have no way to trace it back to a prompt change. We need something like Git for prompts — version history, diffs, rollback."
+Severity: High. Three enterprise customers raised the same issue in the past month.
+
+**2. Model evaluation is manual and disconnected (Camille — customer research summary)**
+Customers are running evaluations in ad-hoc notebooks, exporting CSVs, and comparing results in spreadsheets. There is no native eval harness that connects to MLflow experiment tracking. One customer (autonomous vehicle company, ~350 employees) spent 6 weeks building an internal eval framework that should be a platform feature.
+Severity: High.
+
+**3. LLM endpoint observability is limited (Ravi)**
+"We can see request count and latency on Model Serving dashboards, but we have no visibility into token usage per endpoint, cost per request, or quality drift over time. If a model starts hallucinating more, we won't know until a user files a ticket."
+Severity: Medium.
+
+## Decisions Made
+
+- **Decision:** Prompt versioning will be scoped as a Q2 spike. Ravi to prototype using MLflow's existing artifact store as a backend. Owner: Ravi. Due: 2024-04-01.
+- **Decision:** LLMOps observability (token cost, quality drift) added to Q3 roadmap. Priya to add to the backlog with customer evidence attached.
+
+## Open Question
+Should prompt versioning live inside MLflow Experiments or as a standalone Mosaic AI feature? Dependency on MLflow team needs to be resolved before scoping begins.
+
+## Action Items
+- Ravi: prototype prompt artifact storage in MLflow by 2024-04-01
+- Camille: share full customer eval framework interview notes with Priya
+- Leo: connect with MLflow PM to align on integration boundary

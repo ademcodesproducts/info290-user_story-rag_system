@@ -1,0 +1,36 @@
+---
+title: Structured Streaming Roadmap Discussion
+date: 2024-01-30
+attendees: Marcus Reid (PM, Data Engineering), Yuki Tanaka (Staff Data Engineer), Preethi Nair (Engineering Manager), Ben Osei (Senior Data Engineer)
+product_area: Structured Streaming, Delta Lake, Workflows
+---
+
+## Meeting Purpose
+Align on top Structured Streaming pain points to inform H1 roadmap. Input sourced from 8 customer interviews and 3 escalated support tickets.
+
+## Pain Points Raised
+
+**1. Watermarking behavior is inconsistent with late-arriving data (Yuki)**
+"We process IoT sensor data where events can arrive up to 4 hours late. The watermark drops state correctly in testing but we've seen cases in production where duplicate records appear in silver tables after a checkpoint restore. We can't reproduce it reliably, which means we can't fix it. The documentation on foreachBatch + watermark interaction is sparse."
+Severity: High. Data duplication in silver tables has downstream compliance implications.
+
+**2. No native SLA monitoring for streaming pipelines (Ben)**
+"If our Auto Loader pipeline stalls — no new files processed in 3 hours — we find out from a downstream analyst filing a ticket, not from Databricks. We want a native alert: 'no records processed in N minutes.' Right now we're running a separate monitoring job that queries system tables every 15 minutes."
+Severity: Medium. This came up in 5 of 8 customer interviews independently.
+
+**3. Checkpoint management is manual and error-prone (Yuki)**
+"When we need to reset a streaming query, we have to manually delete the checkpoint directory. If someone deletes the wrong path, we lose processing state and have to reprocess weeks of data. There's no checkpoint management UI or safe-reset operation."
+Severity: Medium.
+
+## Decisions Made
+
+- **Decision:** Native SLA alerting for streaming pipelines (no records in N minutes) prioritized for Q2. Will integrate with existing Databricks notification framework. Owner: Marcus.
+- **Decision:** Watermark + checkpoint correctness investigation elevated to P1 bug. Engineering to reproduce and fix before new streaming features ship. Owner: Preethi.
+
+## Open Question
+Should checkpoint management (list, reset, migrate) be a Workflows feature or a Structured Streaming feature? Dependency on Workflows team needed.
+
+## Action Items
+- Marcus: write user story for SLA alerting feature by 2024-02-09
+- Preethi: assign 2 engineers to watermark reproduction by 2024-02-05
+- Ben: share production logs from the duplicate record incident

@@ -66,7 +66,41 @@ def main():
     collection = get_collection(openai_api_key=api_key)
     openai_client = OpenAI(api_key=api_key)
 
-    results = run_evaluation(
+    output_path = Path(args.output) if args.output else None
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    prior_results = [result_from_dict(c) for c in prior_cases]
+    new_cases: list[dict] = []
+
+    def serialize(r) -> dict:
+        return {
+            "test_id": r.test_id,
+            "query": r.query,
+            "recall_at_k": r.recall_at_k,
+            "mrr": r.mrr,
+            "pain_keyword_recall": r.pain_keyword_recall,
+            "story_format": r.story_format,
+            "faithfulness": r.faithfulness,
+            "relevance": r.relevance,
+            "invest": r.invest,
+            "pain_points": r.rag_result.pain_points if r.rag_result else [],
+            "user_stories": r.rag_result.user_stories if r.rag_result else [],
+            "summary": r.rag_result.summary if r.rag_result else "",
+            "sources": [h["source_label"] for h in r.rag_result.hits] if r.rag_result else [],
+        }
+
+    def save_checkpoint(all_result_objs, all_case_dicts):
+        if not output_path:
+            return
+        agg = aggregate_metrics(all_result_objs)
+        output_path.write_text(
+            json.dumps({"config": vars(args), "aggregate": agg, "cases": all_case_dicts},
+                       indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+    for result in run_evaluation(
         collection=collection,
         openai_client=openai_client,
         top_k=args.top_k,
@@ -77,46 +111,19 @@ def main():
         test_set_path=eval_set_path,
         prompt_variant=args.prompt_variant,
         skip_ids=skip_ids or None,
-    )
+    ):
+        new_cases.append(serialize(result))
+        save_checkpoint(prior_results + [result_from_dict(c) for c in new_cases],
+                        prior_cases + new_cases)
 
-    # Merge prior results (resume) with new ones for aggregate + save
-    prior_results = [result_from_dict(c) for c in prior_cases]
-    all_results = prior_results + results
-
+    all_results = prior_results + [result_from_dict(c) for c in new_cases]
     agg = aggregate_metrics(all_results)
     print(format_report(all_results, agg))
 
-    if args.output:
-        output_path = Path(args.output)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-
-        new_cases = [
-            {
-                "test_id": r.test_id,
-                "query": r.query,
-                "recall_at_k": r.recall_at_k,
-                "mrr": r.mrr,
-                "pain_keyword_recall": r.pain_keyword_recall,
-                "story_format": r.story_format,
-                "faithfulness": r.faithfulness,
-                "relevance": r.relevance,
-                "invest": r.invest,
-                "pain_points": r.rag_result.pain_points if r.rag_result else [],
-                "user_stories": r.rag_result.user_stories if r.rag_result else [],
-                "summary": r.rag_result.summary if r.rag_result else "",
-                "sources": [h["source_label"] for h in r.rag_result.hits] if r.rag_result else [],
-            }
-            for r in results
-        ]
-
-        output_path.write_text(
-            json.dumps(
-                {"config": vars(args), "aggregate": agg, "cases": prior_cases + new_cases},
-                indent=2, ensure_ascii=False,
-            ),
-            encoding="utf-8",
-        )
+    if output_path:
+        save_checkpoint(all_results, prior_cases + new_cases)
         print(f"Saved to {output_path}  ({len(prior_cases + new_cases)} total cases)")
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,36 @@
+---
+title: DLT Pipeline Error Handling — Engineering & PM Review
+date: 2024-03-26
+attendees: Marcus Webb (Senior Data Engineer), Lily Bergström (Data Engineer), Devon Okafor (Staff Data Engineer), Marcus Reid (PM, Data Engineering)
+product_area: DLT, Workflows, Delta Lake
+---
+
+## Meeting Purpose
+Review top DLT error handling pain points from customer interviews and support escalations. Three tickets escalated in Q1 all related to error message quality and pipeline debuggability.
+
+## Pain Points Raised
+
+**1. DLT error messages are cryptic and non-actionable (Marcus Webb)**
+"When a DLT pipeline fails, the error shown in the UI is an internal Java stack trace. The actual cause — a bad record, a schema mismatch, a missing upstream table — is buried 40 lines deep. I've started keeping a personal 'DLT error translation guide' that maps internal errors to their real causes. That document should be the error message itself."
+Severity: High. This is the top DLT support ticket category for the past two quarters.
+
+**2. No selective table refresh — a single table failure restarts the whole pipeline (Lily)**
+"We have a DLT pipeline with 15 tables. If one silver table fails due to a bad source record, DLT restarts the entire pipeline including upstream bronze tables that were fine. For a pipeline that takes 45 minutes to run, this is a major productivity hit. We need the ability to re-run a single failed table without restarting the full DAG."
+Severity: High. Three separate feature requests filed for this in Q1.
+
+**3. Pipeline event logs are not queryable from Unity Catalog (Devon)**
+"DLT pipeline event logs are accessible via a system function but they're not exposed as a Delta table in Unity Catalog. We can't join them with our cost data or our data quality metrics. Everything downstream of DLT pipeline observability requires a custom scraping job."
+Severity: Medium.
+
+## Decisions Made
+
+- **Decision:** Error message quality improvement (map top-20 internal DLT errors to plain-language descriptions with remediation steps) prioritized as a Q2 documentation + UI fix. Owner: Marcus Reid. Engineering effort: 1 sprint.
+- **Decision:** Selective table refresh scoped as a Q3 feature. Requires changes to DLT execution engine. Owner: Marcus Reid to write spec. Devon to validate technical approach.
+
+## Open Question
+Should DLT event logs be exposed as a Unity Catalog system table (managed by Databricks) or as a user-configurable Delta table the pipeline writes to? The former is simpler for users; the latter gives more flexibility but requires schema decisions.
+
+## Action Items
+- Marcus Webb: compile the top-20 DLT error → plain English mappings
+- Lily: document the 45-minute pipeline restart incident with timeline for the spec
+- Devon: spike Unity Catalog system table approach for event log exposure

@@ -7,7 +7,7 @@ from src.ingestion.chunker import Chunk, chunk_document
 
 
 KB_DIR = Path("data/knowledge_base")
-DOC_FOLDERS = ["interviews", "retros", "prds", "tickets"]
+DOC_FOLDERS = ["interviews", "retros", "prds", "tickets", "meeting_notes"]
 
 
 def load_all_documents(kb_dir: Path = KB_DIR) -> list[tuple[dict, str]]:

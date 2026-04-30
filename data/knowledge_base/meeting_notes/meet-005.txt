@@ -1,0 +1,36 @@
+---
+title: Repos & Version Control Developer Experience Sync
+date: 2024-03-05
+attendees: Omar Hassan (Data Scientist), Lily Chen (Senior Data Engineer), Tom Bergstrom (PM, Developer Experience), Sara Volkov (Engineering Manager)
+product_area: Repos, Notebooks, Databricks Connect
+---
+
+## Meeting Purpose
+Surface top developer workflow friction points around Repos and version control to inform the DX roadmap for Q2–Q3.
+
+## Pain Points Raised
+
+**1. Merge conflicts in Repos have no in-notebook resolution UI (Lily)**
+"When two engineers edit the same notebook and one pushes while the other has uncommitted changes, the conflict resolution requires dropping out of Databricks entirely, resolving in a local git client, then re-pushing. Our team loses 30–60 minutes per conflict incident. VS Code has inline merge resolution; Databricks notebooks don't."
+Severity: High. Happens multiple times per sprint for teams with 3+ notebook contributors.
+
+**2. Databricks Connect error messages mask root causes (Omar)**
+"I get 'connection refused' from Databricks Connect roughly once a week. 90% of the time it's because my personal access token expired, but the error message doesn't say that. I spent over 90 minutes debugging the first time it happened. A one-line message saying 'your token may have expired' would save hours across the team."
+Severity: Medium. Three separate user complaints logged in support in the past 6 weeks.
+
+**3. .gitignore is not respected for notebook outputs (Lily)**
+"Cell outputs — especially large DataFrames printed as tables — bloat our repo. We've added notebook output paths to .gitignore but Databricks Repos doesn't honor it consistently. We've had commits with 8MB of output JSON that slowed down CI pipelines."
+Severity: Medium.
+
+## Decisions Made
+
+- **Decision:** Improve Databricks Connect error messages for expired/invalid tokens. Simple string change; Tom to file as P2 bug. Owner: Tom. Due: 2024-03-20.
+- **Decision:** In-notebook merge conflict UI scoped as a Q3 investment. Requires design review. Owner: Sara to engage design team.
+
+## Open Question
+Should notebook output stripping be enforced at commit time (git hook) or at the Repos layer? If at the Repos layer, does it conflict with users who intentionally commit outputs for review?
+
+## Action Items
+- Tom: file P2 bug for Databricks Connect token expiry error message
+- Lily: document the .gitignore inconsistency with repro steps
+- Omar: share the 90-minute debugging session as a user story for the error message fix

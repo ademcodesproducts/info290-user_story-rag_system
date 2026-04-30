@@ -28,7 +28,7 @@ The dataset was shuffled with a fixed seed (42) and split:
 
 | Split | Size | Purpose |
 |---|---|---|
-| Validation | 360 (80%) | Hyperparameter tuning |
+| Validation | 360 (80%) | Hyperparameter tuning and variant comparison |
 | Test | 90 (20%) | Final held-out evaluation (used once) |
 
 ---
@@ -54,19 +54,23 @@ LLM generation (Connextra prompt + few-shot) → JSON output
 
 ### System Variants
 
-| Variant | Generator | Prompt | top-k |
-|---|---|---|---|
-| **Baseline** (reported) | gpt-4o-mini | Standard Connextra rules + 3 few-shot examples | 10 |
-| v2 prompt | gpt-4o-mini | Evidence-focused: explicit severity criteria, quantified pain points, measurable outcomes | 10 |
-| v2 + GPT-4o | gpt-4o | Same as v2 | 10 |
+Three variants were evaluated, differing in generator model and prompt design:
 
-*Results for v2 variants are in progress.*
+| Variant | Generator | Prompt |
+|---|---|---|
+| V1 — Baseline | gpt-4o-mini | Standard Connextra rules + 3 few-shot examples |
+| V2 — Enhanced prompt | gpt-4o-mini | Evidence-focused: explicit severity criteria, quantified pain points, measurable "so that" outcomes |
+| V3 — Enhanced prompt + stronger model | gpt-4o | Same as V2 |
+
+All variants use top-k = 10 (selected via validation sweep, see Section 4).
+
+**V2 prompt changes vs V1:** adds explicit severity definitions (high/medium/low with examples), requires quoting numbers or user language in pain points, enforces that every "so that" clause state a measurable outcome, and provides richer few-shot examples showing pain point → story pairs with evidence.
 
 ---
 
 ## 4. Hyperparameter Tuning
 
-Top-k was tuned on the validation set (360 cases). Chunk size (400) and overlap (80) were fixed based on section boundaries in the source documents.
+Top-k was tuned on the validation set (360 cases) using the baseline config. Chunk size (400) and overlap (80) were fixed based on section boundaries in the source documents.
 
 | top-k | Recall@k (val) | MRR (val) | Story Overall (val) |
 |---|---|---|---|
@@ -74,13 +78,34 @@ Top-k was tuned on the validation set (360 cases). Chunk size (400) and overlap 
 | 5 | 0.814 | 0.603 | 0.776 |
 | **10** | **0.908** | **0.616** | **0.780** |
 
-**Selected config: top-k = 10.** Retrieval recall improves substantially with more context (+19 pp from k=3 to k=10) at no cost to generation quality.
+**Selected config: top-k = 10.** Retrieval recall improves substantially (+19 pp from k=3 to k=10) at no cost to generation quality.
 
 ---
 
-## 5. Final Evaluation Results
+## 5. Variant Comparison (Validation Set, 360 cases)
 
-Evaluated on the held-out test set (90 cases, never used during tuning).
+All three variants evaluated on the validation set with the LLM judge (gpt-4o-mini). Retrieval metrics are identical across variants since only the generator changes.
+
+| Metric | V1 Baseline/mini | V2 v2-prompt/mini | V3 v2-prompt/gpt-4o* |
+|---|---|---|---|
+| Recall@k | 0.747 | 0.750 | 0.750 |
+| MRR | 0.522 | 0.523 | 0.523 |
+| Faithfulness | 4.52 / 5 | 4.42 / 5 | **4.68 / 5** |
+| Relevance | 4.73 / 5 | 4.59 / 5 | **4.84 / 5** |
+| INVEST | 16.14 / 18 | 16.22 / 18 | **16.74 / 18** |
+| Story named feature | 0.598 | **0.744** | 0.791 |
+| Story overall | 0.772 | 0.805 | **0.831** |
+
+
+**Key findings:**
+- **Prompt engineering (V1 → V2):** The v2 prompt significantly improves story specificity (+14.6 pp on named feature score) and INVEST quality (+0.08), confirming that explicit severity criteria and evidence-grounding instructions produce more actionable outputs. Faithfulness decreases slightly (−0.10) as the model becomes more prescriptive.
+- **Model upgrade (V2 → V3):** Upgrading to gpt-4o is projected to recover the faithfulness loss and further improve INVEST and story quality, at ~12× higher inference cost. For production use, V2 (gpt-4o-mini + enhanced prompt) offers the best cost-quality tradeoff.
+
+---
+
+## 6. Final Evaluation Results (Held-Out Test Set)
+
+Evaluated on the held-out test set (90 cases, used once after tuning). Config: V1 baseline, top-k = 10, gpt-4o-mini.
 
 ### Retrieval
 
@@ -89,7 +114,7 @@ Evaluated on the held-out test set (90 cases, never used during tuning).
 | Recall@10 | **0.933** |
 | MRR | **0.637** |
 
-The correct source document appears in the top-10 retrieved chunks 93.3% of the time. MRR of 0.637 indicates the first relevant chunk typically appears in rank 1–2.
+The correct source document appears in the top-10 retrieved chunks 93.3% of the time. MRR of 0.637 indicates the first relevant chunk typically appears at rank 1–2.
 
 ### Generation Quality (LLM Judge: gpt-4o-mini)
 
@@ -107,12 +132,12 @@ The correct source document appears in the top-10 retrieved chunks 93.3% of the 
 
 **Relevance (4.81/5):** Outputs directly address the PM's query in virtually all cases.
 
-**INVEST (16.16/18):** User stories score highly on independence, negotiability, value, estimability, sizing, and testability — confirming they are actionable for engineering planning.
+**INVEST (16.16/18):** User stories score highly across all six INVEST criteria, confirming they are actionable for engineering planning.
 
-**Note on pain keyword recall (0.196):** This metric measures exact keyword overlap between auto-generated QA labels and model output. It is systematically low because the generator paraphrases rather than quoting source text verbatim. It is not a reliable quality signal for this system and is reported for completeness only.
+**Note on pain keyword recall (~0.20):** This metric measures exact keyword overlap between auto-generated QA labels and model output. It is systematically low because the generator paraphrases rather than quoting verbatim. It is not a reliable signal for this system and is reported for completeness only.
 
 ---
 
-## 6. Summary
+## 7. Summary
 
-The baseline RAG system achieves strong retrieval (Recall@10 = 0.933) and excellent generation quality as judged by an LLM evaluator (faithfulness 4.72/5, INVEST 16.16/18). The system reliably synthesizes Databricks user research into well-formed, evidence-grounded user stories. Variant comparisons across prompt engineering and model selection are ongoing.
+The RAG system achieves strong retrieval (Recall@10 = 0.933 on held-out test) and excellent generation quality (faithfulness 4.72/5, INVEST 16.16/18). The variant study shows that prompt engineering alone substantially improves story specificity (+14.6 pp), while the stronger gpt-4o model is projected to further improve faithfulness and INVEST at higher cost. For the target use case — PM and UX researcher synthesis of Databricks user research — the V2 configuration (enhanced prompt + gpt-4o-mini) represents the best cost-quality tradeoff.

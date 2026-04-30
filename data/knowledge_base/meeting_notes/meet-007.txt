@@ -1,0 +1,36 @@
+---
+title: Unity Catalog Governance Deep-Dive — Financial Services Segment
+date: 2024-02-28
+attendees: Jordan Kim (Analytics Engineer), Amara Diallo (Senior Platform Engineer), Priya Anand (PM, Data Governance), Felix Müller (Security Engineer)
+product_area: Unity Catalog, Security, Compliance
+---
+
+## Meeting Purpose
+Deep-dive on Unity Catalog governance friction for financial services customers, ahead of a regulatory compliance review season.
+
+## Pain Points Raised
+
+**1. Row-level security policies are expensive to maintain at scale (Amara)**
+"We have 200+ row-level security policies across 80 tables. Each policy is a SQL expression stored in Unity Catalog. When our data model changes — a column rename, a schema migration — we have to manually audit which policies reference that column. There's no dependency graph, no impact analysis, no automated validation. We discovered a broken policy during a compliance audit, not before."
+Severity: High. Policy breakage during schema migrations is a recurring compliance risk.
+
+**2. External location credentials cannot be scoped to read-only (Felix)**
+"We grant External Location access to service principals for ETL jobs. The credentials are either full read/write or nothing — there's no read-only External Location credential. Our security team requires least-privilege access for all service principals, so we can't use External Locations for read-only consumers."
+Severity: High. Security architecture blocker.
+
+**3. Audit log querying is slow for large time windows (Jordan)**
+"System tables for Unity Catalog audit logs are excellent for compliance, but querying 90 days of audit history for a specific table takes 4–6 minutes. During an active audit we're running these queries repeatedly. The data volume isn't huge — it's the query engine warm-up on system tables that's slow."
+Severity: Medium.
+
+## Decisions Made
+
+- **Decision:** RLS policy impact analysis (which policies reference a given column) to be scoped as a Unity Catalog metadata feature in Q3. Owner: Priya.
+- **Decision:** Read-only External Location credential support filed as a P2 feature request. Felix to provide security requirements doc. Owner: Felix. Due: 2024-03-14.
+
+## Open Question
+Should RLS policy validation run automatically on schema change events, or should it be a manual audit tool? Automatic validation has performance implications for frequent schema changes.
+
+## Action Items
+- Amara: document the broken policy incident as a case study for the product spec
+- Felix: write security requirements for read-only External Location credentials
+- Jordan: share slow audit query examples with approximate data volumes

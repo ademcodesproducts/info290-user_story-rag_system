@@ -1,0 +1,36 @@
+---
+title: Delta Sharing Partner Integration Review
+date: 2024-02-14
+attendees: Anika Sharma (PM, Data Sharing), Devon Okafor (Staff Data Engineer), Rachel Kim (Partner Engineer), Liu Yang (Platform Admin)
+product_area: Delta Sharing, Unity Catalog
+---
+
+## Meeting Purpose
+Review friction points discovered during three enterprise Delta Sharing rollouts in Q4. Input from partner engineers and platform admins managing the deployments.
+
+## Pain Points Raised
+
+**1. Recipient onboarding takes 2–3 days and requires manual coordination (Rachel)**
+"When we set up a new Delta Sharing recipient — a partner company — we have to manually generate an activation link, email it, wait for them to configure their client, then verify the connection. If anything goes wrong there's no visibility into whether they've completed setup. Two of our three rollouts had a multi-day delay just in this handshake phase."
+Severity: High. Slows down partner time-to-value significantly.
+
+**2. No fine-grained share permissions — it's all-or-nothing per table (Liu)**
+"We want to share a subset of columns from a Delta table with a partner but Delta Sharing only supports table-level sharing. To share a filtered view, we have to create a separate view, grant access to that, and maintain it separately. For 40 partner tables this is unsustainable."
+Severity: High. Column-level and row-level sharing is a blocker for regulated data (PII, financial).
+
+**3. Audit logs for Delta Sharing are delayed by 30–60 minutes (Liu)**
+"When a partner queries a shared table, we need to see that access in near real-time for compliance. The system tables log shows sharing events but with a 30–60 minute lag. For SOC 2 audits, our legal team requires access logs within 5 minutes."
+Severity: High. Compliance blocker for two financial services customers.
+
+## Decisions Made
+
+- **Decision:** Column-level sharing (via view-based access) to be documented as a supported pattern in Q1 docs update. Native column-level sharing scoped for H2. Owner: Anika.
+- **Decision:** Audit log latency improvement elevated to P1. Target: sub-5-minute latency for Delta Sharing access events. Owner: Anika to file with engineering.
+
+## Open Question
+Should recipient onboarding automation (self-serve activation portal) be a Delta Sharing feature or a Unity Catalog admin feature? Needs product alignment.
+
+## Action Items
+- Rachel: document the current manual onboarding steps to baseline the problem
+- Liu: quantify number of maintained view objects caused by column-filtering workaround
+- Anika: file P1 bug for audit log latency with SLA requirement from legal team

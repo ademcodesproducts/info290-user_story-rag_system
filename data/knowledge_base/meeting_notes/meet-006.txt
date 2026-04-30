@@ -1,0 +1,36 @@
+---
+title: Multi-Workspace Fleet Management — Enterprise Admin Review
+date: 2024-01-18
+attendees: Sandra Volkov (Principal Platform Engineer), Marcus Webb (Staff Data Engineer), Ingrid Larsson (PM, Platform), Chen Wei (Engineering Manager)
+product_area: Multi-workspace, Unity Catalog, Admin Console
+---
+
+## Meeting Purpose
+Review pain points from enterprise customers managing 10+ Databricks workspaces. Three customers with 15–25 workspaces participated in discovery interviews this quarter.
+
+## Pain Points Raised
+
+**1. No central admin console for multi-workspace operations (Sandra)**
+"We manage 18 workspaces across 4 cloud regions. To check cluster policy compliance, I have to log into each workspace individually. Last month I spent 3 hours just aggregating cluster configuration data into a spreadsheet for a quarterly audit. There is no fleet-level view — not for policies, not for costs, not for user access."
+Severity: High. Every enterprise customer with 5+ workspaces hits this. Manual aggregation is the only workaround.
+
+**2. Cluster policy drift across workspaces is invisible (Marcus)**
+"We push cluster policies via Terraform but drift happens — someone updates a policy manually in the UI and Terraform state goes stale. We have no alert when a workspace diverges from the fleet standard. By the time we notice, 3 workspaces are out of compliance and we don't know for how long."
+Severity: High. Compliance and cost control implications.
+
+**3. User access provisioning is not synchronized across workspaces (Sandra)**
+"When a user leaves the company, SCIM deprovisioning removes them from the identity provider but workspace-level permissions are not always revoked within our SLA. We've had cases where deactivated users retained access for 4–6 hours. For SOC 2 this is a finding."
+Severity: High. Security and compliance blocker. Repeat of a ticket escalation from Q3.
+
+## Decisions Made
+
+- **Decision:** Multi-workspace fleet dashboard (policy compliance, cost, user access) added to H2 roadmap as a major investment. Ingrid to write problem brief. Owner: Ingrid.
+- **Decision:** SCIM deprovisioning latency elevated to P1. Engineering to investigate Unity Catalog propagation delay. Owner: Chen Wei.
+
+## Open Question
+Should the fleet management console be a Unity Catalog admin feature or a standalone Accounts Console enhancement? Architectural decision needed before scoping.
+
+## Action Items
+- Sandra: provide fleet configuration data (anonymized) to inform dashboard design
+- Ingrid: write problem brief for fleet management by 2024-02-01
+- Chen Wei: investigate SCIM propagation delay root cause by 2024-02-08
